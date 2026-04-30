@@ -68,7 +68,6 @@ export default function Modal3D({ isVisible, onClose, product }: Modal3DProps) {
       modelUrl: product.model_url,
     };
 
-    // @ts-expect-error - Ignoramos error temporal si Zustand espera imageUrl en lugar de image_url
     addToCart(cartProduct, colorToSave);
     onClose();
 
