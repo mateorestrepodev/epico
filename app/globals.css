@@ -1,26 +1,107 @@
+/* app/globals.css */
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* ─── PALETA OFICIAL BRANDBOOK ─── */
+  /* CAMBIO AQUÍ: Fondo global suave tipo galería de arte */
+  --color-background:  #f5f5f5;
+  --color-foreground:  #000000;
+
+  /* Azul épico — HEX 291df1 / Pantone 2728C */
+  --color-epico-blue:  #291df1;
+  --color-epico-dark:  #000000;
+  --color-epico-light: #f5f5f5; 
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ¡Eliminamos los @font-face manuales porque next/font/local hace esto por nosotros de forma optimizada! */
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* ─── ESCALADO FLUIDO PARA PANTALLAS GRANDES ─── */
+  html {
+    font-size: 100%;
+  }
+
+  @media (min-width: 1600px) {
+    html {
+      font-size: 1vw;
+    }
+  }
+
+  @media (min-width: 3000px) {
+    html {
+      font-size: 30px;
+    }
+  }
+
+  /* ─── TIPOGRAFÍA BASE — brandbook specs ─── */
+  body {
+    font-family: var(--font-neue-montreal), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  /* Títulos — Neue Montreal Regular (brandbook) */
+  h1, h2, h3 {
+    font-family: var(--font-neue-montreal), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 0.86; 
+  }
+
+  /* Subtítulos — Neue Montreal Bold (brandbook) */
+  h4, h5, h6 {
+    font-family: var(--font-neue-montreal), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 0.92; 
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* ─── DISEÑO DEL SCROLLBAR GLOBAL (RECTÁNGULO BRUTALISTA) ─── */
+  
+  /* Para navegadores Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: var(--color-epico-blue) var(--color-background);
+  }
+
+  /* Para navegadores basados en WebKit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 10px; /* Un grosor con más carácter arquitectónico */
+    height: 10px; 
+  }
+
+  /* El fondo o riel del scroll */
+  ::-webkit-scrollbar-track {
+    background: var(--color-background); 
+    border-radius: 0px !important; /* Forzamos ángulos de 90° */
+    border: none !important;
+  }
+
+  /* La barra que se mueve (Thumb) */
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-epico-blue);
+    border-radius: 0px !important; /* Forzamos ángulos de 90° */
+    border: none !important;
+  }
+
+  /* Efecto sutil al pasar el mouse sobre el scroll */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1a12b0; 
+  }
 }
