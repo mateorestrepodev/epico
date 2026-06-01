@@ -46,7 +46,7 @@ export default async function ProyectoDetalle({ params }: Props) {
 
       {/* 1. HERO: Altura reducida (70vh en compu, 60vh en móvil) para que se asome la franja blanca */}
       {heroImage ? (
-        <section className="relative w-full h-[60vh] md:h-[80vh] bg-[#111]">
+        <section className="relative w-full h-[60vh] md:h-[88vh] bg-[#111]">
           <Image
             src={heroImage}
             alt={`Portada de ${proyecto.title}`}
