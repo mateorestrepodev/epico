@@ -106,7 +106,7 @@ export default function HeroScroll() {
       >
         {/* TEXTO SLOGAN: Se va con el telón azul hacia arriba */}
         <div className="absolute bottom-10 w-full text-center text-white/80 text-xs tracking-[0.3em] pl-[0.3em] uppercase">
-          Objetos autenticos
+          Objetos auténticos
         </div>
       </motion.div>
 

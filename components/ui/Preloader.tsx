@@ -50,7 +50,7 @@ export default function Preloader() {
             // 'pl-[0.3em]' balancea el espacio invisible que deja el tracking al final.
             className="absolute bottom-10 w-full text-center text-white/50 text-xs tracking-[0.3em] pl-[0.3em] uppercase"
           >
-            Objetos autenticos
+            Objetos auténticos
           </motion.div>
         </motion.div>
       )}
