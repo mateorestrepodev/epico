@@ -19,10 +19,9 @@ export default function EditarProyecto() {
 
   const [projectId, setProjectId] = useState<number | null>(null);
 
-  // Estados del Formulario (Textos)
+  // Estados del Formulario (Textos) - Categoría eliminada
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState("");
   const [year, setYear] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
@@ -50,7 +49,6 @@ export default function EditarProyecto() {
           setProjectId(data.id);
           setTitle(data.title || "");
           setSlug(data.slug || "");
-          setCategory(data.category || "");
           setYear(data.year || "");
           setLocation(data.location || "");
           setDescription(data.description || "");
@@ -93,7 +91,7 @@ export default function EditarProyecto() {
     const options = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1920,
-      useWebWorker: false, // <-- SOLUCIÓN AL TIMEOUT: Apagamos el Web Worker
+      useWebWorker: false,
       fileType: "image/webp",
       initialQuality: 0.95,
     };
@@ -151,7 +149,6 @@ export default function EditarProyecto() {
         .update({
           title,
           slug,
-          category,
           year,
           location,
           description,
@@ -249,17 +246,6 @@ export default function EditarProyecto() {
               />
             </div>
             <div>
-              <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
-                Categoría
-              </label>
-              <input
-                type="text"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
-              />
-            </div>
-            <div className="md:col-span-2">
               <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
                 Ubicación
               </label>
@@ -393,7 +379,7 @@ export default function EditarProyecto() {
                         <button
                           type="button"
                           onClick={() => removeExistingGalleryImage(url)}
-                          className="absolute top-1 right-1 bg-red-500/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-1 right-1 bg-red-500/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         >
                           <svg
                             width="10"
@@ -430,7 +416,7 @@ export default function EditarProyecto() {
                         <button
                           type="button"
                           onClick={() => removeNewGalleryImage(idx)}
-                          className="absolute top-1 right-1 bg-red-500/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto"
+                          className="absolute top-1 right-1 bg-red-500/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto cursor-pointer"
                         >
                           <svg
                             width="10"
@@ -462,7 +448,7 @@ export default function EditarProyecto() {
             <button
               type="submit"
               disabled={loadingSubmit}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm cursor-pointer"
             >
               {loadingSubmit ? "Guardando cambios..." : "Guardar Cambios"}
             </button>

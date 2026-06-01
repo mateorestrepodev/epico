@@ -25,7 +25,7 @@ export default async function ProyectoDetalle({ params }: Props) {
     notFound();
   }
 
-  const galeriaUrls: string[] = (proyecto.gallery || []).filter(
+  const galeriaUrls: string[] = (proyecto.gallery_urls || []).filter(
     (url: string) => url && typeof url === "string" && url.trim() !== "",
   );
 
@@ -69,12 +69,7 @@ export default async function ProyectoDetalle({ params }: Props) {
             <span className="font-light text-gray-700">{proyecto.year}</span>
           )}
         </h1>
-
-        {proyecto.category && (
-          <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gray-700 mt-3 font-medium">
-            {proyecto.category}
-          </p>
-        )}
+        {/* Se eliminó por completo el bloque que mostraba la categoría */}
       </section>
 
       {/* 3. GALERÍA: Ya sin el zoom en el hover */}

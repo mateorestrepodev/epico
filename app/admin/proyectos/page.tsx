@@ -8,7 +8,6 @@ import { supabase } from "@/lib/supabase/supabase";
 interface Proyecto {
   id: number;
   title: string;
-  category: string;
   location: string;
   year: string;
   image_url: string | null;
@@ -20,14 +19,13 @@ export default function AdminProyectosDashboard() {
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
-  // Todo el fetch se encapsula DENTRO del useEffect.
-  // Así el linter entiende que es exclusivo del montaje inicial.
   useEffect(() => {
     const fetchProyectos = async () => {
       try {
         const { data, error } = await supabase
           .from("proyectos")
-          .select("id, title, category, location, year, image_url, slug")
+          // Eliminamos 'category' del select
+          .select("id, title, location, year, image_url, slug")
           .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -107,7 +105,7 @@ export default function AdminProyectosDashboard() {
                     alt={item.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 25vw"
-                    className="object-cover  transition-transform duration-700"
+                    className="object-cover transition-transform duration-700"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-[#827A70] text-xs uppercase tracking-widest">
@@ -122,7 +120,8 @@ export default function AdminProyectosDashboard() {
                     {item.title}
                   </h3>
                   <p className="text-[#827A70] text-[10px] uppercase tracking-widest font-medium">
-                    {item.category} • {item.year}
+                    {item.location && `${item.location} • `}
+                    {item.year}
                   </p>
                 </div>
 

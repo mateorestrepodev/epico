@@ -4,8 +4,8 @@ import { useState, type FormEvent, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/lib/supabase/supabase"; // Usamos la instancia global
-import imageCompression from "browser-image-compression"; // ¡Nuestra nueva magia!
+import { supabase } from "@/lib/supabase/supabase";
+import imageCompression from "browser-image-compression";
 
 export default function NuevoProyecto() {
   const router = useRouter();
@@ -14,11 +14,10 @@ export default function NuevoProyecto() {
   const [loadingText, setLoadingText] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  // Estados de datos
+  // Estados de datos (Categoría eliminada)
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
-    category: "",
     year: "",
     location: "",
     description: "",
@@ -66,7 +65,7 @@ export default function NuevoProyecto() {
     const options = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1920,
-      useWebWorker: true,
+      useWebWorker: false, // <-- IMPORTANTE: Cambiado a false para evitar Timeout
       fileType: "image/webp",
       initialQuality: 0.95,
     };
@@ -95,21 +94,22 @@ export default function NuevoProyecto() {
   // ------------------------------------
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    // ...
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     try {
       if (!coverFile) throw new Error("La imagen de portada es obligatoria.");
       if (!formData.slug) throw new Error("El slug es obligatorio.");
 
       let coverUrl = "";
-      const galleryUrls: string[] = []; // <--- CÁMBIALO A CONST
-
-      // ...
+      const galleryUrls: string[] = [];
 
       // 1. Subir imagen de portada comprimida
       setLoadingText("Comprimiendo y subiendo portada...");
       coverUrl = await uploadFileToStorage(coverFile, "covers");
 
-      // 2. Subir imágenes de galería comprimidas (en serie para no saturar el navegador)
+      // 2. Subir imágenes de galería comprimidas
       if (galleryFiles.length > 0) {
         setLoadingText(
           `Comprimiendo y subiendo ${galleryFiles.length} fotos de galería...`,
@@ -126,7 +126,6 @@ export default function NuevoProyecto() {
         {
           title: formData.title,
           slug: formData.slug,
-          category: formData.category,
           year: formData.year,
           location: formData.location,
           description: formData.description,
@@ -154,7 +153,6 @@ export default function NuevoProyecto() {
   return (
     <main className="min-h-screen bg-[#F6F5F2] text-[#423C35] font-sans p-6 md:p-12">
       <div className="max-w-4xl mx-auto bg-white border border-[#E4DFD5] p-8 md:p-10 shadow-sm rounded-xl">
-        {/* Cabecera */}
         <header className="mb-10 border-b border-[#E4DFD5] pb-6 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-medium tracking-tight text-[#332D26]">
@@ -213,21 +211,6 @@ export default function NuevoProyecto() {
 
             <div>
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
-                Categoría
-              </label>
-              <input
-                type="text"
-                name="category"
-                required
-                value={formData.category}
-                onChange={handleChange}
-                placeholder="Ej: Arquitectura Residencial"
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors text-[#332D26]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
                 Año
               </label>
               <input
@@ -241,7 +224,7 @@ export default function NuevoProyecto() {
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
                 Ubicación
               </label>
@@ -405,7 +388,7 @@ export default function NuevoProyecto() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm cursor-pointer"
             >
               {loading ? "Publicando..." : "Publicar Proyecto"}
             </button>

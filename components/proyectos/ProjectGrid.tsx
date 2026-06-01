@@ -11,8 +11,7 @@ export interface ProjectData {
   slug: string;
   title: string;
   year: string;
-  category: string;
-  city: string; // <-- AÑADIDO: Asegúrate de que tu BD devuelva esto
+  location: string; // <-- CORREGIDO: En BD se llama 'location', no 'city'
   image_url: string;
   gallery_urls?: string[];
 }
@@ -37,13 +36,13 @@ export default function ProjectGrid({ projects }: { projects: ProjectData[] }) {
             }}
             className="group flex flex-col"
           >
-            {/* Info Arriba: Nombre y Ciudad */}
+            {/* Info Arriba: Nombre y Ubicación */}
             <div className="mb-4">
-              <h3 className="text-sm  font-bold uppercase tracking-widest text-gray-900">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900">
                 {project.title}
               </h3>
-              <p className="text-[10px]  uppercase tracking-[0.2em] text-gray-500 mt-1 font-medium">
-                {project.city || "Ubicación"}
+              <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mt-1 font-medium">
+                {project.location || "Sin ubicación"}
               </p>
             </div>
 
