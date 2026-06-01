@@ -41,7 +41,7 @@ export default async function ProyectoDetalle({ params }: Props) {
         : null;
 
   return (
-    <main className="relative w-full min-h-screen bg-white overflow-x-hidden flex flex-col">
+    <main className="relative w-full min-h-screen bg-background overflow-x-hidden flex flex-col">
       <InnerNavbar theme="dark" />
 
       {/* 1. HERO: Altura reducida (70vh en compu, 60vh en móvil) para que se asome la franja blanca */}
@@ -62,7 +62,7 @@ export default async function ProyectoDetalle({ params }: Props) {
       )}
 
       {/* 2. FRANJA BLANCA: Textos más pequeños y compactos */}
-      <section className="w-full bg-white py-5 flex flex-col items-center justify-center text-center px-6">
+      <section className="w-full bg-background py-5 flex flex-col items-center justify-center text-center px-6">
         <h1 className="text-lg md:text-xl font-semibold uppercase tracking-widest text-epico-dark flex flex-wrap justify-center gap-2">
           <span>{proyecto.title}</span>
           {proyecto.year && (

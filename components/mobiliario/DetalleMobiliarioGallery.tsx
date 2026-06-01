@@ -100,7 +100,7 @@ export default function DetalleMobiliarioGallery({
           <>
             <button
               onClick={prevImage}
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF9F2]/90 text-[#4A4238] flex items-center justify-center hover:bg-white transition-colors z-10"
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF9F2]/90 text-[#4A4238] flex items-center justify-center hover:bg-background transition-colors z-10"
             >
               <svg
                 width="20"
@@ -115,7 +115,7 @@ export default function DetalleMobiliarioGallery({
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF9F2]/90 text-[#4A4238] flex items-center justify-center hover:bg-white transition-colors z-10"
+              className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF9F2]/90 text-[#4A4238] flex items-center justify-center hover:bg-background transition-colors z-10"
             >
               <svg
                 width="20"

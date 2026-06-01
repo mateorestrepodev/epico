@@ -96,7 +96,7 @@ export default function CartDrawer() {
               duration: 0.4,
               ease: [0.76, 0, 0.24, 1],
             }}
-            className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-white z-[101] flex flex-col shadow-2xl"
+            className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-background z-[101] flex flex-col shadow-2xl"
           >
             {/* Cabecera del Carrito */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
@@ -213,14 +213,14 @@ export default function CartDrawer() {
                     placeholder="TU NOMBRE COMPLETO"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full bg-white border border-gray-200 p-3 text-sm focus:outline-none focus:border-epico-blue transition-colors placeholder:text-gray-400 placeholder:text-xs placeholder:tracking-widest uppercase"
+                    className="w-full bg-background border border-gray-200 p-3 text-sm focus:outline-none focus:border-epico-blue transition-colors placeholder:text-gray-400 placeholder:text-xs placeholder:tracking-widest uppercase"
                   />
                   <input
                     type="text"
                     placeholder="DIRECCIÓN DE ENTREGA"
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
-                    className="w-full bg-white border border-gray-200 p-3 text-sm focus:outline-none focus:border-epico-blue transition-colors placeholder:text-gray-400 placeholder:text-xs placeholder:tracking-widest uppercase"
+                    className="w-full bg-background border border-gray-200 p-3 text-sm focus:outline-none focus:border-epico-blue transition-colors placeholder:text-gray-400 placeholder:text-xs placeholder:tracking-widest uppercase"
                   />
                 </div>
 

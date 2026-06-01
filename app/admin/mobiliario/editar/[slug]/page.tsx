@@ -200,7 +200,7 @@ export default function EditarMueblePage() {
 
   return (
     <main className="min-h-screen bg-[#F6F5F2] text-[#423C35] font-sans p-6 md:p-12">
-      <div className="max-w-4xl mx-auto bg-white border border-[#E4DFD5] p-8 shadow-sm rounded-xl">
+      <div className="max-w-4xl mx-auto bg-background border border-[#E4DFD5] p-8 shadow-sm rounded-xl">
         <header className="mb-10 border-b border-[#E4DFD5] pb-6 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-medium tracking-tight">
@@ -298,7 +298,7 @@ export default function EditarMueblePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Box 1: Imagen Principal */}
-              <div className="bg-white border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
+              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="block text-xs font-semibold text-[#332D26]">
@@ -359,7 +359,7 @@ export default function EditarMueblePage() {
               </div>
 
               {/* Box 2: Imagen Hover */}
-              <div className="bg-white border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
+              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="block text-xs font-semibold text-[#332D26]">
@@ -420,7 +420,7 @@ export default function EditarMueblePage() {
               </div>
 
               {/* Box 3: Galería (Ocupa 2 columnas) */}
-              <div className="md:col-span-2 bg-white border border-zinc-200 p-6 rounded-xl shadow-sm">
+              <div className="md:col-span-2 bg-background border border-zinc-200 p-6 rounded-xl shadow-sm">
                 <div className="flex justify-between items-center mb-5">
                   <div>
                     <span className="block text-xs font-semibold text-[#332D26]">
@@ -524,7 +524,7 @@ export default function EditarMueblePage() {
               </div>
 
               {/* Box 4: Modelo 3D (Ocupa 2 columnas) */}
-              <div className="md:col-span-2 bg-white border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
+              <div className="md:col-span-2 bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="block text-xs font-semibold text-[#332D26]">

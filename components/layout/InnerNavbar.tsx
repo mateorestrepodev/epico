@@ -59,7 +59,7 @@ export default function InnerNavbar({
   const lineBgColor = isScrolled
     ? "bg-epico-blue"
     : theme === "dark"
-      ? "bg-white"
+      ? "bg-background"
       : "bg-epico-blue";
 
   return (
@@ -138,7 +138,7 @@ export default function InnerNavbar({
               animate={{ x: "0%" }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-              className="fixed top-0 right-0 w-full md:w-1/2 h-full bg-epico-blue z-50 flex flex-col justify-between pt-16 pl-10 md:pl-14 pr-10 pb-10 shadow-2xl"
+              className="fixed top-0 right-0 w-full md:w-1/2 h-full bg-epico-blue z-50 flex flex-col justify-between p-7 shadow-2xl"
             >
               {/* Botón cerrar */}
               <button
@@ -184,7 +184,7 @@ export default function InnerNavbar({
               </div>
 
               {/* Footer del menú */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-1 text-white/70 text-[10px] tracking-widest uppercase">
+              <div className="flex flex-row justify-between items-start md:items-end gap-1 text-white/70 text-[9px] tracking-widest uppercase">
                 <span>CREAR Y PERMANECER</span>
                 <a
                   href="https://www.instagram.com/estudioepico/"

@@ -93,7 +93,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
       {show3DModal && product.model_url && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10">
           <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-[#F6F5F2] rounded-sm shadow-2xl overflow-hidden flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b border-gray-300 bg-white">
+            <div className="flex justify-between items-center p-4 border-b border-gray-300 bg-background">
               <span className="text-sm font-medium text-epico-dark uppercase tracking-widest">
                 Visor 3D: {product.name}
               </span>
@@ -120,7 +120,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
                   backgroundColor: "#F6F5F2",
                 }}
               />
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 px-4 py-2 rounded-full shadow-sm pointer-events-none">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/90 px-4 py-2 rounded-full shadow-sm pointer-events-none">
                 <span className="text-[10px] uppercase tracking-widest text-gray-600 font-medium">
                   Arrastra para rotar • Haz scroll para acercar
                 </span>

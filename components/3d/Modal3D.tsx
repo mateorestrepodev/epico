@@ -72,11 +72,11 @@ export default function Modal3D({ isVisible, onClose, product }: Modal3DProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex flex-col md:flex-row bg-white overflow-hidden"
+          className="fixed inset-0 z-[100] flex flex-col md:flex-row bg-background overflow-hidden"
         >
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 md:top-8 md:right-8 z-50 p-2 text-black hover:opacity-60 transition-opacity bg-white/50 backdrop-blur-md rounded-full md:bg-transparent md:backdrop-blur-none cursor-pointer"
+            className="absolute top-6 right-6 md:top-8 md:right-8 z-50 p-2 text-black hover:opacity-60 transition-opacity bg-background/50 backdrop-blur-md rounded-full md:bg-transparent md:backdrop-blur-none cursor-pointer"
             aria-label="Cerrar modal"
           >
             <X size={32} strokeWidth={1.5} />
@@ -134,7 +134,7 @@ export default function Modal3D({ isVisible, onClose, product }: Modal3DProps) {
             </div>
           </div>
 
-          <div className="w-full h-[50vh] md:h-full md:w-[40%] bg-white flex flex-col px-8 py-10 md:p-16 overflow-y-auto">
+          <div className="w-full h-[50vh] md:h-full md:w-[40%] bg-background flex flex-col px-8 py-10 md:p-16 overflow-y-auto">
             <div className="mt-auto md:mt-0 max-w-md mx-auto w-full flex flex-col h-full justify-center">
               <div className="mb-8">
                 <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-black mb-4">

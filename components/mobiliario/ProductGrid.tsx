@@ -53,8 +53,8 @@ export default function ProductGrid() {
   }
 
   return (
-    <section className="w-full max-w-[1600px] mx-auto  px-5 md:px-8 pb-24 md:py-20">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8">
+    <section className="w-full max-w-[1600px] mx-auto  px-5 md:px-8 py-16 md:py-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product, index) => (
           <motion.div
             key={product.id}

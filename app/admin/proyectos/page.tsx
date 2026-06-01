@@ -96,7 +96,7 @@ export default function AdminProyectosDashboard() {
           proyectos.map((item) => (
             <div
               key={item.id}
-              className="bg-white border border-[#E4DFD5] rounded-sm overflow-hidden flex flex-col group shadow-sm hover:shadow-md transition-shadow duration-300"
+              className="bg-background border border-[#E4DFD5] rounded-sm overflow-hidden flex flex-col group shadow-sm hover:shadow-md transition-shadow duration-300"
             >
               <div className="relative aspect-[5/4] w-full bg-[#EBE7DF] overflow-hidden p-4">
                 {item.image_url ? (
@@ -114,7 +114,7 @@ export default function AdminProyectosDashboard() {
                 )}
               </div>
 
-              <div className="p-6 flex flex-col flex-grow justify-between bg-white">
+              <div className="p-6 flex flex-col flex-grow justify-between bg-background">
                 <div>
                   <h3 className="font-medium text-lg tracking-wide text-[#332D26] truncate mb-1">
                     {item.title}
@@ -144,7 +144,7 @@ export default function AdminProyectosDashboard() {
             </div>
           ))
         ) : (
-          <div className="col-span-full border border-dashed border-[#D5CEC4] rounded-sm p-16 flex flex-col justify-center items-center text-center bg-white shadow-sm">
+          <div className="col-span-full border border-dashed border-[#D5CEC4] rounded-sm p-16 flex flex-col justify-center items-center text-center bg-background shadow-sm">
             <p className="text-[#6A6258] text-sm mb-6 font-light">
               El portafolio de proyectos está vacío.
             </p>

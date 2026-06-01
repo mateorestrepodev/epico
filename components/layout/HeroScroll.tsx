@@ -157,7 +157,7 @@ export default function HeroScroll() {
               animate={{ x: "0%" }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-              className="fixed top-0 right-0 w-full md:w-1/2 h-full bg-[#291df1] z-50 flex flex-col justify-between pt-16 pl-10 md:pl-14 pr-10 pb-10 shadow-2xl"
+              className="fixed top-0 right-0 w-full md:w-1/2 h-full bg-[#291df1] z-50 flex flex-col justify-between p-7 shadow-2xl"
             >
               {/* Botón cerrar */}
               <button
@@ -169,7 +169,7 @@ export default function HeroScroll() {
               </button>
 
               {/* Links */}
-              <nav className="flex flex-col gap-2 mt-10">
+              <nav className="flex flex-col gap-2 mt-4">
                 {NAV_LINKS.map((link, i) => {
                   const isActive = pathname === link.href;
                   return (
@@ -207,7 +207,7 @@ export default function HeroScroll() {
               </nav>
 
               {/* Footer */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-1 text-white/50 text-[10px] tracking-widest uppercase">
+              <div className="flex flex-row justify-between items-start md:items-end gap-1 text-white/70 text-[9px] tracking-widest uppercase">
                 <span>CREAR Y PERMANECER</span>
                 <a
                   href="https://www.instagram.com/estudioepico/"

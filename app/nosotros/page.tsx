@@ -17,7 +17,7 @@ const TEAM = [
 
 export default function NosotrosPage() {
   return (
-    <main className="w-full bg-white overflow-x-hidden">
+    <main className="w-full bg-background overflow-x-hidden">
       <InnerNavbar />
 
       {TEAM.map((member) => (

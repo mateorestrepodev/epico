@@ -38,7 +38,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F6F5F2] p-4 font-sans text-[#423C35]">
-      <div className="w-full max-w-sm space-y-8 bg-white p-10 shadow-sm border border-[#E4DFD5] rounded-sm">
+      <div className="w-full max-w-sm space-y-8 bg-background p-10 shadow-sm border border-[#E4DFD5] rounded-sm">
         {/* LOGO Y TÍTULOS */}
         <div className="text-center flex flex-col items-center">
           <Logo className="w-24 h-auto text-[#332D26] mb-6" />
