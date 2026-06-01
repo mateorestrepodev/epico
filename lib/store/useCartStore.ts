@@ -1,7 +1,7 @@
 // lib/store/useCartStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ProductData } from "@/components/3d/Modal3D";
+import { ProductData } from "@/types/product"; // <-- ¡AQUÍ ESTÁ LA CORRECCIÓN CLAVE!
 
 export interface CartItem {
   product: ProductData;

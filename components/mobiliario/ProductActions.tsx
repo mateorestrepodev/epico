@@ -2,18 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useCartStore } from "@/lib/store/useCartStore";
-
-// 1. Añadimos 'colors: any[]' para que Modal3D y tu CartStore estén felices
-export interface ProductData {
-  id?: string | number;
-  name?: string;
-  price?: string | number;
-  model_url?: string;
-  image_url?: string;
-  description?: string;
-  colors: string[]; // <-- Cambiamos 'any[]' por 'string[]'
-  [key: string]: unknown; // <-- Cambiamos 'any' por 'unknown' (seguro para el linter)
-}
+import { ProductData } from "@/types/product";
 
 interface ProductActionsProps {
   product: ProductData;
@@ -41,15 +30,15 @@ export default function ProductActions({ product }: ProductActionsProps) {
 
   const handleAddToCart = () => {
     const defaultColor = "Estándar";
+    // Al estar todos usando el mismo type, esto pasa limpio
     addToCart(product, defaultColor, quantity);
     openCart();
   };
 
   return (
     <div className="w-full my-6 flex flex-col flex-shrink-0">
-      {/* Fila 1: Cantidad + Añadir a la cesta */}
       <div className="flex gap-4 mb-4 w-full">
-        <div className="flex items-center justify-between border border-gray-300 bg-transparent px-3  w-32 flex-shrink-0">
+        <div className="flex items-center justify-between border border-gray-300 bg-transparent px-3 py-2 w-32 flex-shrink-0">
           <button
             onClick={decrease}
             className="text-gray-500 hover:text-epico-dark transition-colors text-lg px-2 cursor-pointer"
@@ -75,7 +64,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
         </button>
       </div>
 
-      {/* Botón 3D Integrado */}
       <button
         onClick={() => setShow3DModal(true)}
         className={`w-full border font-medium py-4 text-xs uppercase tracking-widest flex items-center justify-center gap-3 mb-4 transition-colors
@@ -84,7 +72,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
                ? "border-epico-dark bg-transparent text-epico-dark hover:bg-epico-dark hover:text-white cursor-pointer"
                : "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-60"
            }
-         `}
+        `}
         disabled={!product.model_url}
       >
         <svg
@@ -102,7 +90,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
         {product.model_url ? "Ver en 3D" : "3D No Disponible"}
       </button>
 
-      {/* MODAL 3D FLOTANTE */}
       {show3DModal && product.model_url && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10">
           <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-[#F6F5F2] rounded-sm shadow-2xl overflow-hidden flex flex-col">
@@ -119,8 +106,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
             </div>
 
             <div className="flex-grow w-full h-full relative cursor-move">
-              {/* 2. Este comentario mágico hace que TypeScript ignore el tag y elimine el error 2339 */}
-              {/* @ts-ignore - model-viewer es un web component externo */}
+              {/* @ts-ignore */}
               <model-viewer
                 src={product.model_url}
                 auto-rotate
@@ -134,7 +120,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
                   backgroundColor: "#F6F5F2",
                 }}
               />
-
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 px-4 py-2 rounded-full shadow-sm pointer-events-none">
                 <span className="text-[10px] uppercase tracking-widest text-gray-600 font-medium">
                   Arrastra para rotar • Haz scroll para acercar

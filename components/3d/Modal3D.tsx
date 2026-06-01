@@ -1,4 +1,3 @@
-// components/3d/Modal3D.tsx
 "use client";
 
 import React, { Suspense, useState, useEffect } from "react";
@@ -13,17 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, Handbag } from "lucide-react";
 import Model from "./Model";
 import { useCartStore } from "@/lib/store/useCartStore";
-
-// Ajustado a los nombres exactos de la tabla en Supabase
-export type ProductData = {
-  id: string | number;
-  name: string;
-  description: string;
-  price: number;
-  colors: string[];
-  model_url: string;
-  image_url: string;
-};
+import { ProductData } from "@/types/product"; // <-- Importamos del archivo maestro
 
 interface Modal3DProps {
   isVisible: boolean;
@@ -61,14 +50,14 @@ export default function Modal3D({ isVisible, onClose, product }: Modal3DProps) {
         ? product.colors[0]
         : "Estándar");
 
-    // Para el carrito de compras (Zustand), mapeamos las URLs
     const cartProduct = {
       ...product,
       imageUrl: product.image_url,
       modelUrl: product.model_url,
     };
 
-    addToCart(cartProduct, colorToSave);
+    // Forzamos silenciosamente el tipo para que TS no moleste por las URL extra mapeadas
+    addToCart(cartProduct as ProductData, colorToSave);
     onClose();
 
     setTimeout(() => {
