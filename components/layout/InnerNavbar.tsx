@@ -17,9 +17,13 @@ import CartDrawer from "@/components/cart/CartDrawer";
 
 type Props = {
   theme?: "light" | "dark";
+  showCart?: boolean; // <-- Propiedad añadida para controlar el carrito
 };
 
-export default function InnerNavbar({ theme = "light" }: Props) {
+export default function InnerNavbar({
+  theme = "light",
+  showCart = true,
+}: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,10 +64,6 @@ export default function InnerNavbar({ theme = "light" }: Props) {
 
   return (
     <>
-      {/* ¡CORRECCIÓN AQUÍ!
-        Dejamos el padding fijo en 'py-5 px-5 md:px-8' para ambos estados.
-        Así la barra no se encoge, solo cambia su fondo suavemente.
-      */}
       <nav
         className={`fixed top-0 left-0 w-full z-40 flex justify-between items-center py-5 px-5 md:px-8 transition-colors duration-500 ease-in-out ${
           isScrolled
@@ -83,19 +83,21 @@ export default function InnerNavbar({ theme = "light" }: Props) {
 
         {/* Zona de Botones Derechos */}
         <div className="flex items-center gap-6">
-          {/* Botón Carrito */}
-          <button
-            onClick={openCart}
-            className={`relative focus:outline-none hover:opacity-70 transition-colors duration-300 cursor-pointer ${iconColor}`}
-            aria-label="Abrir carrito"
-          >
-            <Handbag size={26} strokeWidth={1.5} />
-            {isMounted && totalItems > 0 && (
-              <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full pointer-events-none">
-                {totalItems}
-              </span>
-            )}
-          </button>
+          {/* Botón Carrito: Envuelta en la condición showCart */}
+          {showCart && (
+            <button
+              onClick={openCart}
+              className={`relative focus:outline-none hover:opacity-70 transition-colors duration-300 cursor-pointer ${iconColor}`}
+              aria-label="Abrir carrito"
+            >
+              <Handbag size={26} strokeWidth={1.5} />
+              {isMounted && totalItems > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full pointer-events-none">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Menú Hamburguesa */}
           <button
@@ -188,7 +190,7 @@ export default function InnerNavbar({ theme = "light" }: Props) {
                   href="https://www.instagram.com/estudioepico/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold  transition-colors cursor-pointer"
+                  className="font-semibold transition-colors cursor-pointer"
                 >
                   @estudioepico
                 </a>

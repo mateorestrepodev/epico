@@ -31,6 +31,7 @@ export default function Preloader() {
           transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
           className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-epico-dark"
         >
+          {/* PRIMERO: El Logo */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -40,13 +41,16 @@ export default function Preloader() {
             <Logo className="w-full h-auto" />
           </motion.div>
 
+          {/* SEGUNDO: El texto (Slogan) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="absolute bottom-10 text-white/50 text-xs tracking-[0.3em] uppercase"
+            // LA CORRECCIÓN: 'w-full text-center' asegura el eje central.
+            // 'pl-[0.3em]' balancea el espacio invisible que deja el tracking al final.
+            className="absolute bottom-10 w-full text-center text-white/50 text-xs tracking-[0.3em] pl-[0.3em] uppercase"
           >
-            Cargando Experiencia
+            Objetos autenticos
           </motion.div>
         </motion.div>
       )}

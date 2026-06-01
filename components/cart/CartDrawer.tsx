@@ -100,9 +100,9 @@ export default function CartDrawer() {
           >
             {/* Cabecera del Carrito */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-xl font-medium tracking-tight flex items-center gap-2">
+              <h2 className="text-xl font-medium tracking-wide flex items-center gap-2">
                 <Handbag size={20} />
-                Tu Selección
+                Tu selección
               </h2>
               <button
                 onClick={closeCart}
@@ -139,10 +139,10 @@ export default function CartDrawer() {
                     </div>
 
                     <div className="flex-1 flex flex-col">
-                      <h3 className="font-medium text-lg">
+                      <h3 className="font-medium text-lg tracking-wide  ">
                         {item.product.name}
                       </h3>
-                      <p className="text-gray-500 text-sm mb-2">
+                      <p className="text-gray-500 text-sm mb-2 tracking-wide">
                         {formatPrice(item.product.price)}
                       </p>
 
@@ -251,7 +251,7 @@ export default function CartDrawer() {
                     →
                   </span>
                 </button>
-                <p className="text-[10px] text-center text-gray-400 mt-4 tracking-widest uppercase select-none">
+                <p className="text-[10px] text-center text-gray-700 mt-4 tracking-widest uppercase select-none">
                   Envío calculado al finalizar la compra.
                 </p>
               </div>

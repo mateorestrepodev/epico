@@ -1,7 +1,7 @@
 // lib/store/useCartStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ProductData } from "@/components/3d/Modal3D";
+import { ProductData } from "@/components/3d/Modal3D"; // Mantenemos tu import original
 
 export interface CartItem {
   product: ProductData;
@@ -11,10 +11,11 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
-  isOpen: boolean; // Controla si el panel lateral está visible
+  isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
-  addToCart: (product: ProductData, color: string) => void;
+  // AÑADIDO: quantity como parámetro
+  addToCart: (product: ProductData, color: string, quantity: number) => void;
   removeFromCart: (productId: string | number, color: string) => void;
   updateQuantity: (productId: string | number, color: string, quantity: number) => void;
   clearCart: () => void;
@@ -31,7 +32,8 @@ export const useCartStore = create<CartState>()(
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
 
-      addToCart: (product, color) => {
+      // AÑADIDO: quantity por defecto es 1, pero puede recibir la cantidad del contador
+      addToCart: (product, color, quantity = 1) => {
         const currentItems = get().items;
         const existingItem = currentItems.find(
           (item) => item.product.id === product.id && item.selectedColor === color
@@ -41,12 +43,13 @@ export const useCartStore = create<CartState>()(
           set({
             items: currentItems.map((item) =>
               item.product.id === product.id && item.selectedColor === color
-                ? { ...item, quantity: item.quantity + 1 }
+                // Sumamos la cantidad que el usuario eligió a la que ya estaba en el carrito
+                ? { ...item, quantity: item.quantity + quantity }
                 : item
             ),
           });
         } else {
-          set({ items: [...currentItems, { product, selectedColor: color, quantity: 1 }] });
+          set({ items: [...currentItems, { product, selectedColor: color, quantity }] });
         }
       },
 
@@ -76,7 +79,6 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "epico-cart-storage",
-      // Excluimos 'isOpen' para que el carrito no aparezca abierto si el usuario recarga la página
       partialize: (state) => ({ items: state.items }),
     }
   )

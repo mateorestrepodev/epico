@@ -36,6 +36,9 @@ export default function HeroScroll() {
   useEffect(() => {
     if (!dims) return;
 
+    // Detectamos si es móvil o desktop para alinear el logo en la esquina igual que tu Navbar
+    const isDesktop = window.innerWidth >= 768;
+
     const timer = setTimeout(async () => {
       await Promise.all([
         animateCurtain(
@@ -45,7 +48,14 @@ export default function HeroScroll() {
         ),
         animateLogo(
           logoScope.current,
-          { top: 20, left: 28, x: "0%", y: "0%", scale: 1, color: "#291df1" },
+          {
+            top: 20, // Padding superior
+            left: isDesktop ? 32 : 20, // px-8 (32) en PC, px-5 (20) en móvil
+            x: "0%",
+            y: "0%",
+            scale: 0.85, // Lo encogemos un poquito para que quede tamaño Navbar
+            color: "#291df1",
+          },
           { duration: 1.2, ease: [0.76, 0, 0.24, 1] },
         ),
       ]);
@@ -62,27 +72,45 @@ export default function HeroScroll() {
   if (!dims) return null;
 
   return (
-    <div className="relative w-full h-screen z-50 ">
+    <div className="relative w-full h-screen z-50">
       {/* Imagen de fondo */}
       <div className="absolute inset-0 w-full h-full">
         <Image
-          src="/epicohero1.jpg"
+          src="/epicohero.png"
           alt="ēpico — Mobiliario Auténtico"
           fill
           priority
           sizes="100vw"
           className="object-cover object-center"
         />
+
+        {/* ISOTIPO CENTRADO SOBRE LA FOTO (Este se queda en la foto) */}
+        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-8 flex items-end h-full justify-between z-10 pointer-events-none pb-8">
+          <div className="flex items-center gap-10 md:gap-16">
+            {/* Rectángulo largo */}
+            <div className="w-12 h-2.5 md:w-12 md:h-3 bg-epico-blue" />
+            {/* Cuadro pequeño */}
+            <div className="w-2.5 h-2.5 md:w-5 md:h-3 bg-epico-blue" />
+          </div>
+          <span className="text-epico-blue text-[10px] md:text-xs font-bold tracking-widest uppercase">
+            ESTUDIOEPICO.COM
+          </span>
+        </div>
       </div>
 
       {/* Telón azul */}
       <motion.div
         ref={curtainScope}
         style={{ height: dims.h }}
-        className="absolute top-0 left-0 w-full bg-[#291df1] z-10"
-      />
+        className="absolute top-0 left-0 w-full bg-[#291df1] z-10 overflow-hidden"
+      >
+        {/* TEXTO SLOGAN: Se va con el telón azul hacia arriba */}
+        <div className="absolute bottom-10 w-full text-center text-white/80 text-xs tracking-[0.3em] pl-[0.3em] uppercase">
+          Objetos autenticos
+        </div>
+      </motion.div>
 
-      {/* Logo — hereda color via currentColor */}
+      {/* Logo — Animado desde el centro */}
       <motion.div
         ref={logoScope}
         style={{
@@ -90,10 +118,11 @@ export default function HeroScroll() {
           left: dims.w / 2,
           x: "-50%",
           y: "-50%",
-          scale: 1.5,
+          scale: 1,
           color: "#ffffff",
+          transformOrigin: "top left",
         }}
-        className="absolute z-20 w-24 md:w-28 origin-top-left pointer-events-none select-none"
+        className="absolute z-20 w-28 md:w-36 pointer-events-none select-none"
       >
         <Logo className="w-full h-auto drop-shadow-md" />
       </motion.div>
@@ -184,7 +213,7 @@ export default function HeroScroll() {
                   href="https://www.instagram.com/estudioepico/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold hover:text-epico-blue transition-colors cursor-pointer"
+                  className="font-semibold hover:text-white transition-colors cursor-pointer"
                 >
                   @estudioepico
                 </a>
