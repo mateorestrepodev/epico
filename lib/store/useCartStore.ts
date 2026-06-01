@@ -1,7 +1,7 @@
 // lib/store/useCartStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ProductData } from "@/components/3d/Modal3D"; // Mantenemos tu import original
+import { ProductData } from "@/components/3d/Modal3D";
 
 export interface CartItem {
   product: ProductData;
@@ -14,8 +14,8 @@ interface CartState {
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
-  // AÑADIDO: quantity como parámetro
-  addToCart: (product: ProductData, color: string, quantity: number) => void;
+  // CORRECCIÓN: Se agrega '?' para que quantity sea opcional
+  addToCart: (product: ProductData, color: string, quantity?: number) => void;
   removeFromCart: (productId: string | number, color: string) => void;
   updateQuantity: (productId: string | number, color: string, quantity: number) => void;
   clearCart: () => void;
@@ -32,7 +32,7 @@ export const useCartStore = create<CartState>()(
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
 
-      // AÑADIDO: quantity por defecto es 1, pero puede recibir la cantidad del contador
+      // quantity por defecto es 1 si no se envía nada
       addToCart: (product, color, quantity = 1) => {
         const currentItems = get().items;
         const existingItem = currentItems.find(
