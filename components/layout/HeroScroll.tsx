@@ -93,7 +93,7 @@ export default function HeroScroll() {
             <div className="w-2.5 h-2.5 md:w-5 md:h-3 bg-epico-blue" />
           </div>
           <span className="text-epico-blue text-[10px] md:text-xs font-bold tracking-widest uppercase">
-            ESTUDIOEPICO.COM
+            ESTUDIOĒPICO.COM
           </span>
         </div>
       </div>
