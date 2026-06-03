@@ -58,6 +58,9 @@ export default function ProductGrid() {
 
   return (
     <section className="w-full max-w-[1600px] mx-auto px-5 md:px-8 py-16 md:py-20">
+      <h1 className="text-2xl font-light tracking-wider text-epico-dark mb-10">
+        Mobiliario / Productos
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-8">
         {products.map((product, index) => {
           // Determinamos si este producto específico tiene el estado "activo" por touch

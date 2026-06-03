@@ -21,17 +21,17 @@ export default function HeroScroll() {
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
 
   const pathname = usePathname();
-  const router = useRouter(); // Instancia del enrutador para navegación programática
+  const router = useRouter();
 
   const [curtainScope, animateCurtain] = useAnimate();
   const [logoScope, animateLogo] = useAnimate();
   const [burgerScope, animateBurger] = useAnimate();
 
-  // Estados para el motor de captura de gestos
   const [touchStartY, setTouchStartY] = useState(0);
   const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
+    // Usamos window.innerHeight para la altura precisa
     const update = () =>
       setDims({ w: window.innerWidth, h: window.innerHeight });
     update();
@@ -42,7 +42,6 @@ export default function HeroScroll() {
   useEffect(() => {
     if (!dims) return;
 
-    // Detectamos si es móvil o desktop para alinear el logo
     const isDesktop = window.innerWidth >= 768;
 
     const timer = setTimeout(async () => {
@@ -75,8 +74,6 @@ export default function HeroScroll() {
     return () => clearTimeout(timer);
   }, [dims]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // --- CONTROLADOR DE EVENTOS DE NAVEGACIÓN (SWIPE Y SCROLL) ---
-
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartY(e.targetTouches[0].clientY);
   };
@@ -86,7 +83,6 @@ export default function HeroScroll() {
     const touchEndY = e.changedTouches[0].clientY;
     const distance = touchStartY - touchEndY;
 
-    // Umbral de 50px para evitar falsos positivos al hacer tap
     if (distance > 50) {
       setIsNavigating(true);
       router.push("/mobiliario");
@@ -96,7 +92,6 @@ export default function HeroScroll() {
   const handleWheel = (e: React.WheelEvent) => {
     if (isNavigating) return;
 
-    // deltaY positivo indica scroll hacia abajo
     if (e.deltaY > 50) {
       setIsNavigating(true);
       router.push("/mobiliario");
@@ -107,14 +102,15 @@ export default function HeroScroll() {
 
   return (
     <div
-      className="relative w-full h-screen z-50 overflow-hidden"
+      // CLAVE: h-[100dvh] previene el scroll fantasma en iOS/Android
+      // fixed asegura que el componente se bloquee al viewport
+      className="fixed inset-0 w-full h-[100dvh] z-50 overflow-hidden touch-none"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
     >
       {/* Imágenes de fondo Responsive */}
       <div className="absolute inset-0 w-full h-full pointer-events-none">
-        {/* 1. IMAGEN DESKTOP / TABLET (Se oculta en móviles) */}
         <Image
           src="/epicohero.png"
           alt="ēpico — Mobiliario Auténtico"
@@ -124,7 +120,6 @@ export default function HeroScroll() {
           className="object-cover object-center hidden md:block"
         />
 
-        {/* 2. IMAGEN MOBILE (Se oculta en tablet/desktop) */}
         <Image
           src="/epicoheromobile.png"
           alt="ēpico — Mobiliario Auténtico Mobile"
@@ -157,7 +152,7 @@ export default function HeroScroll() {
         </div>
       </motion.div>
 
-      {/* Logo — Animado desde el centro */}
+      {/* Logo */}
       <motion.div
         ref={logoScope}
         style={{
@@ -204,7 +199,7 @@ export default function HeroScroll() {
               animate={{ x: "0%" }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-              className="fixed top-0 right-0 w-full md:w-1/2 h-full bg-[#291df1] z-50 flex flex-col justify-between p-7 shadow-2xl"
+              className="fixed top-0 right-0 w-full md:w-1/2 h-[100dvh] bg-[#291df1] z-50 flex flex-col justify-between p-7 shadow-2xl"
             >
               <button
                 onClick={() => setMenuOpen(false)}
@@ -251,7 +246,7 @@ export default function HeroScroll() {
                 })}
               </nav>
 
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-1 text-white/70 text-[9px] tracking-widest uppercase">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-1 text-white/70 text-[9px] tracking-widest uppercase pb-6 md:pb-0">
                 <span>CREAR Y PERMANECER</span>
                 <a
                   href="https://www.instagram.com/estudioepico/"

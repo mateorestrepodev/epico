@@ -28,8 +28,11 @@ export default function MobiliarioPage() {
       {/* Navegación Interna */}
       <InnerNavbar />
 
-      {/* 1. Sección Hero (Sofá) */}
-      <section className="relative w-full h-[60vh] md:h-screen overflow-hidden">
+      {/* 1. Sección Hero (Sofá) 
+          CAMBIO CLAVE: Usamos h-[100dvh] para que cubra exactamente 
+          toda la pantalla en móviles y desktop. 
+      */}
+      <section className="relative w-full h-[100dvh] overflow-hidden">
         {/* 1. IMAGEN DESKTOP / TABLET (Se oculta en móviles) */}
         <Image
           src="/epicoheromobiliario.png"
