@@ -29,7 +29,13 @@ export default function InnerNavbar({
   const [isScrolled, setIsScrolled] = useState(false);
 
   const pathname = usePathname();
-  const navLinks = ["Mobiliario", "Proyectos", "Nosotros", "Contacto"];
+  const navLinks = [
+    "A la medida",
+    "Mobiliario",
+    "Proyectos",
+    "Nosotros",
+    "Contacto",
+  ];
 
   const { openCart, getTotalItems } = useCartStore();
   const totalItems = getTotalItems();
