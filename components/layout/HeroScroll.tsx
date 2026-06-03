@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useAnimate } from "framer-motion";
 import { X } from "lucide-react";
 import Logo from "@/components/ui/Logo";
@@ -19,11 +19,17 @@ const NAV_LINKS = [
 export default function HeroScroll() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
+
   const pathname = usePathname();
+  const router = useRouter(); // Instancia del enrutador para navegación programática
 
   const [curtainScope, animateCurtain] = useAnimate();
   const [logoScope, animateLogo] = useAnimate();
   const [burgerScope, animateBurger] = useAnimate();
+
+  // Estados para el motor de captura de gestos
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
     const update = () =>
@@ -36,7 +42,7 @@ export default function HeroScroll() {
   useEffect(() => {
     if (!dims) return;
 
-    // Detectamos si es móvil o desktop para alinear el logo en la esquina igual que tu Navbar
+    // Detectamos si es móvil o desktop para alinear el logo
     const isDesktop = window.innerWidth >= 768;
 
     const timer = setTimeout(async () => {
@@ -49,11 +55,11 @@ export default function HeroScroll() {
         animateLogo(
           logoScope.current,
           {
-            top: 20, // Padding superior
-            left: isDesktop ? 32 : 20, // px-8 (32) en PC, px-5 (20) en móvil
+            top: 20,
+            left: isDesktop ? 32 : 20,
             x: "0%",
             y: "0%",
-            scale: 0.85, // Lo encogemos un poquito para que quede tamaño Navbar
+            scale: 0.85,
             color: "#291df1",
           },
           { duration: 1.2, ease: [0.76, 0, 0.24, 1] },
@@ -69,27 +75,69 @@ export default function HeroScroll() {
     return () => clearTimeout(timer);
   }, [dims]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // --- CONTROLADOR DE EVENTOS DE NAVEGACIÓN (SWIPE Y SCROLL) ---
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartY(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (isNavigating) return;
+    const touchEndY = e.changedTouches[0].clientY;
+    const distance = touchStartY - touchEndY;
+
+    // Umbral de 50px para evitar falsos positivos al hacer tap
+    if (distance > 50) {
+      setIsNavigating(true);
+      router.push("/mobiliario");
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (isNavigating) return;
+
+    // deltaY positivo indica scroll hacia abajo
+    if (e.deltaY > 50) {
+      setIsNavigating(true);
+      router.push("/mobiliario");
+    }
+  };
+
   if (!dims) return null;
 
   return (
-    <div className="relative w-full h-screen z-50">
-      {/* Imagen de fondo */}
-      <div className="absolute inset-0 w-full h-full">
+    <div
+      className="relative w-full h-screen z-50 overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onWheel={handleWheel}
+    >
+      {/* Imágenes de fondo Responsive */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none">
+        {/* 1. IMAGEN DESKTOP / TABLET (Se oculta en móviles) */}
         <Image
           src="/epicohero.png"
           alt="ēpico — Mobiliario Auténtico"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-cover object-center hidden md:block"
         />
 
-        {/* ISOTIPO CENTRADO SOBRE LA FOTO (Este se queda en la foto) */}
-        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-8 flex items-end h-full justify-between z-10 pointer-events-none pb-8">
+        {/* 2. IMAGEN MOBILE (Se oculta en tablet/desktop) */}
+        <Image
+          src="/epicoheromobile.png"
+          alt="ēpico — Mobiliario Auténtico Mobile"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center md:hidden"
+        />
+
+        {/* ISOTIPO CENTRADO SOBRE LA FOTO */}
+        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-8 flex items-end h-full justify-between z-10 pb-8">
           <div className="flex items-center gap-10 md:gap-16">
-            {/* Rectángulo largo */}
             <div className="w-12 h-2.5 md:w-12 md:h-3 bg-epico-blue" />
-            {/* Cuadro pequeño */}
             <div className="w-2.5 h-2.5 md:w-5 md:h-3 bg-epico-blue" />
           </div>
           <span className="text-epico-blue text-[10px] md:text-xs font-bold tracking-widest uppercase">
@@ -102,10 +150,9 @@ export default function HeroScroll() {
       <motion.div
         ref={curtainScope}
         style={{ height: dims.h }}
-        className="absolute top-0 left-0 w-full bg-[#291df1] z-10 overflow-hidden"
+        className="absolute top-0 left-0 w-full bg-[#291df1] z-10 overflow-hidden pointer-events-none"
       >
-        {/* TEXTO SLOGAN: Se va con el telón azul hacia arriba */}
-        <div className="absolute bottom-10 w-full text-center text-white/80 text-xs tracking-[0.3em] pl-[0.3em] uppercase">
+        <div className="absolute bottom-10 w-full text-center font-semibold text-white/80 text-xs tracking-[0.3em] pl-[0.3em] uppercase">
           Objetos auténticos
         </div>
       </motion.div>
@@ -148,7 +195,7 @@ export default function HeroScroll() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 w-1/2 h-full z-40 cursor-pointer bg-black/5"
+              className="fixed inset-0 w-full md:w-1/2 h-full z-40 cursor-pointer bg-black/5"
               onClick={() => setMenuOpen(false)}
             />
             <motion.div
@@ -159,7 +206,6 @@ export default function HeroScroll() {
               transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
               className="fixed top-0 right-0 w-full md:w-1/2 h-full bg-[#291df1] z-50 flex flex-col justify-between p-7 shadow-2xl"
             >
-              {/* Botón cerrar */}
               <button
                 onClick={() => setMenuOpen(false)}
                 className="absolute top-8 right-8 text-white text-3xl cursor-pointer hover:opacity-60 hover:rotate-90 transition-all duration-300"
@@ -168,7 +214,6 @@ export default function HeroScroll() {
                 <X size={36} strokeWidth={1.5} />
               </button>
 
-              {/* Links */}
               <nav className="flex flex-col gap-2 mt-4">
                 {NAV_LINKS.map((link, i) => {
                   const isActive = pathname === link.href;
@@ -206,8 +251,7 @@ export default function HeroScroll() {
                 })}
               </nav>
 
-              {/* Footer */}
-              <div className="flex flex-row justify-between items-start md:items-end gap-1 text-white/70 text-[9px] tracking-widest uppercase">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-1 text-white/70 text-[9px] tracking-widest uppercase">
                 <span>CREAR Y PERMANECER</span>
                 <a
                   href="https://www.instagram.com/estudioepico/"

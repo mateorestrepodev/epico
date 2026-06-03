@@ -30,12 +30,24 @@ export default function MobiliarioPage() {
 
       {/* 1. Sección Hero (Sofá) */}
       <section className="relative w-full h-[60vh] md:h-screen overflow-hidden">
+        {/* 1. IMAGEN DESKTOP / TABLET (Se oculta en móviles) */}
         <Image
           src="/epicoheromobiliario.png"
           alt="Mobiliario ēpico"
           fill
           priority
-          className="object-cover object-center"
+          sizes="100vw"
+          className="object-cover object-center hidden md:block"
+        />
+
+        {/* 2. IMAGEN MOBILE (Se oculta en tablet/desktop) */}
+        <Image
+          src="/epicoheromobiliariomobile.png"
+          alt="Mobiliario ēpico Mobile"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center md:hidden"
         />
 
         {/* Franja Azul Animada - Cambiamos py por alto fijo (h-8 y md:h-10) */}

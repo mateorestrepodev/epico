@@ -15,6 +15,9 @@ export default function DetalleMobiliarioGallery({
 }: ProductGalleryClientProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Estados para detectar el gesto de Swipe (deslizar)
+  const [touchStartX, setTouchStartX] = useState(0);
+
   // Referencia para controlar el scroll de las miniaturas
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -23,7 +26,7 @@ export default function DetalleMobiliarioGallery({
     if (thumbnailRefs.current[currentIndex]) {
       thumbnailRefs.current[currentIndex]?.scrollIntoView({
         behavior: "smooth",
-        block: "center", // <-- ESTO ES LO QUE HACE LA MAGIA, OBLIGA A REVELAR LAS OCULTAS
+        block: "center",
       });
     }
   }, [currentIndex]);
@@ -43,6 +46,25 @@ export default function DetalleMobiliarioGallery({
   const prevImage = () =>
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
 
+  // --- LÓGICA DE SWIPE ---
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const distance = touchStartX - touchEndX;
+
+    // Si el usuario deslizó el dedo hacia la izquierda más de 50px (Siguiente)
+    if (distance > 50) {
+      nextImage();
+    }
+    // Si el usuario deslizó el dedo hacia la derecha más de 50px (Anterior)
+    else if (distance < -50) {
+      prevImage();
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-4 w-full h-full overflow-hidden">
       {/* Miniaturas (Izquierda) con scroll invisible y auto-centrado */}
@@ -51,7 +73,6 @@ export default function DetalleMobiliarioGallery({
           {images.map((img, idx) => (
             <button
               key={idx}
-              // Asignamos la referencia a cada botón
               ref={(el) => {
                 thumbnailRefs.current[idx] = el;
               }}
@@ -74,8 +95,12 @@ export default function DetalleMobiliarioGallery({
         </div>
       )}
 
-      {/* Visor Grande */}
-      <div className="relative flex-grow w-full h-full bg-[#E8E3D9] overflow-hidden group">
+      {/* Visor Grande (Ahora con soporte para Swipe) */}
+      <div
+        className="relative flex-grow w-full h-full bg-[#E8E3D9] overflow-hidden group"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -91,11 +116,12 @@ export default function DetalleMobiliarioGallery({
               fill
               priority={currentIndex === 0}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 50vw"
-              className="object-cover object-center"
+              className="object-cover object-center pointer-events-none" // Evitamos que la imagen interfiera con el touch
             />
           </motion.div>
         </AnimatePresence>
 
+        {/* Botones de navegación - Siguen funcionando igual y se ven bien */}
         {images.length > 1 && (
           <>
             <button
