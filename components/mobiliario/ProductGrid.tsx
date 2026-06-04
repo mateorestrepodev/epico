@@ -49,7 +49,7 @@ export default function ProductGrid() {
   if (loading) {
     return (
       <section className="w-full max-w-[1600px] mx-auto px-5 md:px-8 py-24 flex justify-center items-center">
-        <p className="text-zinc-500 uppercase tracking-widest text-sm animate-pulse">
+        <p className="text-zinc-500 uppercase tracking-wider text-sm animate-pulse">
           Cargando catálogo...
         </p>
       </section>
@@ -81,7 +81,7 @@ export default function ProductGrid() {
             >
               {/* --- TÍTULO PARA MOBILE / TABLET (Visible arriba de la foto) --- */}
               <div className="lg:hidden mb-4">
-                <h3 className="text-lg font-medium  tracking-widest text-epico-dark">
+                <h3 className="text-[14px] font-light  tracking-wider text-gray-900">
                   {product.name}
                 </h3>
               </div>
@@ -170,7 +170,7 @@ export default function ProductGrid() {
                   </p>
 
                   {/* Instrucción sutil en móvil para indicar el segundo tap */}
-                  <p className="lg:hidden text-white/60 text-[10px] mt-2 tracking-widest uppercase">
+                  <p className="lg:hidden text-white/60 text-[10px] mt-2 tracking-wider uppercase">
                     Toca de nuevo para ver
                   </p>
                 </div>

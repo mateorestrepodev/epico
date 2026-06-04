@@ -60,7 +60,7 @@ export default async function DetalleMobiliarioPage({
             <h1 className="text-4xl md:text-5xl font-medium text-epico-dark mb-4 leading-none tracking-wide">
               {product.name}
             </h1>
-            <p className="text-xl md:text-2xl tracking-wide font-light text-gray-800 mb-2">
+            <p className="text-xl md:text-2xl tracking-wider font-light text-gray-800 mb-2">
               $
               {product.price
                 ? Number(product.price).toLocaleString("es-CO")

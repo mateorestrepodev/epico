@@ -56,7 +56,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-[10px] uppercase tracking-widest font-medium text-[#6A6258] mb-1.5"
+                className="block text-[10px] uppercase tracking-wider font-medium text-[#6A6258] mb-1.5"
               >
                 Correo electrónico
               </label>
@@ -75,7 +75,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-[10px] uppercase tracking-widest font-medium text-[#6A6258] mb-1.5"
+                className="block text-[10px] uppercase tracking-wider font-medium text-[#6A6258] mb-1.5"
               >
                 Contraseña
               </label>
@@ -103,7 +103,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full cursor-pointer justify-center rounded-sm bg-epico-blue px-4 py-4 text-[10px] font-medium uppercase tracking-widest text-white transition-colors hover:bg-blue-800 focus:outline-none disabled:opacity-50"
+            className="flex w-full cursor-pointer justify-center rounded-sm bg-epico-blue px-4 py-4 text-[10px] font-medium uppercase tracking-wider text-white transition-colors hover:bg-blue-800 focus:outline-none disabled:opacity-50"
           >
             {loading ? "Iniciando sesión..." : "Entrar"}
           </button>

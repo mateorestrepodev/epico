@@ -263,7 +263,7 @@ export default function NuevoMueblePage() {
                       Portada del producto
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
                     Elegir Archivo
                     <input
                       type="file"
@@ -310,7 +310,7 @@ export default function NuevoMueblePage() {
                       Al pasar el mouse
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
                     Elegir Archivo
                     <input
                       type="file"
@@ -355,7 +355,7 @@ export default function NuevoMueblePage() {
                       Añade fotos para el carrusel
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
                     Elegir Archivos
                     <input
                       type="file"
@@ -421,7 +421,7 @@ export default function NuevoMueblePage() {
                       Archivo interactivo para el visor
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
                     Elegir Archivo
                     <input
                       type="file"
@@ -469,7 +469,7 @@ export default function NuevoMueblePage() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm"
             >
               {loading ? (
                 <>

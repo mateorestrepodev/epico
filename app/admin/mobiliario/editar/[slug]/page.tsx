@@ -191,7 +191,7 @@ export default function EditarMueblePage() {
   if (loadingInitial) {
     return (
       <main className="min-h-screen bg-[#F6F5F2] flex items-center justify-center">
-        <p className="text-[#827A70] uppercase tracking-widest text-sm animate-pulse">
+        <p className="text-[#827A70] uppercase tracking-wider text-sm animate-pulse">
           Cargando producto...
         </p>
       </main>
@@ -308,7 +308,7 @@ export default function EditarMueblePage() {
                       Portada del producto
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
                     Cambiar
                     <input
                       type="file"
@@ -369,7 +369,7 @@ export default function EditarMueblePage() {
                       Al pasar el mouse
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
                     Cambiar
                     <input
                       type="file"
@@ -430,7 +430,7 @@ export default function EditarMueblePage() {
                       Añade o elimina fotos del carrusel
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
                     Añadir Fotos
                     <input
                       type="file"
@@ -534,7 +534,7 @@ export default function EditarMueblePage() {
                       Archivo interactivo para el visor
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
                     Cambiar
                     <input
                       type="file"
@@ -604,7 +604,7 @@ export default function EditarMueblePage() {
             <button
               type="submit"
               disabled={loadingSubmit}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm"
             >
               {loadingSubmit ? "Guardando cambios..." : "Guardar Cambios"}
             </button>

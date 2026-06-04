@@ -53,7 +53,7 @@ export default function AdminLayout({
         </div>
 
         <nav className="flex-1 overflow-y-auto space-y-6 p-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <p className="text-xs font-bold tracking-widest text-gray-700">
+          <p className="text-xs font-bold tracking-wider text-gray-700">
             PANEL DE CONTROL
           </p>
           <div className="flex flex-col space-y-4">
@@ -105,7 +105,7 @@ export default function AdminLayout({
         {/* ================= MENÚ DESPLEGABLE MÓVIL ================= */}
         {isMobileMenuOpen && (
           <div className="absolute top-20 left-0 right-0 bottom-0 bg-[var(--color-background)] z-40 flex flex-col p-8 md:hidden overflow-y-auto">
-            <p className="text-xs font-bold tracking-widest text-gray-700 mb-8">
+            <p className="text-xs font-bold tracking-wider text-gray-700 mb-8">
               Navegación
             </p>
             <div className="flex flex-col space-y-6 flex-1">

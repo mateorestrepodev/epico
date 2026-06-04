@@ -88,7 +88,7 @@ export default function ALaMedidaPage() {
         <div className="w-full max-w-3xl">
           {/* HEADER DEL WIZARD */}
           <div className="mb-10">
-            <h1 className="text-3xl  font-medium tracking-wide mb-4">
+            <h1 className="text-3xl  font-medium tracking-wider mb-4">
               {step === 3 ? "Casi listo" : "Solicita tu asesoría"}
             </h1>
             <p className="text-gray-800 font-light text-sm md:text-base leading-relaxed max-w-xl">
@@ -100,7 +100,7 @@ export default function ALaMedidaPage() {
 
           {/* BARRA DE PROGRESO */}
           <div className="mb-12">
-            <p className="text-xs uppercase tracking-widest text-gray-600 mb-3 font-semibold">
+            <p className="text-xs uppercase tracking-wider text-gray-600 mb-3 font-semibold">
               Paso {step} de 3
             </p>
             <div className="w-full h-[2px] bg-gray-200 relative">
@@ -222,7 +222,7 @@ export default function ALaMedidaPage() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 bg-white p-8 md:p-10 border border-gray-200">
                     <div className="flex flex-col">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-2">
+                      <label className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-2">
                         Nombre *
                       </label>
                       <input
@@ -237,7 +237,7 @@ export default function ALaMedidaPage() {
                     </div>
 
                     <div className="flex flex-col">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-2">
+                      <label className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-2">
                         Ciudad *
                       </label>
                       <input
@@ -252,7 +252,7 @@ export default function ALaMedidaPage() {
                     </div>
 
                     <div className="flex flex-col">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-2">
+                      <label className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-2">
                         Email *
                       </label>
                       <input
@@ -267,7 +267,7 @@ export default function ALaMedidaPage() {
                     </div>
 
                     <div className="flex flex-col">
-                      <label className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-2">
+                      <label className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-2">
                         Teléfono (Opcional)
                       </label>
                       <input
@@ -304,7 +304,7 @@ export default function ALaMedidaPage() {
               <button
                 onClick={nextStep}
                 disabled={!isStepValid()}
-                className={`flex items-center gap-3 px-8 py-4 text-xs font-semibold uppercase tracking-widest transition-all ${
+                className={`flex items-center gap-3 px-8 py-4 text-xs font-semibold uppercase tracking-wider transition-all ${
                   isStepValid()
                     ? "bg-epico-blue text-white hover:bg-blue-800 hover:shadow-lg cursor-pointer"
                     : "bg-gray-200 text-gray-600 cursor-not-allowed"
@@ -317,7 +317,7 @@ export default function ALaMedidaPage() {
               <button
                 onClick={handleSubmit}
                 disabled={!isStepValid()}
-                className={`flex items-center gap-3 px-8 py-4 text-xs font-semibold uppercase tracking-widest transition-all ${
+                className={`flex items-center gap-3 px-8 py-4 text-xs font-semibold uppercase tracking-wider transition-all ${
                   isStepValid()
                     ? "bg-epico-blue text-white hover:bg-blue-800 hover:shadow-lg cursor-pointer"
                     : "bg-gray-200 text-gray-600 cursor-not-allowed"

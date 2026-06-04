@@ -34,7 +34,7 @@ export default function DetalleMobiliarioGallery({
   if (!images || images.length === 0) {
     return (
       <div className="w-full h-full bg-[#E8E3D9] flex flex-col items-center justify-center border border-[#D0C7B9]">
-        <span className="text-[#645C50] text-sm tracking-widest uppercase font-medium">
+        <span className="text-[#645C50] text-sm tracking-wider uppercase font-medium">
           Imagen no disponible
         </span>
       </div>

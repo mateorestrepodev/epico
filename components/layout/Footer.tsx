@@ -1,7 +1,7 @@
 // components/layout/Footer.tsx
 export default function Footer() {
   return (
-    <footer className="w-full px-6 py-8 flex flex-col md:flex-row  items-center gap-4 text-[10px] md:text-[11px] font-semibold tracking-widest uppercase bg-background text-foreground">
+    <footer className="w-full px-6 py-8 flex flex-col md:flex-row  items-center gap-4 text-[10px] md:text-[11px] font-semibold tracking-wider uppercase bg-background text-foreground">
       <p className="flex w-full justify-start">CREAR Y PERMANECER</p>
       <a
         href="https://wa.me/573242548059"

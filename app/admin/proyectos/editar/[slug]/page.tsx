@@ -1,3 +1,4 @@
+// app/admin/proyectos/editar/[slug]/page.tsx
 "use client";
 
 import { useState, useEffect, type FormEvent } from "react";
@@ -6,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase/supabase";
 import imageCompression from "browser-image-compression";
+import { X } from "lucide-react";
 
 export default function EditarProyecto() {
   const router = useRouter();
@@ -16,25 +18,26 @@ export default function EditarProyecto() {
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [projectId, setProjectId] = useState<number | null>(null);
 
-  // Estados del Formulario (Textos) - Categoría eliminada
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [year, setYear] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
 
-  // Estados para URLs existentes
   const [existingCoverUrl, setExistingCoverUrl] = useState<string | null>(null);
+  const [existingMobileCoverUrl, setExistingMobileCoverUrl] = useState<
+    string | null
+  >(null);
   const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>([]);
 
-  // Estados para Nuevos Archivos
   const [newCoverFile, setNewCoverFile] = useState<File | null>(null);
+  const [newMobileCoverFile, setNewMobileCoverFile] = useState<File | null>(
+    null,
+  );
   const [newGalleryFiles, setNewGalleryFiles] = useState<File[]>([]);
 
-  // Cargar datos
   useEffect(() => {
     async function loadProject() {
       try {
@@ -43,7 +46,6 @@ export default function EditarProyecto() {
           .select("*")
           .eq("slug", slugParam)
           .single();
-
         if (error) throw error;
         if (data) {
           setProjectId(data.id);
@@ -54,36 +56,31 @@ export default function EditarProyecto() {
           setDescription(data.description || "");
 
           setExistingCoverUrl(data.image_url);
+          setExistingMobileCoverUrl(data.image_mobile_url);
           setExistingGalleryUrls(data.gallery_urls || []);
         }
-      } catch (err: unknown) {
-        console.error(err);
-        setError("Error al cargar los datos del proyecto.");
+      } catch (err) {
+        setError("Error al cargar los datos.");
       } finally {
         setLoadingInitial(false);
       }
     }
-
     if (slugParam) loadProject();
   }, [slugParam]);
 
-  // Manejo de la galería
   const handleGalleryAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      setNewGalleryFiles((prev) => [...prev, ...filesArray]);
-    }
+    if (e.target.files)
+      setNewGalleryFiles((prev) => [
+        ...prev,
+        ...Array.from(e.target.files as FileList),
+      ]);
   };
 
-  const removeExistingGalleryImage = (urlToRemove: string) => {
+  const removeExistingGalleryImage = (urlToRemove: string) =>
     setExistingGalleryUrls((prev) => prev.filter((url) => url !== urlToRemove));
-  };
-
-  const removeNewGalleryImage = (indexToRemove: number) => {
+  const removeNewGalleryImage = (indexToRemove: number) =>
     setNewGalleryFiles((prev) => prev.filter((_, i) => i !== indexToRemove));
-  };
 
-  // --- COMPRESIÓN A WEBP ---
   const uploadFileToStorage = async (
     file: File,
     folder: string,
@@ -95,27 +92,14 @@ export default function EditarProyecto() {
       fileType: "image/webp",
       initialQuality: 0.95,
     };
-
-    try {
-      const compressedFile = await imageCompression(file, options);
-      const fileName = `${Math.random().toString(36).substring(2, 15)}.webp`;
-      const filePath = `proyectos/${folder}/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("epico-images")
-        .upload(filePath, compressedFile);
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage
-        .from("epico-images")
-        .getPublicUrl(filePath);
-
-      return data.publicUrl;
-    } catch (error) {
-      console.error("Error al comprimir o subir la imagen:", error);
-      throw error;
-    }
+    const compressedFile = await imageCompression(file, options);
+    const filePath = `proyectos/${folder}/${Math.random().toString(36).substring(2, 15)}.webp`;
+    const { error } = await supabase.storage
+      .from("epico-images")
+      .upload(filePath, compressedFile);
+    if (error) throw error;
+    return supabase.storage.from("epico-images").getPublicUrl(filePath).data
+      .publicUrl;
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -125,15 +109,17 @@ export default function EditarProyecto() {
     setError(null);
 
     try {
-      if (!slug) throw new Error("El slug es obligatorio.");
-
-      // Lógica de reemplazo de Portada
       let finalCover = existingCoverUrl;
-      if (newCoverFile) {
-        finalCover = await uploadFileToStorage(newCoverFile, "covers");
-      }
+      let finalMobileCover = existingMobileCoverUrl;
 
-      // Lógica de suma de Galería
+      if (newCoverFile)
+        finalCover = await uploadFileToStorage(newCoverFile, "covers");
+      if (newMobileCoverFile)
+        finalMobileCover = await uploadFileToStorage(
+          newMobileCoverFile,
+          "covers-mobile",
+        );
+
       const finalGallery = [...existingGalleryUrls];
       if (newGalleryFiles.length > 0) {
         for (let i = 0; i < newGalleryFiles.length; i++) {
@@ -143,7 +129,6 @@ export default function EditarProyecto() {
         }
       }
 
-      // GUARDADO EXACTO
       const { error: updateError } = await supabase
         .from("proyectos")
         .update({
@@ -153,6 +138,7 @@ export default function EditarProyecto() {
           location,
           description,
           image_url: finalCover,
+          image_mobile_url: finalMobileCover,
           gallery_urls: finalGallery,
         })
         .eq("id", projectId);
@@ -161,24 +147,19 @@ export default function EditarProyecto() {
 
       router.push("/admin/proyectos");
       router.refresh();
-    } catch (err: unknown) {
-      console.error(err);
-      if (err instanceof Error) setError(err.message);
-      else setError("Error al actualizar la base de datos");
+    } catch (err) {
+      setError("Error al actualizar.");
     } finally {
       setLoadingSubmit(false);
     }
   };
 
-  if (loadingInitial) {
+  if (loadingInitial)
     return (
-      <div className="min-h-[80vh] flex items-center justify-center">
-        <p className="text-[#827A70] uppercase tracking-widest text-sm animate-pulse">
-          Cargando proyecto...
-        </p>
+      <div className="min-h-[80vh] flex items-center justify-center animate-pulse uppercase">
+        Cargando...
       </div>
     );
-  }
 
   return (
     <main className="min-h-screen bg-[#F6F5F2] text-[#423C35] font-sans p-6 md:p-12">
@@ -188,50 +169,42 @@ export default function EditarProyecto() {
             <h1 className="text-2xl font-medium tracking-tight">
               Editar: {title}
             </h1>
-            <p className="text-xs text-[#827A70] mt-1">
-              Actualiza la información y galería de este proyecto
-              arquitectónico.
-            </p>
           </div>
           <Link
             href="/admin/proyectos"
-            className="text-xs uppercase tracking-wider text-[#827A70] hover:text-[#332D26] transition-colors"
+            className="text-xs uppercase tracking-wider text-[#827A70]"
           >
             ← Cancelar
           </Link>
         </header>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-md border border-red-200">
-            {error}
-          </div>
+          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* SECCIÓN 1: DATOS BÁSICOS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
-                Título del Proyecto *
+                Título *
               </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md"
               />
             </div>
             <div>
               <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
-                URL Slug *
+                Slug
               </label>
               <input
                 type="text"
-                required
                 value={slug}
                 readOnly
-                className="w-full bg-[#ECE9E2] border border-[#D5CEC4] px-4 py-3 text-sm text-[#554E45] rounded-md cursor-not-allowed"
+                className="w-full bg-[#ECE9E2] border px-4 py-3 text-sm rounded-md cursor-not-allowed text-zinc-500"
               />
             </div>
             <div>
@@ -242,7 +215,7 @@ export default function EditarProyecto() {
                 type="text"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md"
               />
             </div>
             <div>
@@ -253,41 +226,39 @@ export default function EditarProyecto() {
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md"
               />
             </div>
             <div className="md:col-span-2">
               <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
-                Descripción del Proyecto
+                Descripción
               </label>
               <textarea
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors resize-none"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md resize-none"
               />
             </div>
           </div>
 
-          {/* SECCIÓN 2: ARCHIVOS MULTIMEDIA */}
           <div className="border-t border-[#E4DFD5] pt-8">
             <h2 className="text-sm font-medium uppercase text-[#332D26] mb-6">
-              Reemplazar Archivos Multimedia
+              Archivos Multimedia
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Box 1: Imagen Principal */}
-              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm md:col-span-2">
+              {/* Portada Desktop */}
+              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <span className="block text-xs font-semibold text-[#332D26]">
-                      Imagen de Portada *
+                    <span className="block text-xs font-semibold">
+                      Portada Desktop *
                     </span>
                     <span className="text-[10px] text-zinc-500">
-                      Imagen principal del proyecto
+                      Horizontal (16:9)
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
                     Cambiar
                     <input
                       type="file"
@@ -299,58 +270,65 @@ export default function EditarProyecto() {
                     />
                   </label>
                 </div>
-
-                <div className="flex items-center gap-3 bg-zinc-50 p-3 rounded-lg border border-zinc-100">
+                <div className="flex gap-2 items-center text-[11px] text-zinc-500">
                   {newCoverFile ? (
-                    <>
-                      <div className="relative w-16 h-10 rounded overflow-hidden flex-shrink-0 border border-zinc-200">
-                        <Image
-                          src={URL.createObjectURL(newCoverFile)}
-                          alt="New Cover"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <span className="text-[11px] font-medium text-epico-blue truncate">
-                        {newCoverFile.name}
-                      </span>
-                    </>
-                  ) : existingCoverUrl ? (
-                    <>
-                      <div className="relative w-16 h-10 rounded overflow-hidden flex-shrink-0 border border-zinc-200">
-                        <Image
-                          src={existingCoverUrl}
-                          alt="Current Cover"
-                          fill
-                          className="object-cover"
-                          priority
-                        />
-                      </div>
-                      <span className="text-[11px] font-medium text-green-600">
-                        ✓ Archivo actual conservado
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-[11px] text-zinc-400">
-                      Sin portada
+                    <span className="text-epico-blue font-medium">
+                      {newCoverFile.name}
                     </span>
+                  ) : existingCoverUrl ? (
+                    <span className="text-green-600">
+                      ✓ Archivo actual conservado
+                    </span>
+                  ) : (
+                    "Sin portada"
                   )}
                 </div>
               </div>
 
-              {/* Box 2: Galería */}
-              <div className="md:col-span-2 bg-background border border-zinc-200 p-6 rounded-xl shadow-sm">
-                <div className="flex justify-between items-center mb-5">
+              {/* Portada Móvil */}
+              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between">
+                <div className="flex justify-between items-start mb-4">
                   <div>
-                    <span className="block text-xs font-semibold text-[#332D26]">
-                      Galería del Proyecto
+                    <span className="block text-xs font-semibold">
+                      Portada Móvil
                     </span>
                     <span className="text-[10px] text-zinc-500">
-                      Añade o elimina fotos del proyecto
+                      Vertical (9:16)
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
-                    Añadir Fotos
+                  <label className="bg-epico-dark text-white text-[10px] uppercase font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
+                    Cambiar
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) =>
+                        setNewMobileCoverFile(e.target.files?.[0] || null)
+                      }
+                    />
+                  </label>
+                </div>
+                <div className="flex gap-2 items-center text-[11px] text-zinc-500">
+                  {newMobileCoverFile ? (
+                    <span className="text-epico-blue font-medium">
+                      {newMobileCoverFile.name}
+                    </span>
+                  ) : existingMobileCoverUrl ? (
+                    <span className="text-green-600">
+                      ✓ Archivo actual conservado
+                    </span>
+                  ) : (
+                    "No se ha subido portada móvil"
+                  )}
+                </div>
+              </div>
+
+              {/* Galeria - se mantiene la estructura visual de cajas pequeñas */}
+              <div className="md:col-span-2 border border-zinc-200 p-6 rounded-xl">
+                <div className="flex justify-between mb-4">
+                  <span className="text-xs font-semibold">Galería</span>
+                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1 uppercase rounded-md cursor-pointer">
+                    Añadir
                     <input
                       type="file"
                       multiple
@@ -360,86 +338,43 @@ export default function EditarProyecto() {
                     />
                   </label>
                 </div>
-
-                {existingGalleryUrls.length > 0 ||
-                newGalleryFiles.length > 0 ? (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 bg-zinc-50 p-4 rounded-lg border border-zinc-100">
-                    {/* Fotos Existentes */}
-                    {existingGalleryUrls.map((url, idx) => (
-                      <div
-                        key={`old-${idx}`}
-                        className="relative aspect-square rounded-md overflow-hidden border border-zinc-200 group"
+                <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
+                  {existingGalleryUrls.map((url, idx) => (
+                    <div
+                      key={`old-${idx}`}
+                      className="relative aspect-square border"
+                    >
+                      <Image src={url} fill className="object-cover" alt="" />
+                      <button
+                        type="button"
+                        onClick={() => removeExistingGalleryImage(url)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
                       >
-                        <Image
-                          src={url}
-                          alt={`Gallery old ${idx}`}
-                          fill
-                          className="object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeExistingGalleryImage(url)}
-                          className="absolute top-1 right-1 bg-red-500/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                        >
-                          <svg
-                            width="10"
-                            height="10"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                          >
-                            <path d="M18 6L6 18M6 6l12 12" />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-
-                    {/* Fotos Nuevas */}
-                    {newGalleryFiles.map((file, idx) => (
-                      <div
-                        key={`new-${idx}`}
-                        className="relative aspect-square rounded-md overflow-hidden border-2 border-epico-blue group"
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ))}
+                  {newGalleryFiles.map((file, idx) => (
+                    <div
+                      key={`new-${idx}`}
+                      className="relative aspect-square border-2 border-epico-blue"
+                    >
+                      <Image
+                        src={URL.createObjectURL(file)}
+                        fill
+                        className="object-cover opacity-80"
+                        alt=""
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNewGalleryImage(idx)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
                       >
-                        <Image
-                          src={URL.createObjectURL(file)}
-                          alt={`Gallery new ${idx}`}
-                          fill
-                          className="object-cover opacity-80"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <span className="bg-epico-blue text-white text-[8px] px-1 rounded-sm uppercase tracking-widest">
-                            Nuevo
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeNewGalleryImage(idx)}
-                          className="absolute top-1 right-1 bg-red-500/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto cursor-pointer"
-                        >
-                          <svg
-                            width="10"
-                            height="10"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                          >
-                            <path d="M18 6L6 18M6 6l12 12" />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100 text-center">
-                    <span className="text-[11px] text-zinc-400">
-                      La galería de este proyecto está vacía
-                    </span>
-                  </div>
-                )}
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -448,9 +383,9 @@ export default function EditarProyecto() {
             <button
               type="submit"
               disabled={loadingSubmit}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm cursor-pointer"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 rounded-md"
             >
-              {loadingSubmit ? "Guardando cambios..." : "Guardar Cambios"}
+              {loadingSubmit ? "Guardando..." : "Guardar Cambios"}
             </button>
           </div>
         </form>

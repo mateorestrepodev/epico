@@ -21,7 +21,6 @@ export default function ProjectGrid({ projects }: { projects: ProjectData[] }) {
 
   return (
     <section className="w-full max-w-[1600px] mx-auto bg-background px-6 md:px-10 py-24 md:py-32">
-      {/* Cuadrícula de 2 columnas en lugar de 3 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16 lg:gap-x-12 lg:gap-y-20">
         {projects.map((project, index) => (
           <motion.div
@@ -38,10 +37,10 @@ export default function ProjectGrid({ projects }: { projects: ProjectData[] }) {
           >
             {/* Info Arriba: Nombre y Ubicación */}
             <div className="mb-4">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-900">
+              <h3 className="text-[14px] font-light  tracking-wider text-gray-900">
                 {project.title}
               </h3>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mt-1 font-medium">
+              <p className="text-[11px]  tracking-[0.2em] text-gray-700 mt-1 font-normal">
                 {project.location || "Sin ubicación"}
               </p>
             </div>

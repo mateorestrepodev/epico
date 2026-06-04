@@ -62,7 +62,7 @@ export default function AdminMobiliarioDashboard() {
   if (loading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
-        <p className="text-[#827A70] uppercase tracking-widest text-sm animate-pulse">
+        <p className="text-[#827A70] uppercase tracking-wider text-sm animate-pulse">
           Cargando inventario...
         </p>
       </div>
@@ -74,7 +74,7 @@ export default function AdminMobiliarioDashboard() {
       {/* Cabecera del Panel */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 border-b border-[#E4DFD5] pb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-medium tracking-wide text-[#332D26] mb-1">
+          <h1 className="text-3xl font-medium tracking-wider text-[#332D26] mb-1">
             Mobiliario
           </h1>
           <p className="text-sm text-[#827A70] tracking-wide">
@@ -83,7 +83,7 @@ export default function AdminMobiliarioDashboard() {
         </div>
         <Link
           href="/admin/mobiliario/nuevo"
-          className="bg-epico-blue text-white px-6 py-3 rounded-sm text-xs uppercase tracking-widest font-medium hover:bg-blue-700 transition-colors shadow-sm"
+          className="bg-epico-blue text-white px-6 py-3 rounded-sm text-xs uppercase tracking-wider font-medium hover:bg-blue-700 transition-colors shadow-sm"
         >
           + Nuevo Mueble
         </Link>
@@ -128,14 +128,14 @@ export default function AdminMobiliarioDashboard() {
                 <div className="flex gap-3  pt-3">
                   <Link
                     href={`/admin/mobiliario/editar/${item.slug}`}
-                    className="flex-1 text-center text-[10px] uppercase tracking-widest font-medium text-white transition-colors border border-[#D5CEC4]  py-2.5 rounded-sm bg-epico-blue"
+                    className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-white transition-colors border border-[#D5CEC4]  py-2.5 rounded-sm bg-epico-blue"
                   >
                     Editar
                   </Link>
                   <button
                     onClick={() => handleDelete(item.id, item.name)}
                     disabled={isDeleting === item.id}
-                    className="flex-1 text-center text-[10px] uppercase tracking-widest font-medium text-red-600 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300 bg-red-50 py-2.5 rounded-sm disabled:opacity-50 cursor-pointer"
+                    className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-red-600 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300 bg-red-50 py-2.5 rounded-sm disabled:opacity-50 cursor-pointer"
                   >
                     {isDeleting === item.id ? "Borrando..." : "Eliminar"}
                   </button>
@@ -151,7 +151,7 @@ export default function AdminMobiliarioDashboard() {
             </p>
             <Link
               href="/admin/mobiliario/nuevo"
-              className="text-[#7B6E5F] text-xs uppercase tracking-widest font-medium border-b border-[#7B6E5F] hover:text-[#332D26] hover:border-[#332D26] pb-1 transition-colors"
+              className="text-[#7B6E5F] text-xs uppercase tracking-wider font-medium border-b border-[#7B6E5F] hover:text-[#332D26] hover:border-[#332D26] pb-1 transition-colors"
             >
               Añadir tu primer producto
             </Link>

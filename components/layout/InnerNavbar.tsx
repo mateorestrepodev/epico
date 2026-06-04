@@ -190,7 +190,7 @@ export default function InnerNavbar({
               </div>
 
               {/* Footer del menú */}
-              <div className="flex flex-row justify-between items-start md:items-end gap-1 text-white/70 text-[9px] tracking-widest uppercase">
+              <div className="flex flex-row justify-between items-start md:items-end gap-1 text-white/70 text-[9px] tracking-wider uppercase">
                 <span>CREAR Y PERMANECER</span>
                 <a
                   href="https://www.instagram.com/estudioepico/"

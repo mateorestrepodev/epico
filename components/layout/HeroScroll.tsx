@@ -136,7 +136,7 @@ export default function HeroScroll() {
             <div className="w-12 h-2.5 md:w-12 md:h-3 bg-epico-blue" />
             <div className="w-2.5 h-2.5 md:w-5 md:h-3 bg-epico-blue" />
           </div>
-          <span className="text-epico-blue text-[10px] md:text-xs font-bold tracking-widest uppercase">
+          <span className="text-epico-blue text-[10px] md:text-xs font-bold tracking-wider uppercase">
             ESTUDIOĒPICO.COM
           </span>
         </div>
@@ -247,7 +247,7 @@ export default function HeroScroll() {
                 })}
               </nav>
 
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-1 text-white/70 text-[9px] tracking-widest uppercase pb-6 md:pb-0">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-1 text-white/70 text-[9px] tracking-wider uppercase pb-6 md:pb-0">
                 <span>CREAR Y PERMANECER</span>
                 <a
                   href="https://www.instagram.com/estudioepico/"

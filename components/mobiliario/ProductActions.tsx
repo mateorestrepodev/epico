@@ -58,7 +58,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
 
         <button
           onClick={handleAddToCart}
-          className="flex-1 bg-epico-blue text-white font-medium py-4 px-2 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
+          className="flex-1 bg-epico-blue text-white font-medium py-4 px-2 text-xs uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer"
         >
           Añadir a la cesta
         </button>
@@ -66,7 +66,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
 
       <button
         onClick={() => setShow3DModal(true)}
-        className={`w-full border font-medium py-4 text-xs uppercase tracking-widest flex items-center justify-center gap-3 mb-4 transition-colors
+        className={`w-full border font-medium py-4 text-xs uppercase tracking-wider flex items-center justify-center gap-3 mb-4 transition-colors
            ${
              product.model_url
                ? "border-epico-dark bg-transparent text-epico-dark hover:bg-epico-dark hover:text-white cursor-pointer"
@@ -99,7 +99,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
               </span>
               <button
                 onClick={() => setShow3DModal(false)}
-                className="text-gray-500 hover:text-red-500 transition-colors flex items-center gap-2 text-xs uppercase tracking-widest font-semibold cursor-pointer"
+                className="text-gray-500 hover:text-red-500 transition-colors flex items-center gap-2 text-xs uppercase tracking-wider font-semibold cursor-pointer"
               >
                 Cerrar ✕
               </button>
@@ -121,7 +121,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
                 }}
               />
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/90 px-4 py-2 rounded-full shadow-sm pointer-events-none">
-                <span className="text-[10px] uppercase tracking-widest text-gray-600 font-medium">
+                <span className="text-[10px] uppercase tracking-wider text-gray-600 font-medium">
                   Arrastra para rotar • Haz scroll para acercar
                 </span>
               </div>

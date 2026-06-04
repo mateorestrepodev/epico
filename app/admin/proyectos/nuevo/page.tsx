@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase/supabase";
 import imageCompression from "browser-image-compression";
+import { X } from "lucide-react"; // <-- ¡AQUÍ ESTÁ LA LÍNEA QUE FALTABA!
 
 export default function NuevoProyecto() {
   const router = useRouter();
@@ -14,7 +15,6 @@ export default function NuevoProyecto() {
   const [loadingText, setLoadingText] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  // Estados de datos (Categoría eliminada)
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -23,11 +23,10 @@ export default function NuevoProyecto() {
     description: "",
   });
 
-  // Estados de archivos
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [mobileCoverFile, setMobileCoverFile] = useState<File | null>(null);
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
 
-  // Autogenerar slug
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -45,7 +44,6 @@ export default function NuevoProyecto() {
     }));
   };
 
-  // Manejo de la galería
   const handleGalleryAdd = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
@@ -57,7 +55,6 @@ export default function NuevoProyecto() {
     setGalleryFiles((prev) => prev.filter((_, i) => i !== indexToRemove));
   };
 
-  // --- FUNCIÓN DE COMPRESIÓN A WEBP ---
   const uploadFileToStorage = async (
     file: File,
     folder: string,
@@ -65,7 +62,7 @@ export default function NuevoProyecto() {
     const options = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1920,
-      useWebWorker: false, // <-- IMPORTANTE: Cambiado a false para evitar Timeout
+      useWebWorker: false,
       fileType: "image/webp",
       initialQuality: 0.95,
     };
@@ -91,7 +88,6 @@ export default function NuevoProyecto() {
       throw error;
     }
   };
-  // ------------------------------------
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -99,29 +95,32 @@ export default function NuevoProyecto() {
     setError(null);
 
     try {
-      if (!coverFile) throw new Error("La imagen de portada es obligatoria.");
+      if (!coverFile)
+        throw new Error("La imagen de portada (Desktop) es obligatoria.");
       if (!formData.slug) throw new Error("El slug es obligatorio.");
 
       let coverUrl = "";
+      let mobileCoverUrl = "";
       const galleryUrls: string[] = [];
 
-      // 1. Subir imagen de portada comprimida
-      setLoadingText("Comprimiendo y subiendo portada...");
+      setLoadingText("Comprimiendo y subiendo portadas...");
       coverUrl = await uploadFileToStorage(coverFile, "covers");
-
-      // 2. Subir imágenes de galería comprimidas
-      if (galleryFiles.length > 0) {
-        setLoadingText(
-          `Comprimiendo y subiendo ${galleryFiles.length} fotos de galería...`,
+      if (mobileCoverFile) {
+        mobileCoverUrl = await uploadFileToStorage(
+          mobileCoverFile,
+          "covers-mobile",
         );
+      }
+
+      if (galleryFiles.length > 0) {
+        setLoadingText(`Subiendo ${galleryFiles.length} fotos de galería...`);
         for (let i = 0; i < galleryFiles.length; i++) {
           const url = await uploadFileToStorage(galleryFiles[i], "gallery");
           galleryUrls.push(url);
         }
       }
 
-      // 3. Insertar en la tabla 'proyectos'
-      setLoadingText("Guardando proyecto en base de datos...");
+      setLoadingText("Guardando proyecto...");
       const { error: insertError } = await supabase.from("proyectos").insert([
         {
           title: formData.title,
@@ -130,6 +129,7 @@ export default function NuevoProyecto() {
           location: formData.location,
           description: formData.description,
           image_url: coverUrl,
+          image_mobile_url: mobileCoverUrl || null, // Se guarda null si no se subió
           gallery_urls: galleryUrls,
         },
       ]);
@@ -140,11 +140,8 @@ export default function NuevoProyecto() {
       router.push("/admin/proyectos");
       router.refresh();
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Ocurrió un error inesperado al publicar el proyecto.");
-      }
+      if (err instanceof Error) setError(err.message);
+      else setError("Ocurrió un error inesperado.");
       setLoading(false);
       setLoadingText("");
     }
@@ -189,14 +186,12 @@ export default function NuevoProyecto() {
                 required
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Ej: Casa Llanogrande"
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors text-[#332D26]"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
               />
             </div>
-
             <div>
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
-                URL Slug (Automático) *
+                URL Slug *
               </label>
               <input
                 type="text"
@@ -204,26 +199,9 @@ export default function NuevoProyecto() {
                 required
                 value={formData.slug}
                 readOnly
-                placeholder="casa-llanogrande"
-                className="w-full bg-[#ECE9E2] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none text-[#554E45] font-mono cursor-not-allowed"
+                className="w-full bg-[#ECE9E2] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md cursor-not-allowed font-mono text-[#554E45]"
               />
             </div>
-
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
-                Año
-              </label>
-              <input
-                type="text"
-                name="year"
-                required
-                value={formData.year}
-                onChange={handleChange}
-                placeholder="Ej: 2024"
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors text-[#332D26]"
-              />
-            </div>
-
             <div>
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
                 Ubicación
@@ -231,15 +209,23 @@ export default function NuevoProyecto() {
               <input
                 type="text"
                 name="location"
-                required
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="Ej: Rionegro, Antioquia"
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors text-[#332D26]"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
               />
             </div>
-
-            {/* DESCRIPCIÓN */}
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
+                Año
+              </label>
+              <input
+                type="text"
+                name="year"
+                value={formData.year}
+                onChange={handleChange}
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
+              />
+            </div>
             <div className="md:col-span-2">
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
                 Descripción del Proyecto
@@ -247,11 +233,9 @@ export default function NuevoProyecto() {
               <textarea
                 name="description"
                 rows={4}
-                required
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Escribe los detalles arquitectónicos del proyecto..."
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors text-[#332D26] resize-none"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors resize-none"
               />
             </div>
           </div>
@@ -263,55 +247,74 @@ export default function NuevoProyecto() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Box 1: Imagen Principal */}
-              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm md:col-span-2">
+              {/* Portada Desktop */}
+              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="block text-xs font-semibold text-[#332D26]">
-                      Imagen de Portada *
+                      Portada Desktop *
                     </span>
                     <span className="text-[10px] text-zinc-500">
-                      Imagen principal del proyecto
+                      Horizontal (16:9)
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
-                    Elegir Archivo
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 w-max">
+                    Elegir
                     <input
                       type="file"
                       accept="image/*"
-                      className="hidden"
                       required
+                      className="hidden"
                       onChange={(e) =>
                         setCoverFile(e.target.files?.[0] || null)
                       }
                     />
                   </label>
                 </div>
-
-                <div className="flex items-center gap-3 bg-zinc-50 p-3 rounded-lg border border-zinc-100">
-                  {coverFile ? (
-                    <>
-                      <div className="relative w-16 h-10 rounded overflow-hidden flex-shrink-0 border border-zinc-200">
-                        <Image
-                          src={URL.createObjectURL(coverFile)}
-                          alt="Cover"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <span className="text-[11px] font-medium text-epico-blue truncate">
-                        {coverFile.name}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-[11px] text-zinc-400">
-                      Sin archivo seleccionado
-                    </span>
-                  )}
-                </div>
+                {coverFile ? (
+                  <span className="text-[11px] font-medium text-epico-blue truncate">
+                    {coverFile.name}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-zinc-400">Sin archivo</span>
+                )}
               </div>
 
-              {/* Box 2: Galería */}
+              {/* Portada Mobile */}
+              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <span className="block text-xs font-semibold text-[#332D26]">
+                      Portada Móvil
+                    </span>
+                    <span className="text-[10px] text-zinc-500">
+                      Vertical (Opcional, 9:16)
+                    </span>
+                  </div>
+                  <label className="bg-epico-dark text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 w-max">
+                    Elegir
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) =>
+                        setMobileCoverFile(e.target.files?.[0] || null)
+                      }
+                    />
+                  </label>
+                </div>
+                {mobileCoverFile ? (
+                  <span className="text-[11px] font-medium text-epico-blue truncate">
+                    {mobileCoverFile.name}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-zinc-400">
+                    Usará la de Desktop por defecto
+                  </span>
+                )}
+              </div>
+
+              {/* Galería */}
               <div className="md:col-span-2 bg-background border border-zinc-200 p-6 rounded-xl shadow-sm">
                 <div className="flex justify-between items-center mb-5">
                   <div>
@@ -322,8 +325,8 @@ export default function NuevoProyecto() {
                       Añade fotos para el carrusel
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-widest font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-opacity w-max">
-                    Elegir Archivos
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 w-max">
+                    Añadir Fotos
                     <input
                       type="file"
                       multiple
@@ -350,19 +353,9 @@ export default function NuevoProyecto() {
                         <button
                           type="button"
                           onClick={() => removeGalleryImage(idx)}
-                          className="absolute top-1 right-1 bg-red-500/90 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-1 right-1 bg-red-500/90 text-white p-1 rounded-full opacity-0 group-hover:opacity-100"
                         >
-                          <svg
-                            width="10"
-                            height="10"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                          >
-                            <path d="M18 6L6 18M6 6l12 12" />
-                          </svg>
+                          <X size={10} />
                         </button>
                       </div>
                     ))}
@@ -370,7 +363,7 @@ export default function NuevoProyecto() {
                 ) : (
                   <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100 text-center">
                     <span className="text-[11px] text-zinc-400">
-                      No has seleccionado imágenes para la galería
+                      No has seleccionado imágenes
                     </span>
                   </div>
                 )}
@@ -381,14 +374,14 @@ export default function NuevoProyecto() {
           {/* BOTÓN DE GUARDADO */}
           <div className="border-t border-[#E4DFD5] pt-6 flex justify-end items-center gap-4">
             {loading && (
-              <span className="text-[10px] font-bold uppercase tracking-widest text-epico-blue animate-pulse">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-epico-blue animate-pulse">
                 {loadingText}
               </span>
             )}
             <button
               type="submit"
               disabled={loading}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-3 rounded-md shadow-sm cursor-pointer"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50 rounded-md shadow-sm"
             >
               {loading ? "Publicando..." : "Publicar Proyecto"}
             </button>

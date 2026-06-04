@@ -124,12 +124,12 @@ export default function Modal3D({ isVisible, onClose, product }: Modal3DProps) {
                 />
               </Canvas>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400 uppercase tracking-widest text-xs">
+              <div className="w-full h-full flex items-center justify-center text-gray-400 uppercase tracking-wider text-xs">
                 Modelo 3D no disponible
               </div>
             )}
 
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-[10px] md:text-xs font-medium tracking-widest uppercase text-gray-400 w-full text-center pointer-events-none">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-[10px] md:text-xs font-medium tracking-wider uppercase text-gray-400 w-full text-center pointer-events-none">
               Arrastra para rotar • Scroll para zoom
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function Modal3D({ isVisible, onClose, product }: Modal3DProps) {
 
               {product.colors && product.colors.length > 0 && (
                 <div className="mb-10">
-                  <span className="text-xs text-black tracking-widest uppercase mb-4 block font-medium">
+                  <span className="text-xs text-black tracking-wider uppercase mb-4 block font-medium">
                     Acabados Disponibles
                   </span>
                   <div className="flex gap-4">
@@ -183,7 +183,7 @@ export default function Modal3D({ isVisible, onClose, product }: Modal3DProps) {
                     size={20}
                     className="group-hover:-translate-y-1 transition-transform duration-300"
                   />
-                  <span className="text-sm font-semibold tracking-widest uppercase">
+                  <span className="text-sm font-semibold tracking-wider uppercase">
                     Agregar al Carrito
                   </span>
                 </button>

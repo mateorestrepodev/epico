@@ -1,3 +1,4 @@
+// app/admin/proyectos/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,7 +10,6 @@ interface Proyecto {
   id: number;
   title: string;
   location: string;
-  year: string;
   image_url: string | null;
   slug: string;
 }
@@ -24,8 +24,7 @@ export default function AdminProyectosDashboard() {
       try {
         const { data, error } = await supabase
           .from("proyectos")
-          // Eliminamos 'category' del select
-          .select("id, title, location, year, image_url, slug")
+          .select("id, title, location, image_url, slug")
           .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -63,7 +62,7 @@ export default function AdminProyectosDashboard() {
   if (loading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
-        <p className="text-[#827A70] uppercase tracking-widest text-sm animate-pulse">
+        <p className="text-[#827A70] uppercase tracking-wider text-sm animate-pulse">
           Cargando proyectos...
         </p>
       </div>
@@ -75,7 +74,7 @@ export default function AdminProyectosDashboard() {
       {/* Cabecera del Panel */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 border-b border-[#E4DFD5] pb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-medium tracking-wide text-[#332D26] mb-1">
+          <h1 className="text-3xl font-medium tracking-wider text-[#332D26] mb-1">
             Proyectos
           </h1>
           <p className="text-sm text-[#827A70] ">
@@ -116,26 +115,25 @@ export default function AdminProyectosDashboard() {
 
               <div className="p-6 flex flex-col flex-grow justify-between bg-background">
                 <div>
-                  <h3 className="font-medium text-lg tracking-wide text-[#332D26] truncate mb-1">
+                  <h3 className="font-medium text-lg tracking-wider text-[#332D26] truncate mb-1">
                     {item.title}
                   </h3>
-                  <p className="text-[#827A70] text-[10px] uppercase tracking-widest font-medium">
-                    {item.location && `${item.location} • `}
-                    {item.year}
+                  <p className="text-[#827A70] text-[10px] uppercase tracking-wider font-medium">
+                    {item.location || "Sin ubicación"}
                   </p>
                 </div>
 
                 <div className="flex gap-3 pt-3">
                   <Link
                     href={`/admin/proyectos/editar/${item.slug}`}
-                    className="flex-1 text-center text-[10px] uppercase tracking-widest font-medium text-white transition-colors border border-[#D5CEC4] py-2.5 rounded-sm bg-epico-blue"
+                    className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-white transition-colors border border-[#D5CEC4] py-2.5 rounded-sm bg-epico-blue"
                   >
                     Editar
                   </Link>
                   <button
                     onClick={() => handleDelete(item.id, item.title)}
                     disabled={isDeleting === item.id}
-                    className="flex-1 text-center text-[10px] uppercase tracking-widest font-medium text-red-600 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300 bg-red-50 py-2.5 rounded-sm disabled:opacity-50 cursor-pointer"
+                    className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-red-600 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300 bg-red-50 py-2.5 rounded-sm disabled:opacity-50 cursor-pointer"
                   >
                     {isDeleting === item.id ? "Borrando..." : "Eliminar"}
                   </button>
@@ -150,7 +148,7 @@ export default function AdminProyectosDashboard() {
             </p>
             <Link
               href="/admin/proyectos/nuevo"
-              className="text-[#7B6E5F] text-xs uppercase tracking-widest font-medium border-b border-[#7B6E5F] hover:text-[#332D26] hover:border-[#332D26] pb-1 transition-colors"
+              className="text-[#7B6E5F] text-xs uppercase tracking-wider font-medium border-b border-[#7B6E5F] hover:text-[#332D26] hover:border-[#332D26] pb-1 transition-colors"
             >
               Añadir tu primer proyecto
             </Link>

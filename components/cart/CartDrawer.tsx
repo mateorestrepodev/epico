@@ -100,7 +100,7 @@ export default function CartDrawer() {
           >
             {/* Cabecera del Carrito */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-xl font-medium tracking-wide flex items-center gap-2">
+              <h2 className="text-xl font-medium tracking-wider flex items-center gap-2">
                 <Handbag size={20} />
                 Tu selección
               </h2>
@@ -117,7 +117,7 @@ export default function CartDrawer() {
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-4">
                   <Handbag strokeWidth={1} />
-                  <p className="tracking-widest uppercase text-xs">
+                  <p className="tracking-wider uppercase text-xs">
                     El carrito está vacío
                   </p>
                 </div>
@@ -139,7 +139,7 @@ export default function CartDrawer() {
                     </div>
 
                     <div className="flex-1 flex flex-col">
-                      <h3 className="font-medium text-lg tracking-wide  ">
+                      <h3 className="font-medium text-lg tracking-wider  ">
                         {item.product.name}
                       </h3>
                       <p className="text-gray-500 text-sm mb-2 tracking-wide">
@@ -148,7 +148,7 @@ export default function CartDrawer() {
 
                       {item.selectedColor && (
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="text-[10px] tracking-widest uppercase text-gray-400">
+                          <span className="text-[10px] tracking-wider uppercase text-gray-400">
                             Acabado:
                           </span>
                           <span
@@ -213,19 +213,19 @@ export default function CartDrawer() {
                     placeholder="TU NOMBRE COMPLETO"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full bg-background border border-gray-200 p-3 text-sm focus:outline-none focus:border-epico-blue transition-colors placeholder:text-gray-400 placeholder:text-xs placeholder:tracking-widest uppercase"
+                    className="w-full bg-background border border-gray-200 p-3 text-sm focus:outline-none focus:border-epico-blue transition-colors placeholder:text-gray-400 placeholder:text-xs placeholder:tracking-wider uppercase"
                   />
                   <input
                     type="text"
                     placeholder="DIRECCIÓN DE ENTREGA"
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
-                    className="w-full bg-background border border-gray-200 p-3 text-sm focus:outline-none focus:border-epico-blue transition-colors placeholder:text-gray-400 placeholder:text-xs placeholder:tracking-widest uppercase"
+                    className="w-full bg-background border border-gray-200 p-3 text-sm focus:outline-none focus:border-epico-blue transition-colors placeholder:text-gray-400 placeholder:text-xs placeholder:tracking-wider uppercase"
                   />
                 </div>
 
                 <div className="flex justify-between items-center mb-6">
-                  <span className="text-sm font-semibold tracking-widest uppercase text-gray-500">
+                  <span className="text-sm font-semibold tracking-wider uppercase text-gray-500">
                     Total
                   </span>
                   <span className="text-2xl font-medium">
@@ -242,7 +242,7 @@ export default function CartDrawer() {
                       : "bg-gray-200 text-gray-400 cursor-not-allowed"
                   }`}
                 >
-                  <span className="font-semibold tracking-widest uppercase text-sm">
+                  <span className="font-semibold tracking-wider uppercase text-sm">
                     Finalizar compra
                   </span>
                   <span
@@ -251,7 +251,7 @@ export default function CartDrawer() {
                     →
                   </span>
                 </button>
-                <p className="text-[10px] text-center text-gray-700 mt-4 tracking-widest uppercase select-none">
+                <p className="text-[10px] text-center text-gray-700 mt-4 tracking-wider uppercase select-none">
                   Envío calculado al finalizar la compra.
                 </p>
               </div>

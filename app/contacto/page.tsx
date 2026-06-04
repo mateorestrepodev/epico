@@ -41,7 +41,7 @@ export default function ContactoPage() {
             </span>
             <a
               href="mailto:juaguse@gmail.com"
-              className="text-xs md:text-sm tracking-widest text-epico-dark uppercase hover:text-epico-blue transition-colors group flex flex-col items-start gap-1 w-fit"
+              className="text-xs md:text-sm tracking-wider text-epico-dark uppercase hover:text-epico-blue transition-colors group flex flex-col items-start gap-1 w-fit"
             >
               <span>juaguse@gmail.com</span>
               {/* Línea animada hover */}
@@ -60,7 +60,7 @@ export default function ContactoPage() {
                 href="https://wa.me/573242548059"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-xs md:text-sm tracking-widest text-epico-dark uppercase hover:text-epico-blue transition-colors group w-fit"
+                className="flex items-center gap-3 text-xs md:text-sm tracking-wider text-epico-dark uppercase hover:text-epico-blue transition-colors group w-fit"
               >
                 <svg
                   width="15"
@@ -81,7 +81,7 @@ export default function ContactoPage() {
                 href="https://www.instagram.com/estudioepico/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-xs md:text-sm tracking-widest text-epico-dark uppercase hover:text-epico-blue transition-colors group w-fit"
+                className="flex items-center gap-3 text-xs md:text-sm tracking-wider text-epico-dark uppercase hover:text-epico-blue transition-colors group w-fit"
               >
                 <svg
                   width="15"
@@ -104,7 +104,7 @@ export default function ContactoPage() {
             <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-epico-dark-700 mb-4 block">
               Studio / Showroom
             </span>
-            <p className="text-xs md:text-sm tracking-widest text-epico-dark uppercase leading-relaxed">
+            <p className="text-xs md:text-sm tracking-wider text-epico-dark uppercase leading-relaxed">
               Medellín
               <br />
               Colombia
@@ -116,7 +116,7 @@ export default function ContactoPage() {
             <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-epico-dark-700 mb-4 block">
               Horarios
             </span>
-            <p className="text-xs md:text-sm tracking-widest text-epico-dark uppercase leading-relaxed">
+            <p className="text-xs md:text-sm tracking-wider text-epico-dark uppercase leading-relaxed">
               Lunes a Viernes
               <br />9 AM — 5 PM
             </p>
