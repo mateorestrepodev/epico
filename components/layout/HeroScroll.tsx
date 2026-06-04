@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
 const NAV_LINKS = [
-  { label: "A la medida", href: "/a-la-medida" },
+  { label: "A la medida", href: "/alamedida" },
   { label: "Mobiliario", href: "/mobiliario" },
   { label: "Proyectos", href: "/proyectos" },
   { label: "Nosotros", href: "/nosotros" },
