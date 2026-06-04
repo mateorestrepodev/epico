@@ -3,25 +3,15 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence, useAnimate } from "framer-motion";
-import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { motion, useAnimate } from "framer-motion";
 import Logo from "@/components/ui/Logo";
-
-const NAV_LINKS = [
-  { label: "A la medida", href: "/alamedida" },
-  { label: "Mobiliario", href: "/mobiliario" },
-  { label: "Proyectos", href: "/proyectos" },
-  { label: "Nosotros", href: "/nosotros" },
-  { label: "Contacto", href: "/contacto" },
-];
+import MenuOverlay from "@/components/layout/MenuOverlay"; // <-- Importamos nuestro nuevo componente
 
 export default function HeroScroll() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
 
-  const pathname = usePathname();
   const router = useRouter();
 
   const [curtainScope, animateCurtain] = useAnimate();
@@ -32,7 +22,6 @@ export default function HeroScroll() {
   const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
-    // Usamos window.innerHeight para la altura precisa
     const update = () =>
       setDims({ w: window.innerWidth, h: window.innerHeight });
     update();
@@ -103,27 +92,23 @@ export default function HeroScroll() {
 
   return (
     <div
-      // CLAVE: h-[100dvh] previene el scroll fantasma en iOS/Android
-      // fixed asegura que el componente se bloquee al viewport
       className="fixed inset-0 w-full h-[100dvh] z-50 overflow-hidden touch-none"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
     >
-      {/* Imágenes de fondo Responsive */}
       <div className="absolute inset-0 w-full h-full pointer-events-none">
         <Image
           src="/epicohero.png"
-          alt="ēpico — Mobiliario Auténtico"
+          alt="ēpico"
           fill
           priority
           sizes="100vw"
           className="object-cover object-center hidden md:block"
         />
-
         <Image
           src="/epicoheromobile.png"
-          alt="ēpico — Mobiliario Auténtico Mobile"
+          alt="ēpico Mobile"
           fill
           priority
           sizes="100vw"
@@ -143,7 +128,6 @@ export default function HeroScroll() {
         </div>
       </div>
 
-      {/* Telón azul */}
       <motion.div
         ref={curtainScope}
         style={{ height: dims.h }}
@@ -154,7 +138,6 @@ export default function HeroScroll() {
         </div>
       </motion.div>
 
-      {/* Logo */}
       <motion.div
         ref={logoScope}
         style={{
@@ -171,12 +154,11 @@ export default function HeroScroll() {
         <Logo className="w-full h-auto drop-shadow-md" />
       </motion.div>
 
-      {/* Hamburguesa */}
       <motion.button
         ref={burgerScope}
         style={{ opacity: 0 }}
         onClick={() => setMenuOpen(true)}
-        className="absolute top-[22px] right-7 z-20 flex flex-col gap-[4px] cursor-pointer hover:opacity-70 transition-opacity"
+        className="absolute top-[22px] right-7 z-20 flex flex-col gap-[4px] cursor-pointer hover:opacity-70 transition-opacity pointer-events-auto"
         aria-label="Abrir menú"
       >
         <span className="block w-7 h-[4px] bg-[#291df1]" />
@@ -184,86 +166,8 @@ export default function HeroScroll() {
         <span className="block w-7 h-[4px] bg-[#291df1]" />
       </motion.button>
 
-      {/* Panel de menú */}
-      <AnimatePresence>
-        {menuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 w-full md:w-1/2 h-full z-40 cursor-pointer bg-black/5"
-              onClick={() => setMenuOpen(false)}
-            />
-            <motion.div
-              key="menu-panel"
-              initial={{ x: "100%" }}
-              animate={{ x: "0%" }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-              className="fixed top-0 right-0 w-full md:w-1/2 h-[100dvh] bg-[#291df1] z-50 flex flex-col justify-between p-7 shadow-2xl"
-            >
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="absolute top-8 right-8 text-white text-3xl cursor-pointer hover:opacity-60 hover:rotate-90 transition-all duration-300"
-                aria-label="Cerrar menú"
-              >
-                <X size={36} strokeWidth={1.5} />
-              </button>
-
-              <nav className="flex flex-col gap-2 mt-4">
-                {NAV_LINKS.map((link, i) => {
-                  const isActive = pathname === link.href;
-                  return (
-                    <motion.div
-                      key={link.label}
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{
-                        duration: 0.4,
-                        delay: 0.1 + i * 0.07,
-                        ease: [0.76, 0, 0.24, 1],
-                      }}
-                      className="flex items-center gap-3 text-white text-4xl font-light tracking-tight hover:opacity-60 transition-opacity"
-                    >
-                      <Link
-                        href={link.href}
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-3"
-                      >
-                        <span
-                          className={`text-2xl transition-all duration-300 ${
-                            isActive
-                              ? "opacity-100 translate-x-0"
-                              : "opacity-0 -translate-x-2"
-                          }`}
-                        >
-                          →
-                        </span>
-                        {link.label}
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </nav>
-
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-1 text-white/70 text-[9px] tracking-wider uppercase pb-6 md:pb-0">
-                <span>CREAR Y PERMANECER</span>
-                <a
-                  href="https://www.instagram.com/estudioepico/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold hover:text-white transition-colors cursor-pointer"
-                >
-                  @estudioepico
-                </a>
-                <span>Est. 2022 MDE/COL</span>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* AQUÍ INYECTAMOS EL NUEVO COMPONENTE */}
+      <MenuOverlay isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </div>
   );
 }

@@ -3,21 +3,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
-} from "framer-motion";
-import { X, Handbag } from "lucide-react";
+import { useScroll, useMotionValueEvent } from "framer-motion";
+import { Handbag } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useCartStore } from "@/lib/store/useCartStore";
 import CartDrawer from "@/components/cart/CartDrawer";
+import MenuOverlay from "@/components/layout/MenuOverlay"; // <-- Importamos nuestro nuevo componente
 
 type Props = {
   theme?: "light" | "dark";
-  showCart?: boolean; // <-- Propiedad añadida para controlar el carrito
+  showCart?: boolean;
 };
 
 export default function InnerNavbar({
@@ -27,15 +22,6 @@ export default function InnerNavbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-
-  const pathname = usePathname();
-  const navLinks = [
-    "A la medida",
-    "Mobiliario",
-    "Proyectos",
-    "Nosotros",
-    "Contacto",
-  ];
 
   const { openCart, getTotalItems } = useCartStore();
   const totalItems = getTotalItems();
@@ -89,7 +75,6 @@ export default function InnerNavbar({
 
         {/* Zona de Botones Derechos */}
         <div className="flex items-center gap-6">
-          {/* Botón Carrito: Envuelta en la condición showCart */}
           {showCart && (
             <button
               onClick={openCart}
@@ -127,85 +112,8 @@ export default function InnerNavbar({
       {/* Panel Lateral del Carrito */}
       <CartDrawer />
 
-      {/* Menú de Navegación Desplegable */}
-      <AnimatePresence>
-        {menuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 w-full md:w-1/2 h-full z-40 cursor-pointer bg-black/20 backdrop-blur-sm"
-              onClick={() => setMenuOpen(false)}
-            />
-            <motion.div
-              key="inner-menu"
-              initial={{ x: "100%" }}
-              animate={{ x: "0%" }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-              className="fixed top-0 right-0 w-full md:w-1/2 h-full bg-epico-blue z-50 flex flex-col justify-between p-7 shadow-2xl"
-            >
-              {/* Botón cerrar */}
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="absolute top-8 right-8 text-white cursor-pointer hover:opacity-60 hover:rotate-90 transition-all duration-300"
-                aria-label="Cerrar menú"
-              >
-                <X size={36} strokeWidth={1.5} />
-              </button>
-
-              {/* Links */}
-              <div className="flex flex-col gap-2 mt-10">
-                {navLinks.map((link, i) => {
-                  const href = `/${link.toLowerCase()}`;
-                  const isActive = pathname === href;
-                  return (
-                    <motion.a
-                      key={link}
-                      href={href}
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{
-                        duration: 0.4,
-                        delay: 0.1 + i * 0.07,
-                        ease: [0.76, 0, 0.24, 1],
-                      }}
-                      className="flex items-center gap-3 text-white text-4xl font-light tracking-tight hover:opacity-60 transition-opacity cursor-pointer"
-                    >
-                      <span
-                        className={
-                          isActive
-                            ? "text-2xl opacity-100 translate-x-0 transition-all duration-300"
-                            : "text-2xl opacity-0 -translate-x-2 transition-all duration-300"
-                        }
-                      >
-                        →
-                      </span>
-                      {link}
-                    </motion.a>
-                  );
-                })}
-              </div>
-
-              {/* Footer del menú */}
-              <div className="flex flex-row justify-between items-start md:items-end gap-1 text-white/70 text-[9px] tracking-wider uppercase">
-                <span>CREAR Y PERMANECER</span>
-                <a
-                  href="https://www.instagram.com/estudioepico/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold transition-colors cursor-pointer"
-                >
-                  @estudioepico
-                </a>
-                <span>Est. 2022 MDE/COL</span>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* AQUÍ INYECTAMOS EL NUEVO COMPONENTE */}
+      <MenuOverlay isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
 }
