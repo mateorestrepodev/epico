@@ -130,7 +130,7 @@ export default function AdminMobiliarioDashboard() {
                   </p>
                 </div>
 
-                <div className="flex gap-3  pt-3 mt-4 border-t border-gray-100">
+                <div className="flex gap-3  pt-3  border-t border-gray-100">
                   <Link
                     href={`/admin/mobiliario/editar/${item.slug}`}
                     className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-white transition-colors border border-[#D5CEC4]  py-2.5 rounded-sm bg-epico-blue"

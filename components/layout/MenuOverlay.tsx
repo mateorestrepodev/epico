@@ -48,7 +48,7 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
             {/* Botón Cerrar */}
             <button
               onClick={onClose}
-              className="absolute top-8 right-8 text-white text-3xl cursor-pointer hover:opacity-60 hover:rotate-90 transition-all duration-300"
+              className="absolute top-8 right-8 text-white text-3xl cursor-pointer hover:opacity-60  transition-all duration-300"
               aria-label="Cerrar menú"
             >
               <X size={36} strokeWidth={1.5} />
@@ -77,7 +77,7 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
                       className="flex items-center gap-3"
                     >
                       <span
-                        className={`text-2xl transition-all duration-300 ${
+                        className={`text-2xl transition-all duration-300 -ml-6 ${
                           isActive
                             ? "opacity-100 translate-x-0"
                             : "opacity-0 -translate-x-2"
@@ -93,7 +93,7 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
             </nav>
 
             {/* Footer del Menú */}
-            <div className="flex flex-row justify-between items-start sm:items-end gap-2 sm:gap-1 text-white/70 text-[8px] tracking-widest uppercase pb-3 md:pb-0">
+            <div className="flex flex-row justify-between items-start sm:items-end gap-2 sm:gap-1 text-white/70 text-[8px] md:text-[10px] tracking-widest uppercase pb-3 md:pb-0">
               <span>CREAR Y PERMANECER</span>
               <a
                 href="https://www.instagram.com/estudioepico/"

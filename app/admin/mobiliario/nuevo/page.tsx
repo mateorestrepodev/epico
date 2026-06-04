@@ -33,6 +33,7 @@ export default function NuevoMueblePage() {
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState(""); // Precio base
+  const [discount, setDiscount] = useState(""); // <-- NUEVO ESTADO DE DESCUENTO
   const [description, setDescription] = useState("");
   const [colors, setColors] = useState("");
 
@@ -123,7 +124,6 @@ export default function NuevoMueblePage() {
             .filter(Boolean)
         : [];
 
-      // Filtrar sizes vacíos y asegurar números
       const formattedSizes = sizes
         .filter((s) => s.label.trim() !== "" && s.price.trim() !== "")
         .map((s) => ({ label: s.label, price: parseFloat(s.price) }));
@@ -134,6 +134,7 @@ export default function NuevoMueblePage() {
           slug,
           category,
           price: price ? parseFloat(price) : null,
+          discount: discount ? parseInt(discount) : 0, // <-- GUARDAMOS EL DESCUENTO
           description,
           colors: colorsArray,
           sizes: formattedSizes,
@@ -173,7 +174,9 @@ export default function NuevoMueblePage() {
         </header>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm">{error}</div>
+          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-md border border-red-200">
+            {error}
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -242,31 +245,59 @@ export default function NuevoMueblePage() {
               <button
                 type="button"
                 onClick={handleAddSize}
-                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 flex items-center gap-1"
+                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 flex items-center gap-1 cursor-pointer"
               >
                 <Plus size={12} /> Añadir Medida
               </button>
             </div>
 
             {sizes.length === 0 ? (
-              <div>
-                <label className="block text-[10px] text-gray-500 mb-2">
-                  Precio Base Único (Si no tiene medidas variables)
-                </label>
-                <input
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="Ej: 1500000"
-                  className="w-1/2 bg-[#FAFAF9] border px-4 py-3 text-sm rounded-md"
-                />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-[10px] text-gray-500 mb-2">
+                    Precio Base Único
+                  </label>
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="Ej: 1500000"
+                    className="w-full bg-[#FAFAF9] border px-4 py-3 text-sm rounded-md"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-[10px] text-gray-500 mb-2">
+                    Descuento (%) Opcional
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    placeholder="Ej: 15"
+                    className="w-full bg-[#FAFAF9] border px-4 py-3 text-sm rounded-md"
+                  />
+                </div>
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-[10px] text-gray-500">
-                  Agrega el nombre de la medida y su precio específico. (Ej:
-                  140x190cm - 1500000)
-                </p>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex-1">
+                    <label className="block text-[10px] text-gray-500 mb-1">
+                      Descuento Global (%)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={discount}
+                      onChange={(e) => setDiscount(e.target.value)}
+                      placeholder="Ej: 15 (Aplica a todas las medidas)"
+                      className="w-1/2 bg-[#FAFAF9] border px-4 py-2 text-sm rounded-md"
+                    />
+                  </div>
+                </div>
                 {sizes.map((size, idx) => (
                   <div key={idx} className="flex gap-4 items-center">
                     <input
@@ -280,7 +311,7 @@ export default function NuevoMueblePage() {
                     />
                     <input
                       type="number"
-                      placeholder="Precio"
+                      placeholder="Precio Original"
                       value={size.price}
                       onChange={(e) =>
                         handleSizeChange(idx, "price", e.target.value)
@@ -290,7 +321,7 @@ export default function NuevoMueblePage() {
                     <button
                       type="button"
                       onClick={() => handleRemoveSize(idx)}
-                      className="text-red-500 hover:text-red-700 p-2"
+                      className="text-red-500 hover:text-red-700 p-2 cursor-pointer"
                     >
                       <X size={18} />
                     </button>
@@ -320,13 +351,11 @@ export default function NuevoMueblePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="bg-background border p-6 rounded-xl shadow-sm">
                 <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <span className="block text-xs font-semibold">
-                      Principal *
-                    </span>
-                  </div>
+                  <span className="block text-xs font-semibold">
+                    Principal *
+                  </span>
                   <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
-                    Elegir
+                    Elegir{" "}
                     <input
                       type="file"
                       accept="image/*"
@@ -348,11 +377,9 @@ export default function NuevoMueblePage() {
 
               <div className="bg-background border p-6 rounded-xl shadow-sm">
                 <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <span className="block text-xs font-semibold">Hover</span>
-                  </div>
+                  <span className="block text-xs font-semibold">Hover</span>
                   <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
-                    Elegir
+                    Elegir{" "}
                     <input
                       type="file"
                       accept="image/*"
@@ -378,7 +405,7 @@ export default function NuevoMueblePage() {
                     Galería Múltiple
                   </span>
                   <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
-                    Añadir
+                    Añadir{" "}
                     <input
                       type="file"
                       multiple
@@ -397,11 +424,12 @@ export default function NuevoMueblePage() {
                           fill
                           className="object-cover"
                           alt=""
+                          sizes="100px"
                         />
                         <button
                           type="button"
                           onClick={() => removeGalleryImage(idx)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 cursor-pointer"
                         >
                           <X size={10} />
                         </button>
@@ -423,7 +451,7 @@ export default function NuevoMueblePage() {
                     Modelo 3D (.glb)
                   </span>
                   <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
-                    Elegir
+                    Elegir{" "}
                     <input
                       type="file"
                       accept=".glb,.gltf"
@@ -443,11 +471,11 @@ export default function NuevoMueblePage() {
             </div>
           </div>
 
-          <div className="border-t border-[#E4DFD5] pt-6 flex justify-end">
+          <div className="border-t pt-6 flex justify-end">
             <button
               type="submit"
               disabled={loading}
-              className="bg-epico-blue text-white px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50 rounded-md shadow-sm"
+              className="bg-epico-blue text-white px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50 rounded-md shadow-sm cursor-pointer transition-opacity"
             >
               {loading ? "Publicando..." : "Publicar Mueble"}
             </button>

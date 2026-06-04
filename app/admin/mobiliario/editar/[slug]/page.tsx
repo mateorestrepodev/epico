@@ -38,6 +38,7 @@ export default function EditarMueblePage() {
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
+  const [discount, setDiscount] = useState(""); // <-- NUEVO ESTADO
   const [description, setDescription] = useState("");
   const [colors, setColors] = useState("");
   const [sizes, setSizes] = useState<{ label: string; price: string }[]>([]);
@@ -71,12 +72,12 @@ export default function EditarMueblePage() {
           setSlug(data.slug || "");
           setCategory(data.category || "");
           setPrice(data.price ? data.price.toString() : "");
+          setDiscount(data.discount ? data.discount.toString() : ""); // <-- CARGAMOS EL DESCUENTO
           setDescription(data.description || "");
           setColors(data.colors ? data.colors.join(", ") : "");
 
           if (data.sizes && Array.isArray(data.sizes)) {
             setSizes(
-              // AQUÍ ESTÁ LA CORRECCIÓN: Quitamos el `any` y le damos su tipo exacto
               data.sizes.map(
                 (s: { label: string; price: string | number }) => ({
                   label: s.label,
@@ -185,6 +186,7 @@ export default function EditarMueblePage() {
           slug,
           category,
           price: price ? parseFloat(price) : null,
+          discount: discount ? parseInt(discount) : 0, // <-- ACTUALIZAMOS EL DESCUENTO
           description,
           colors: colorsArray,
           sizes: formattedSizes,
@@ -285,23 +287,55 @@ export default function EditarMueblePage() {
               <button
                 type="button"
                 onClick={handleAddSize}
-                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 rounded flex items-center gap-1"
+                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 rounded flex items-center gap-1 cursor-pointer"
               >
                 <Plus size={12} /> Añadir Medida
               </button>
             </div>
+
             {sizes.length === 0 ? (
-              <div>
-                <label className="block text-[10px] mb-2">Precio Base</label>
-                <input
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="w-1/2 bg-[#FAFAF9] border px-4 py-3 rounded-md"
-                />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-[10px] mb-2">Precio Base</label>
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-[10px] text-gray-500 mb-2">
+                    Descuento (%) Opcional
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md"
+                  />
+                </div>
               </div>
             ) : (
               <div className="space-y-3">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex-1">
+                    <label className="block text-[10px] text-gray-500 mb-1">
+                      Descuento Global (%)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={discount}
+                      onChange={(e) => setDiscount(e.target.value)}
+                      placeholder="Ej: 15 (Aplica a todas las medidas)"
+                      className="w-1/2 bg-[#FAFAF9] border px-4 py-2 rounded-md"
+                    />
+                  </div>
+                </div>
                 {sizes.map((size, idx) => (
                   <div key={idx} className="flex gap-4 items-center">
                     <input
@@ -315,7 +349,7 @@ export default function EditarMueblePage() {
                     />
                     <input
                       type="number"
-                      placeholder="Precio"
+                      placeholder="Precio Original"
                       value={size.price}
                       onChange={(e) =>
                         handleSizeChange(idx, "price", e.target.value)

@@ -1,3 +1,4 @@
+// app/admin/proyectos/nuevo/page.tsx
 "use client";
 
 import { useState, type FormEvent, type ChangeEvent } from "react";
@@ -6,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase/supabase";
 import imageCompression from "browser-image-compression";
-import { X } from "lucide-react"; // <-- ¡AQUÍ ESTÁ LA LÍNEA QUE FALTABA!
+import { X } from "lucide-react";
 
 export default function NuevoProyecto() {
   const router = useRouter();
@@ -18,7 +19,6 @@ export default function NuevoProyecto() {
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
-    year: "",
     location: "",
     description: "",
   });
@@ -125,16 +125,22 @@ export default function NuevoProyecto() {
         {
           title: formData.title,
           slug: formData.slug,
-          year: formData.year,
           location: formData.location,
           description: formData.description,
           image_url: coverUrl,
-          image_mobile_url: mobileCoverUrl || null, // Se guarda null si no se subió
+          image_mobile_url: mobileCoverUrl || null,
           gallery_urls: galleryUrls,
         },
       ]);
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        if (insertError.code === "23505") {
+          throw new Error(
+            "Ya existe un proyecto con este nombre o slug. Por favor, elige un nombre diferente.",
+          );
+        }
+        throw insertError;
+      }
 
       setLoadingText("¡Proyecto publicado!");
       router.push("/admin/proyectos");
@@ -174,7 +180,6 @@ export default function NuevoProyecto() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* SECCIÓN 1: DATOS BÁSICOS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
@@ -202,7 +207,7 @@ export default function NuevoProyecto() {
                 className="w-full bg-[#ECE9E2] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md cursor-not-allowed font-mono text-[#554E45]"
               />
             </div>
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
                 Ubicación
               </label>
@@ -210,18 +215,6 @@ export default function NuevoProyecto() {
                 type="text"
                 name="location"
                 value={formData.location}
-                onChange={handleChange}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
-                Año
-              </label>
-              <input
-                type="text"
-                name="year"
-                value={formData.year}
                 onChange={handleChange}
                 className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
               />
@@ -240,14 +233,12 @@ export default function NuevoProyecto() {
             </div>
           </div>
 
-          {/* SECCIÓN 2: ARCHIVOS MULTIMEDIA */}
           <div className="border-t border-[#E4DFD5] pt-8">
             <h2 className="text-sm font-medium uppercase tracking-wider text-[#332D26] mb-6">
               Subir Archivos Multimedia
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Portada Desktop */}
               <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -280,7 +271,6 @@ export default function NuevoProyecto() {
                 )}
               </div>
 
-              {/* Portada Mobile */}
               <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -314,7 +304,6 @@ export default function NuevoProyecto() {
                 )}
               </div>
 
-              {/* Galería */}
               <div className="md:col-span-2 bg-background border border-zinc-200 p-6 rounded-xl shadow-sm">
                 <div className="flex justify-between items-center mb-5">
                   <div>
@@ -348,12 +337,13 @@ export default function NuevoProyecto() {
                           src={URL.createObjectURL(file)}
                           alt={`Gallery ${idx}`}
                           fill
+                          sizes="100px"
                           className="object-cover"
                         />
                         <button
                           type="button"
                           onClick={() => removeGalleryImage(idx)}
-                          className="absolute top-1 right-1 bg-red-500/90 text-white p-1 rounded-full opacity-0 group-hover:opacity-100"
+                          className="absolute top-1 right-1 bg-red-500/90 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
                         >
                           <X size={10} />
                         </button>
@@ -371,7 +361,6 @@ export default function NuevoProyecto() {
             </div>
           </div>
 
-          {/* BOTÓN DE GUARDADO */}
           <div className="border-t border-[#E4DFD5] pt-6 flex justify-end items-center gap-4">
             {loading && (
               <span className="text-[10px] font-bold uppercase tracking-wider text-epico-blue animate-pulse">
@@ -381,7 +370,7 @@ export default function NuevoProyecto() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50 rounded-md shadow-sm"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50 rounded-md shadow-sm cursor-pointer"
             >
               {loading ? "Publicando..." : "Publicar Proyecto"}
             </button>

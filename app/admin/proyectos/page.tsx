@@ -71,7 +71,6 @@ export default function AdminProyectosDashboard() {
 
   return (
     <div className="w-full text-[#423C35] font-sans tracking-wide">
-      {/* Cabecera del Panel */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 border-b border-[#E4DFD5] pb-6 gap-4">
         <div>
           <h1 className="text-3xl font-medium tracking-wider text-[#332D26] mb-1">
@@ -89,7 +88,6 @@ export default function AdminProyectosDashboard() {
         </Link>
       </header>
 
-      {/* Grid de Proyectos */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
         {proyectos.length > 0 ? (
           proyectos.map((item) => (
@@ -104,7 +102,7 @@ export default function AdminProyectosDashboard() {
                     alt={item.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 25vw"
-                    className="object-cover transition-transform duration-700"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-[#827A70] text-xs uppercase tracking-widest">
@@ -123,7 +121,7 @@ export default function AdminProyectosDashboard() {
                   </p>
                 </div>
 
-                <div className="flex gap-3 pt-3">
+                <div className="flex gap-3 pt-3 mt-4 border-t border-gray-100">
                   <Link
                     href={`/admin/proyectos/editar/${item.slug}`}
                     className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-white transition-colors border border-[#D5CEC4] py-2.5 rounded-sm bg-epico-blue"

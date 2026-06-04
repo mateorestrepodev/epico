@@ -22,7 +22,6 @@ export default function EditarProyecto() {
 
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
-  const [year, setYear] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
 
@@ -51,7 +50,6 @@ export default function EditarProyecto() {
           setProjectId(data.id);
           setTitle(data.title || "");
           setSlug(data.slug || "");
-          setYear(data.year || "");
           setLocation(data.location || "");
           setDescription(data.description || "");
 
@@ -134,7 +132,6 @@ export default function EditarProyecto() {
         .update({
           title,
           slug,
-          year,
           location,
           description,
           image_url: finalCover,
@@ -143,12 +140,18 @@ export default function EditarProyecto() {
         })
         .eq("id", projectId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        if (updateError.code === "23505") {
+          throw new Error("Ya existe un proyecto con este nombre o slug.");
+        }
+        throw updateError;
+      }
 
       router.push("/admin/proyectos");
       router.refresh();
     } catch (err) {
-      setError("Error al actualizar.");
+      if (err instanceof Error) setError(err.message);
+      else setError("Error al actualizar.");
     } finally {
       setLoadingSubmit(false);
     }
@@ -179,7 +182,9 @@ export default function EditarProyecto() {
         </header>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm">{error}</div>
+          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm border border-red-200 rounded-md">
+            {error}
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -204,21 +209,10 @@ export default function EditarProyecto() {
                 type="text"
                 value={slug}
                 readOnly
-                className="w-full bg-[#ECE9E2] border px-4 py-3 text-sm rounded-md cursor-not-allowed text-zinc-500"
+                className="w-full bg-[#ECE9E2] border px-4 py-3 text-sm rounded-md cursor-not-allowed text-zinc-500 font-mono"
               />
             </div>
-            <div>
-              <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
-                Año
-              </label>
-              <input
-                type="text"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md"
-              />
-            </div>
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
                 Ubicación
               </label>
@@ -247,7 +241,6 @@ export default function EditarProyecto() {
               Archivos Multimedia
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Portada Desktop */}
               <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -285,7 +278,6 @@ export default function EditarProyecto() {
                 </div>
               </div>
 
-              {/* Portada Móvil */}
               <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -323,11 +315,10 @@ export default function EditarProyecto() {
                 </div>
               </div>
 
-              {/* Galeria - se mantiene la estructura visual de cajas pequeñas */}
               <div className="md:col-span-2 border border-zinc-200 p-6 rounded-xl">
                 <div className="flex justify-between mb-4">
                   <span className="text-xs font-semibold">Galería</span>
-                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1 uppercase rounded-md cursor-pointer">
+                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1 uppercase rounded-md cursor-pointer hover:opacity-90">
                     Añadir
                     <input
                       type="file"
@@ -344,11 +335,17 @@ export default function EditarProyecto() {
                       key={`old-${idx}`}
                       className="relative aspect-square border"
                     >
-                      <Image src={url} fill className="object-cover" alt="" />
+                      <Image
+                        src={url}
+                        fill
+                        className="object-cover"
+                        alt=""
+                        sizes="100px"
+                      />
                       <button
                         type="button"
                         onClick={() => removeExistingGalleryImage(url)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 cursor-pointer"
                       >
                         <X size={10} />
                       </button>
@@ -364,11 +361,12 @@ export default function EditarProyecto() {
                         fill
                         className="object-cover opacity-80"
                         alt=""
+                        sizes="100px"
                       />
                       <button
                         type="button"
                         onClick={() => removeNewGalleryImage(idx)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 cursor-pointer"
                       >
                         <X size={10} />
                       </button>
@@ -383,7 +381,7 @@ export default function EditarProyecto() {
             <button
               type="submit"
               disabled={loadingSubmit}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 rounded-md"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 rounded-md cursor-pointer disabled:opacity-50 transition-opacity"
             >
               {loadingSubmit ? "Guardando..." : "Guardar Cambios"}
             </button>

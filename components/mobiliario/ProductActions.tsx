@@ -14,6 +14,7 @@ interface ExtendedProductData {
   id: number;
   name: string;
   price: number | null;
+  discount?: number | null; // <-- INYECTAMOS EL TIPO DE DESCUENTO
   colors?: string[];
   sizes?: Size[];
   model_url?: string | null;
@@ -43,8 +44,16 @@ export default function ProductActions({ product }: ProductActionsProps) {
   const addToCart = useCartStore((state) => state.addToCart);
   const openCart = useCartStore((state) => state.openCart);
 
-  // Precio dinámico
-  const currentDisplayPrice = selectedSize ? selectedSize.price : product.price;
+  // === LÓGICA DE PRECIOS Y DESCUENTOS ===
+  const discountPercentage = product.discount || 0;
+  const currentOriginalPrice = selectedSize
+    ? selectedSize.price
+    : product.price;
+
+  // Calculamos el precio final real aplicando el porcentaje
+  const currentDisplayPrice = currentOriginalPrice
+    ? currentOriginalPrice - (currentOriginalPrice * discountPercentage) / 100
+    : null;
 
   useEffect(() => {
     if (show3DModal && !customElements.get("model-viewer")) {
@@ -57,7 +66,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
   }, [show3DModal]);
 
   const handleAddToCart = () => {
-    // 1. Aseguramos que el precio sea estrictamente un número (resolviendo el error de null)
+    // 1. Aseguramos que el precio sea estrictamente un número (resolviendo el error de null con el precio rebajado)
     const finalPrice = currentDisplayPrice || 0;
 
     // 2. Si eligió una medida, se la agregamos al nombre para mayor claridad en el carrito
@@ -87,12 +96,30 @@ export default function ProductActions({ product }: ProductActionsProps) {
 
   return (
     <div className="w-full mb-6 flex flex-col flex-shrink-0">
-      {/* 1. Precio Reactivo */}
-      <p className="text-xl md:text-2xl tracking-wider font-light text-gray-800 mb-2">
-        {currentDisplayPrice
-          ? `$${Number(currentDisplayPrice).toLocaleString("es-CO")} COP`
-          : "Cotizar"}
-      </p>
+      {/* 1. Precio Reactivo con Animación de Descuento */}
+      {currentOriginalPrice ? (
+        <div className="flex flex-col items-start gap-1 mb-2">
+          {discountPercentage > 0 && (
+            <span className="bg-red-600 text-white px-2 py-1 text-[10px] font-bold tracking-widest uppercase rounded-sm mb-1 flex items-center gap-1 w-max">
+              🔥 -{discountPercentage}% OFF
+            </span>
+          )}
+          <div className="flex items-center gap-3">
+            <p className="text-xl md:text-2xl tracking-wider font-light text-gray-800">
+              ${Number(currentDisplayPrice).toLocaleString("es-CO")} COP
+            </p>
+            {discountPercentage > 0 && (
+              <p className="text-sm tracking-wider font-light text-gray-400 line-through">
+                ${Number(currentOriginalPrice).toLocaleString("es-CO")}
+              </p>
+            )}
+          </div>
+        </div>
+      ) : (
+        <p className="text-xl md:text-2xl tracking-wider font-light text-gray-800 mb-2">
+          Cotizar
+        </p>
+      )}
       <p className="text-xs text-gray-700 font-light tracking-wide mb-6">
         Envío calculado al finalizar la compra.
       </p>
@@ -152,7 +179,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
       </button>
       {/* 4. Controles de Compra */}
       <div className="flex gap-4 mb-4 w-full">
-        <div className="flex items-center justify-between border border-gray-500 bg-transparent px-3 py-2 w-32 flex-shrink-0">
+        <div className="flex items-center justify-between border border-gray-00 bg-transparent px-3 py-2 w-32 flex-shrink-0">
           <button
             onClick={() => setQuantity((q) => (q > 1 ? q - 1 : 1))}
             className="text-gray-500 hover:text-epico-dark text-lg px-2 cursor-pointer"
@@ -224,7 +251,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCustomModal(false)}
-                className="flex-1 py-3 text-xs uppercase tracking-wider border border-gray-500 text-gray-600 hover:bg-gray-50 cursor-pointer"
+                className="flex-1 py-3 text-xs uppercase tracking-wider border border-gray-00 text-gray-600 hover:bg-gray-50 cursor-pointer"
               >
                 Cancelar
               </button>
@@ -243,7 +270,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
       {show3DModal && product.model_url && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10">
           <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-[#F6F5F2] rounded-sm shadow-2xl flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b border-gray-500 bg-background">
+            <div className="flex justify-between items-center p-4 border-b border-gray-00 bg-background">
               <span className="text-sm font-medium text-epico-dark uppercase tracking-widest">
                 Visor 3D: {product.name}
               </span>
