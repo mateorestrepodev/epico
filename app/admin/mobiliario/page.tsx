@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase/supabase";
 interface Mueble {
   id: number;
   name: string;
+  category: string | null;
   price: number | null;
   image_url: string | null;
   slug: string;
@@ -18,13 +19,12 @@ export default function AdminMobiliarioDashboard() {
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
-  // Todo el fetch se encapsula DENTRO del useEffect para evitar el error del linter.
   useEffect(() => {
     const fetchMobiliario = async () => {
       try {
         const { data, error } = await supabase
           .from("mobiliario")
-          .select("id, name, price, image_url, slug")
+          .select("id, name, category, price, image_url, slug")
           .order("id", { ascending: false });
 
         if (error) throw error;
@@ -71,7 +71,6 @@ export default function AdminMobiliarioDashboard() {
 
   return (
     <div className="w-full text-[#423C35] font-sans">
-      {/* Cabecera del Panel */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 border-b border-[#E4DFD5] pb-6 gap-4">
         <div>
           <h1 className="text-3xl font-medium tracking-wider text-[#332D26] mb-1">
@@ -89,7 +88,6 @@ export default function AdminMobiliarioDashboard() {
         </Link>
       </header>
 
-      {/* Grid de Inventario */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
         {mobiliario.length > 0 ? (
           mobiliario.map((item) => (
@@ -115,17 +113,24 @@ export default function AdminMobiliarioDashboard() {
 
               <div className="p-6 flex flex-col flex-grow justify-between bg-background">
                 <div>
-                  <h3 className="font-medium text-lg text-[#332D26] truncate mb-1 tracking-wide">
-                    {item.name}
-                  </h3>
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-medium text-lg text-[#332D26] truncate tracking-wide">
+                      {item.name}
+                    </h3>
+                  </div>
+                  {item.category && (
+                    <span className="text-[10px] uppercase tracking-widest text-epico-blue font-semibold mb-2 block">
+                      {item.category}
+                    </span>
+                  )}
                   <p className="text-[#827A70] text-sm font-normal tracking-wide">
                     {item.price
                       ? `$${Number(item.price).toLocaleString()} COP`
-                      : "Sin precio"}
+                      : "Precio variable / Sin precio"}
                   </p>
                 </div>
 
-                <div className="flex gap-3  pt-3">
+                <div className="flex gap-3  pt-3 mt-4 border-t border-gray-100">
                   <Link
                     href={`/admin/mobiliario/editar/${item.slug}`}
                     className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-white transition-colors border border-[#D5CEC4]  py-2.5 rounded-sm bg-epico-blue"

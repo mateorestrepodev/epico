@@ -4,16 +4,47 @@ import React, { useState, useEffect } from "react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import { ProductData } from "@/types/product";
 
+// Simulamos los tipos para que coincidan con la DB nueva
+interface Size {
+  label: string;
+  price: number;
+}
+
+interface ExtendedProductData {
+  id: number;
+  name: string;
+  price: number | null;
+  colors?: string[];
+  sizes?: Size[];
+  model_url?: string | null;
+  image_url: string;
+}
+
 interface ProductActionsProps {
-  product: ProductData;
+  product: ExtendedProductData;
 }
 
 export default function ProductActions({ product }: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1);
   const [show3DModal, setShow3DModal] = useState(false);
+  const [showCustomModal, setShowCustomModal] = useState(false); // Modal A la medida
+
+  // Manejo de variables
+  const hasSizes = product.sizes && product.sizes.length > 0;
+  const initialSize = hasSizes ? product.sizes![0] : null;
+
+  const [selectedSize, setSelectedSize] = useState<Size | null>(initialSize);
+  const [selectedColor, setSelectedColor] = useState<string>(
+    product.colors && product.colors.length > 0
+      ? product.colors[0]
+      : "Estándar",
+  );
 
   const addToCart = useCartStore((state) => state.addToCart);
   const openCart = useCartStore((state) => state.openCart);
+
+  // Precio dinámico
+  const currentDisplayPrice = selectedSize ? selectedSize.price : product.price;
 
   useEffect(() => {
     if (show3DModal && !customElements.get("model-viewer")) {
@@ -25,23 +56,106 @@ export default function ProductActions({ product }: ProductActionsProps) {
     }
   }, [show3DModal]);
 
-  const decrease = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  const increase = () => setQuantity((prev) => prev + 1);
-
   const handleAddToCart = () => {
-    const defaultColor = "Estándar";
-    // Al estar todos usando el mismo type, esto pasa limpio
-    addToCart(product, defaultColor, quantity);
+    // 1. Aseguramos que el precio sea estrictamente un número (resolviendo el error de null)
+    const finalPrice = currentDisplayPrice || 0;
+
+    // 2. Si eligió una medida, se la agregamos al nombre para mayor claridad en el carrito
+    const finalName = selectedSize
+      ? `${product.name} (${selectedSize.label})`
+      : product.name;
+
+    // 3. Formateamos el objeto para que coincida perfectamente con lo que exige ProductData
+    const cartProduct = {
+      ...product,
+      name: finalName,
+      price: finalPrice,
+    } as unknown as ProductData; // El casteo seguro para calmar a TypeScript
+
+    addToCart(cartProduct, selectedColor, quantity);
     openCart();
   };
 
+  const handleCustomWhatsApp = () => {
+    const text = `Hola, estoy interesado en un producto a la medida:\n\n*Producto:* ${product.name}\nMe gustaría cotizar opciones personalizadas.`;
+    window.open(
+      `https://wa.me/573192391641?text=${encodeURIComponent(text)}`,
+      "_blank",
+    );
+    setShowCustomModal(false);
+  };
+
   return (
-    <div className="w-full my-6 flex flex-col flex-shrink-0">
+    <div className="w-full mb-6 flex flex-col flex-shrink-0">
+      {/* 1. Precio Reactivo */}
+      <p className="text-xl md:text-2xl tracking-wider font-light text-gray-800 mb-2">
+        {currentDisplayPrice
+          ? `$${Number(currentDisplayPrice).toLocaleString("es-CO")} COP`
+          : "Cotizar"}
+      </p>
+      <p className="text-xs text-gray-700 font-light tracking-wide mb-6">
+        Envío calculado al finalizar la compra.
+      </p>
+
+      {/* 2. Selector de Colores (Circulitos) */}
+      {product.colors && product.colors.length > 0 && (
+        <div className="mb-6">
+          <span className="text-xs uppercase tracking-widest text-gray-600 font-medium mb-3 block">
+            Color / Acabado
+          </span>
+          <div className="flex gap-3 px-2">
+            {product.colors.map((colorHex, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedColor(colorHex)}
+                title={colorHex}
+                style={{ backgroundColor: colorHex }}
+                className={`w-6 h-6 rounded-full shadow-inner transition-transform cursor-pointer ${
+                  selectedColor === colorHex
+                    ? "ring-2 ring-offset-2 ring-epico-dark scale-110"
+                    : "border border-gray-200 hover:scale-105"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 3. Selector de Tamaños (Botones cuadrados) */}
+      {hasSizes && (
+        <div className="mb-6">
+          <span className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-3 block">
+            Tamaño
+          </span>
+          <div className="flex flex-wrap gap-3">
+            {product.sizes!.map((size, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedSize(size)}
+                className={`px-4 py-2 text-xs uppercase tracking-wider border transition-colors cursor-pointer ${
+                  selectedSize?.label === size.label
+                    ? "border-epico-dark bg-epico-dark text-white font-medium"
+                    : "border-gray-500 text-gray-600 hover:border-gray-500"
+                }`}
+              >
+                {size.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <button
+        onClick={() => setShowCustomModal(true)}
+        className="w-full border border-gray-500 font-medium py-3 mb-4 text-xs uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+      >
+        A la medida
+      </button>
+      {/* 4. Controles de Compra */}
       <div className="flex gap-4 mb-4 w-full">
-        <div className="flex items-center justify-between border border-gray-300 bg-transparent px-3 py-2 w-32 flex-shrink-0">
+        <div className="flex items-center justify-between border border-gray-500 bg-transparent px-3 py-2 w-32 flex-shrink-0">
           <button
-            onClick={decrease}
-            className="text-gray-500 hover:text-epico-dark transition-colors text-lg px-2 cursor-pointer"
+            onClick={() => setQuantity((q) => (q > 1 ? q - 1 : 1))}
+            className="text-gray-500 hover:text-epico-dark text-lg px-2 cursor-pointer"
           >
             −
           </button>
@@ -49,8 +163,8 @@ export default function ProductActions({ product }: ProductActionsProps) {
             {quantity}
           </span>
           <button
-            onClick={increase}
-            className="text-gray-500 hover:text-epico-dark transition-colors text-lg px-2 cursor-pointer"
+            onClick={() => setQuantity((q) => q + 1)}
+            className="text-gray-500 hover:text-epico-dark text-lg px-2 cursor-pointer"
           >
             +
           </button>
@@ -58,53 +172,88 @@ export default function ProductActions({ product }: ProductActionsProps) {
 
         <button
           onClick={handleAddToCart}
-          className="flex-1 bg-epico-blue text-white font-medium py-4 px-2 text-xs uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer"
+          className="flex-1 bg-epico-blue text-white font-medium py-4 px-2 text-[10px] md:text-xs uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
         >
           Añadir a la cesta
         </button>
       </div>
 
-      <button
-        onClick={() => setShow3DModal(true)}
-        className={`w-full border font-medium py-4 text-xs uppercase tracking-wider flex items-center justify-center gap-3 mb-4 transition-colors
-           ${
-             product.model_url
-               ? "border-epico-dark bg-transparent text-epico-dark hover:bg-epico-dark hover:text-white cursor-pointer"
-               : "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-60"
-           }
-        `}
-        disabled={!product.model_url}
-      >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+      {/* 5. Botones Secundarios: 3D y A la medida */}
+      <div className="flex flex-col gap-3">
+        <button
+          onClick={() => setShow3DModal(true)}
+          disabled={!product.model_url}
+          className={`w-full border font-medium py-3 text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-colors ${
+            product.model_url
+              ? "border-epico-dark text-epico-dark hover:bg-epico-dark hover:text-white cursor-pointer"
+              : "border-gray-200 text-gray-400 cursor-not-allowed opacity-60"
+          }`}
         >
-          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-          <line x1="12" y1="22.08" x2="12" y2="12"></line>
-        </svg>
-        {product.model_url ? "Ver en 3D" : "3D No Disponible"}
-      </button>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          {product.model_url ? "Ver en 3D" : "3D No Disponible"}
+        </button>
+      </div>
 
+      {/* --- MODALES --- */}
+
+      {/* Modal A la medida */}
+      {showCustomModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white p-8 max-w-sm w-full text-center shadow-2xl border border-gray-200">
+            <h3 className="text-xl font-medium text-epico-dark mb-2">
+              ¿Diseño a la medida?
+            </h3>
+            <p className="text-sm text-gray-600 font-light mb-6">
+              Serás redirigido a WhatsApp para hablar directamente con nuestro
+              equipo de diseño sobre las modificaciones que deseas para: <br />
+              <strong className="font-medium text-epico-blue mt-2 block">
+                {product.name}
+              </strong>
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowCustomModal(false)}
+                className="flex-1 py-3 text-xs uppercase tracking-wider border border-gray-500 text-gray-600 hover:bg-gray-50 cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCustomWhatsApp}
+                className="flex-1 py-3 text-xs uppercase tracking-wider bg-[#25D366] text-white hover:opacity-90 cursor-pointer"
+              >
+                Ir a WhatsApp
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 3D */}
       {show3DModal && product.model_url && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10">
-          <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-[#F6F5F2] rounded-sm shadow-2xl overflow-hidden flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b border-gray-300 bg-background">
+          <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-[#F6F5F2] rounded-sm shadow-2xl flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b border-gray-500 bg-background">
               <span className="text-sm font-medium text-epico-dark uppercase tracking-widest">
                 Visor 3D: {product.name}
               </span>
               <button
                 onClick={() => setShow3DModal(false)}
-                className="text-gray-500 hover:text-red-500 transition-colors flex items-center gap-2 text-xs uppercase tracking-wider font-semibold cursor-pointer"
+                className="text-gray-500 hover:text-red-500 text-xs uppercase tracking-wider font-semibold cursor-pointer"
               >
                 Cerrar ✕
               </button>
             </div>
-
             <div className="flex-grow w-full h-full relative cursor-move">
               {/* @ts-ignore */}
               <model-viewer
@@ -120,11 +269,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
                   backgroundColor: "#F6F5F2",
                 }}
               />
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/90 px-4 py-2 rounded-full shadow-sm pointer-events-none">
-                <span className="text-[10px] uppercase tracking-wider text-gray-600 font-medium">
-                  Arrastra para rotar • Haz scroll para acercar
-                </span>
-              </div>
             </div>
           </div>
         </div>

@@ -88,7 +88,7 @@ export default function ProductGrid() {
 
               {/* --- CONTENEDOR DE LA IMAGEN E INTERACTIVIDAD --- */}
               <div
-                className="relative w-full aspect-square bg-zinc-100 overflow-hidden cursor-pointer"
+                className="relative w-full aspect-square bg-zinc-100 overflow-hidden cursor-pointer shadow-lg shadow-black/40 "
                 // Lógica de Desktop (Hover normal)
                 onMouseEnter={() => {
                   // Si estamos en un dispositivo con mouse (width >= 1024 típicamente),
@@ -122,13 +122,13 @@ export default function ProductGrid() {
                     alt={product.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className={`object-cover transition-opacity duration-700 ease-in-out ${
+                    className={`object-cover transition-opacity duration-700 ease-in-out  ${
                       // Desktop Hover o Mobile Active
                       product.hover_image_url && isActive
                         ? "opacity-0 lg:group-hover:opacity-0"
                         : !product.hover_image_url && isActive
-                          ? "scale-105 lg:group-hover:scale-105"
-                          : "lg:group-hover:scale-105" // Fallback para cuando no hay hover_img
+                          ? "scale-105 "
+                          : "l" // Fallback para cuando no hay hover_img
                     }`}
                   />
                 )}
