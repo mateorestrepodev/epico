@@ -40,10 +40,10 @@ export default function ContactoPage() {
               Email
             </span>
             <a
-              href="mailto:juaguse@gmail.com"
+              href="mailto:juanita.gutierrez@estudioepico.com"
               className="text-xs md:text-sm tracking-wider text-epico-dark uppercase hover:text-epico-blue transition-colors group flex flex-col items-start gap-1 w-fit"
             >
-              <span>juaguse@gmail.com</span>
+              <span>juanita.gutierrez@estudioepico.com</span>
               {/* Línea animada hover */}
               <span className="h-[1px] w-0 bg-epico-blue group-hover:w-full transition-all duration-500 ease-out"></span>
             </a>

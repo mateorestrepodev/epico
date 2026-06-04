@@ -130,14 +130,15 @@ export default function HeroScroll() {
           className="object-cover object-center md:hidden"
         />
 
-        {/* ISOTIPO CENTRADO SOBRE LA FOTO */}
-        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-8 flex items-end h-full justify-between z-10 pb-8">
-          <div className="flex items-center gap-10 md:gap-16">
-            <div className="w-12 h-2.5 md:w-12 md:h-3 bg-epico-blue" />
-            <div className="w-2.5 h-2.5 md:w-5 md:h-3 bg-epico-blue" />
-          </div>
+        <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between z-10">
+          <div
+            className="w-[100px] md:w-[130px] lg:w-[170px] aspect-[3/1] bg-epico-blue [mask-image:url('/isotipo.svg')] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:left_bottom] [-webkit-mask-image:url('/isotipo.svg')] [-webkit-mask-size:contain] [-webkit-mask-repeat:no-repeat] [-webkit-mask-position:left_bottom]"
+            role="img"
+            aria-label="Isotipo Estudio Épico"
+          />
+
           <span className="text-epico-blue text-[10px] md:text-xs font-bold tracking-wider uppercase">
-            ESTUDIOĒPICO.COM
+            ESTUDIOEPICO.COM
           </span>
         </div>
       </div>
