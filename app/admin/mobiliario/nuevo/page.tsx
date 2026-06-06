@@ -1,3 +1,4 @@
+// app/admin/mobiliario/nuevo/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -252,7 +253,7 @@ export default function NuevoMueblePage() {
             </div>
 
             {sizes.length === 0 ? (
-              <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <label className="block text-[10px] text-gray-500 mb-2">
                     Precio Base Único
@@ -281,9 +282,9 @@ export default function NuevoMueblePage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex-1">
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-4">
+                  <div className="flex-1 w-full md:w-auto">
                     <label className="block text-[10px] text-gray-500 mb-1">
                       Descuento Global (%)
                     </label>
@@ -294,37 +295,53 @@ export default function NuevoMueblePage() {
                       value={discount}
                       onChange={(e) => setDiscount(e.target.value)}
                       placeholder="Ej: 15 (Aplica a todas las medidas)"
-                      className="w-1/2 bg-[#FAFAF9] border px-4 py-2 text-sm rounded-md"
+                      className="w-full md:w-1/2 bg-[#FAFAF9] border px-4 py-2 text-sm rounded-md"
                     />
                   </div>
                 </div>
                 {sizes.map((size, idx) => (
-                  <div key={idx} className="flex gap-4 items-center">
-                    <input
-                      type="text"
-                      placeholder="Medida (Ej: Queen 160x190)"
-                      value={size.label}
-                      onChange={(e) =>
-                        handleSizeChange(idx, "label", e.target.value)
-                      }
-                      className="flex-1 bg-[#FAFAF9] border px-4 py-2 text-sm rounded-md"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Precio Original"
-                      value={size.price}
-                      onChange={(e) =>
-                        handleSizeChange(idx, "price", e.target.value)
-                      }
-                      className="flex-1 bg-[#FAFAF9] border px-4 py-2 text-sm rounded-md"
-                    />
+                  <div
+                    key={idx}
+                    className="relative flex flex-col md:flex-row gap-3 items-end md:items-center p-4 md:p-0 border border-gray-100 md:border-none rounded-lg bg-gray-50/50 md:bg-transparent"
+                  >
+                    {/* En celular la X va arriba a la derecha del contenedor gris */}
                     <button
                       type="button"
                       onClick={() => handleRemoveSize(idx)}
-                      className="text-red-500 hover:text-red-700 p-2 cursor-pointer"
+                      className="absolute top-2 right-2 md:static md:order-last text-red-500 hover:text-red-700 p-2 cursor-pointer z-10"
                     >
                       <X size={18} />
                     </button>
+
+                    <div className="w-full flex-1">
+                      <label className="block text-[10px] text-gray-500 mb-1 md:hidden">
+                        Medida
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ej: Queen 160x190"
+                        value={size.label}
+                        onChange={(e) =>
+                          handleSizeChange(idx, "label", e.target.value)
+                        }
+                        className="w-full bg-[#FAFAF9] border px-4 py-2 text-sm rounded-md"
+                      />
+                    </div>
+
+                    <div className="w-full flex-1">
+                      <label className="block text-[10px] text-gray-500 mb-1 md:hidden">
+                        Precio Original
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Ej: 2000000"
+                        value={size.price}
+                        onChange={(e) =>
+                          handleSizeChange(idx, "price", e.target.value)
+                        }
+                        className="w-full bg-[#FAFAF9] border px-4 py-2 text-sm rounded-md"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -351,9 +368,11 @@ export default function NuevoMueblePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="bg-background border p-6 rounded-xl shadow-sm">
                 <div className="flex justify-between items-start mb-4">
-                  <span className="block text-xs font-semibold">
-                    Principal *
-                  </span>
+                  <div>
+                    <span className="block text-xs font-semibold">
+                      Principal *
+                    </span>
+                  </div>
                   <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
                     Elegir{" "}
                     <input
@@ -377,7 +396,9 @@ export default function NuevoMueblePage() {
 
               <div className="bg-background border p-6 rounded-xl shadow-sm">
                 <div className="flex justify-between items-start mb-4">
-                  <span className="block text-xs font-semibold">Hover</span>
+                  <div>
+                    <span className="block text-xs font-semibold">Hover</span>
+                  </div>
                   <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
                     Elegir{" "}
                     <input

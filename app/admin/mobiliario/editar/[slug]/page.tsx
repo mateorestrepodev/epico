@@ -294,9 +294,12 @@ export default function EditarMueblePage() {
             </div>
 
             {sizes.length === 0 ? (
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-[10px] mb-2">Precio Base</label>
+              // CAMBIO: Estructura vertical en móvil, horizontal en escritorio
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 w-full">
+                  <label className="block text-[10px] mb-2 text-gray-500">
+                    Precio Base
+                  </label>
                   <input
                     type="number"
                     value={price}
@@ -304,7 +307,7 @@ export default function EditarMueblePage() {
                     className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <label className="block text-[10px] text-gray-500 mb-2">
                     Descuento (%) Opcional
                   </label>
@@ -319,25 +322,26 @@ export default function EditarMueblePage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex-1">
-                    <label className="block text-[10px] text-gray-500 mb-1">
-                      Descuento Global (%)
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={discount}
-                      onChange={(e) => setDiscount(e.target.value)}
-                      placeholder="Ej: 15 (Aplica a todas las medidas)"
-                      className="w-1/2 bg-[#FAFAF9] border px-4 py-2 rounded-md"
-                    />
-                  </div>
+              <div className="space-y-4">
+                <div className="w-full md:w-1/2">
+                  <label className="block text-[10px] text-gray-500 mb-1">
+                    Descuento Global (%)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    className="w-full bg-[#FAFAF9] border px-4 py-2 rounded-md"
+                  />
                 </div>
                 {sizes.map((size, idx) => (
-                  <div key={idx} className="flex gap-4 items-center">
+                  // CAMBIO: Contenedor flexible que cambia a row solo en md
+                  <div
+                    key={idx}
+                    className="flex flex-col md:flex-row gap-3 p-3 border border-gray-100 rounded-md bg-gray-50/50"
+                  >
                     <input
                       type="text"
                       placeholder="Ej: 140x190cm"
@@ -345,24 +349,26 @@ export default function EditarMueblePage() {
                       onChange={(e) =>
                         handleSizeChange(idx, "label", e.target.value)
                       }
-                      className="flex-1 bg-[#FAFAF9] border px-4 py-2 rounded-md"
+                      className="flex-1 bg-white border px-4 py-2 rounded-md text-sm"
                     />
-                    <input
-                      type="number"
-                      placeholder="Precio Original"
-                      value={size.price}
-                      onChange={(e) =>
-                        handleSizeChange(idx, "price", e.target.value)
-                      }
-                      className="flex-1 bg-[#FAFAF9] border px-4 py-2 rounded-md"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSize(idx)}
-                      className="text-red-500 cursor-pointer"
-                    >
-                      <X size={18} />
-                    </button>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="number"
+                        placeholder="Precio"
+                        value={size.price}
+                        onChange={(e) =>
+                          handleSizeChange(idx, "price", e.target.value)
+                        }
+                        className="w-full md:w-32 bg-white border px-4 py-2 rounded-md text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSize(idx)}
+                        className="text-red-500 hover:text-red-700 p-2 cursor-pointer"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
