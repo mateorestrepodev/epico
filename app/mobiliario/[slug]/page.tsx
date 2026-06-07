@@ -1,18 +1,54 @@
+// app/mobiliario/[slug]/page.tsx
+import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase/supabase";
 import DetalleMobiliarioGallery from "@/components/mobiliario/DetalleMobiliarioGallery";
 import ProductActions from "@/components/mobiliario/ProductActions";
 import InnerNavbar from "@/components/layout/InnerNavbar";
-import Footer from "@/components/layout/Footer";
 
 export const revalidate = 60;
 
-export default async function DetalleMobiliarioPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ slug: string }>;
-}) {
+};
+
+// === NUEVA FUNCIÓN PARA SEO DINÁMICO ===
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
+
+  const { data: product } = await supabase
+    .from("mobiliario")
+    .select("name, description, image_url")
+    .eq("slug", slug)
+    .single();
+
+  if (!product) return { title: "Mueble no encontrado" };
+
+  const cleanDescription = product.description
+    ? product.description.substring(0, 160).replace(/\n/g, " ") + "..."
+    : `Descubre ${product.name}, diseño auténtico a la medida creado por Estudio ēpico.`;
+
+  return {
+    title: product.name,
+    description: cleanDescription,
+    openGraph: {
+      title: `${product.name} | Estudio ēpico Mobiliario`,
+      description: cleanDescription,
+      images: [
+        {
+          url: product.image_url,
+          width: 1080,
+          height: 1080,
+          alt: product.name,
+        },
+      ],
+    },
+  };
+}
+
+export default async function DetalleMobiliarioPage({ params }: Props) {
   const resolvedParams = await params;
   const { slug } = resolvedParams;
 
@@ -31,8 +67,41 @@ export default async function DetalleMobiliarioPage({
     (img): img is string => typeof img === "string" && img.trim() !== "",
   );
 
+  // === GENERACIÓN DE DATOS ESTRUCTURADOS (JSON-LD) ===
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: product.image_url,
+    description:
+      product.description ||
+      `Mobiliario de diseño ${product.name} por Estudio ēpico`,
+    sku: product.slug,
+    brand: {
+      "@type": "Brand",
+      name: "Estudio ēpico",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `https://estudioepico.com/mobiliario/${product.slug}`,
+      priceCurrency: "COP",
+      price: product.price ? product.price : 0,
+      availability: "https://schema.org/InStock",
+      seller: {
+        "@type": "Organization",
+        name: "Estudio ēpico",
+      },
+    },
+  };
+
   return (
     <main className="relative w-full h-screen bg-background overflow-hidden flex flex-col">
+      {/* === INYECTAMOS EL JSON-LD === */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <InnerNavbar theme="light" />
 
       <div className="flex-grow pt-28 pb-8 w-full mx-auto px-6 md:px-10 max-w-[1500px] overflow-hidden">

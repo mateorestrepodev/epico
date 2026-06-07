@@ -1,4 +1,5 @@
 // app/proyectos/[slug]/page.tsx
+import { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase/supabase";
@@ -11,6 +12,41 @@ type Props = {
 };
 
 export const revalidate = 60;
+
+// === NUEVA FUNCIÓN PARA SEO DINÁMICO ===
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const cleanSlug = decodeURIComponent(resolvedParams.slug);
+
+  const { data: project } = await supabase
+    .from("proyectos")
+    .select("title, description, image_url")
+    .eq("slug", cleanSlug)
+    .single();
+
+  if (!project) return { title: "Proyecto no encontrado" };
+
+  const cleanDescription = project.description
+    ? project.description.substring(0, 160).replace(/\n/g, " ") + "..."
+    : `Explora el proyecto ${project.title} desarrollado por Estudio ēpico.`;
+
+  return {
+    title: project.title,
+    description: cleanDescription,
+    openGraph: {
+      title: `${project.title} | Estudio ēpico Proyectos`,
+      description: cleanDescription,
+      images: [
+        {
+          url: project.image_url,
+          width: 1920,
+          height: 1080,
+          alt: project.title,
+        },
+      ],
+    },
+  };
+}
 
 export default async function ProyectoDetalle({ params }: Props) {
   const resolvedParams = await params;

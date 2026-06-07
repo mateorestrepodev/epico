@@ -22,10 +22,42 @@ const neueMontreal = localFont({
   display: "swap", // Evita textos invisibles mientras carga
 });
 
+// === CONFIGURACIÓN DE SEO GLOBAL ===
 export const metadata: Metadata = {
-  title: "ēpico | Objetos Auténticos",
+  metadataBase: new URL("https://estudioepico.com"),
+  alternates: {
+    canonical: "/", // <--- ESTO EVITA PENALIZACIONES DE CONTENIDO DUPLICADO
+  }, // Base para que las imágenes funcionen en redes sociales
+  title: {
+    default: "Estudio ēpico | Objetos Auténticos",
+    template: "%s | Estudio ēpico", // Plantilla automática para las subpáginas
+  },
   description:
-    "Estudio de mobiliario y diseño de interiores. Medellín, Colombia.",
+    "Estudio de mobiliario y diseño de interiores en Medellín, Colombia. Creamos objetos auténticos a la medida.",
+  keywords: [
+    "mobiliario a la medida",
+    "diseño de interiores",
+    "arquitectura Medellín",
+    "muebles de diseño",
+    "estudio épico",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    url: "https://estudioepico.com",
+    title: "Estudio ēpico | Objetos Auténticos",
+    description:
+      "Estudio de mobiliario y diseño de interiores en Medellín, Colombia.",
+    siteName: "Estudio ēpico",
+    images: [
+      {
+        url: "/epicohero.png", // Imagen por defecto al compartir la web
+        width: 1200,
+        height: 630,
+        alt: "Estudio ēpico Diseño y Mobiliario",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
