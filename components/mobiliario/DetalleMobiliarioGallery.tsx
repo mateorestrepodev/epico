@@ -14,14 +14,9 @@ export default function DetalleMobiliarioGallery({
   productName,
 }: ProductGalleryClientProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Estados para detectar el gesto de Swipe (deslizar)
   const [touchStartX, setTouchStartX] = useState(0);
-
-  // Referencia para controlar el scroll de las miniaturas
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Efecto mágico: Centra automáticamente la miniatura seleccionada
   useEffect(() => {
     if (thumbnailRefs.current[currentIndex]) {
       thumbnailRefs.current[currentIndex]?.scrollIntoView({
@@ -46,28 +41,17 @@ export default function DetalleMobiliarioGallery({
   const prevImage = () =>
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
 
-  // --- LÓGICA DE SWIPE ---
-  const handleTouchStart = (e: React.TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent) =>
     setTouchStartX(e.targetTouches[0].clientX);
-  };
-
   const handleTouchEnd = (e: React.TouchEvent) => {
     const touchEndX = e.changedTouches[0].clientX;
     const distance = touchStartX - touchEndX;
-
-    // Si el usuario deslizó el dedo hacia la izquierda más de 50px (Siguiente)
-    if (distance > 50) {
-      nextImage();
-    }
-    // Si el usuario deslizó el dedo hacia la derecha más de 50px (Anterior)
-    else if (distance < -50) {
-      prevImage();
-    }
+    if (distance > 50) nextImage();
+    else if (distance < -50) prevImage();
   };
 
   return (
     <div className="flex flex-col md:flex-row gap-4 w-full h-full overflow-hidden">
-      {/* Miniaturas (Izquierda) con scroll invisible y auto-centrado */}
       {images.length > 1 && (
         <div className="hidden md:flex flex-col gap-3 w-20 xl:w-28 h-full overflow-y-auto pr-1 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {images.map((img, idx) => (
@@ -77,6 +61,7 @@ export default function DetalleMobiliarioGallery({
                 thumbnailRefs.current[idx] = el;
               }}
               onClick={() => setCurrentIndex(idx)}
+              aria-label={`Ver imagen ${idx + 1}`}
               className={`relative aspect-square w-full flex-shrink-0 overflow-hidden transition-all duration-300 bg-[#E8E3D9] ${
                 currentIndex === idx
                   ? "opacity-100 ring-1 ring-offset-2 ring-[#7A7265]"
@@ -95,7 +80,6 @@ export default function DetalleMobiliarioGallery({
         </div>
       )}
 
-      {/* Visor Grande (Ahora con soporte para Swipe) */}
       <div
         className="relative flex-grow w-full h-full bg-[#E8E3D9] overflow-hidden group"
         onTouchStart={handleTouchStart}
@@ -114,18 +98,19 @@ export default function DetalleMobiliarioGallery({
               src={images[currentIndex]}
               alt={`${productName} - Vista principal`}
               fill
-              priority={currentIndex === 0}
+              priority={true}
+              fetchPriority="high"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 50vw"
-              className="object-cover object-center pointer-events-none" // Evitamos que la imagen interfiera con el touch
+              className="object-cover object-center pointer-events-none"
             />
           </motion.div>
         </AnimatePresence>
 
-        {/* Botones de navegación - Siguen funcionando igual y se ven bien */}
         {images.length > 1 && (
           <>
             <button
               onClick={prevImage}
+              aria-label="Imagen anterior"
               className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF9F2]/90 text-[#4A4238] flex items-center justify-center hover:bg-background transition-colors z-10"
             >
               <svg
@@ -141,6 +126,7 @@ export default function DetalleMobiliarioGallery({
             </button>
             <button
               onClick={nextImage}
+              aria-label="Siguiente imagen"
               className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#FDF9F2]/90 text-[#4A4238] flex items-center justify-center hover:bg-background transition-colors z-10"
             >
               <svg

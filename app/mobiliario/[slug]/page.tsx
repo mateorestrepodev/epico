@@ -13,7 +13,6 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-// === NUEVA FUNCIÓN PARA SEO DINÁMICO ===
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const { slug } = resolvedParams;
@@ -67,7 +66,6 @@ export default async function DetalleMobiliarioPage({ params }: Props) {
     (img): img is string => typeof img === "string" && img.trim() !== "",
   );
 
-  // === GENERACIÓN DE DATOS ESTRUCTURADOS (JSON-LD) ===
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -77,26 +75,19 @@ export default async function DetalleMobiliarioPage({ params }: Props) {
       product.description ||
       `Mobiliario de diseño ${product.name} por Estudio ēpico`,
     sku: product.slug,
-    brand: {
-      "@type": "Brand",
-      name: "Estudio ēpico",
-    },
+    brand: { "@type": "Brand", name: "Estudio ēpico" },
     offers: {
       "@type": "Offer",
       url: `https://estudioepico.com/mobiliario/${product.slug}`,
       priceCurrency: "COP",
       price: product.price ? product.price : 0,
       availability: "https://schema.org/InStock",
-      seller: {
-        "@type": "Organization",
-        name: "Estudio ēpico",
-      },
+      seller: { "@type": "Organization", name: "Estudio ēpico" },
     },
   };
 
   return (
     <main className="relative w-full h-screen bg-background overflow-hidden flex flex-col">
-      {/* === INYECTAMOS EL JSON-LD === */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -106,7 +97,6 @@ export default async function DetalleMobiliarioPage({ params }: Props) {
 
       <div className="flex-grow pt-28 pb-8 w-full mx-auto px-6 md:px-10 max-w-[1500px] overflow-hidden">
         <article className="h-full flex flex-col md:flex-row gap-8 lg:gap-16">
-          {/* COLUMNA IZQUIERDA: Galería */}
           <div className="w-full md:w-[60%] lg:w-[65%] h-full overflow-hidden">
             <DetalleMobiliarioGallery
               images={productImages}
@@ -114,11 +104,10 @@ export default async function DetalleMobiliarioPage({ params }: Props) {
             />
           </div>
 
-          {/* COLUMNA DERECHA: Datos y Acciones (SCROLL INTERNO) */}
           <div className="w-full md:w-[40%] lg:w-[35%] h-full overflow-y-auto scrollbar-hide pb-20 pr-2 md:pr-6 flex flex-col items-start text-left">
             <Link
               href="/mobiliario"
-              className="text-[10px] uppercase tracking-[0.2em] text-gray-500 hover:text-epico-blue mb-8 transition-colors inline-block"
+              className="text-[10px] uppercase tracking-[0.2em] text-gray-700 hover:text-epico-blue mb-8 transition-colors inline-block"
             >
               ← Volver al catálogo
             </Link>
@@ -127,12 +116,10 @@ export default async function DetalleMobiliarioPage({ params }: Props) {
               {product.name}
             </h1>
 
-            {/* El precio ahora se controla y se muestra DENTRO de ProductActions para que sea reactivo a las medidas */}
             <ProductActions product={product} />
 
-            {/* AQUÍ OCURRE LA MAGIA DEL TEXTO: whitespace-pre-wrap respeta todos tus saltos de línea */}
             <div className="w-full text-left mt-6">
-              <div className="whitespace-pre-wrap text-sm text-gray-600 font-light leading-relaxed">
+              <div className="whitespace-pre-wrap text-sm text-gray-700 font-light leading-relaxed">
                 {product.description ||
                   "Diseño atemporal con estructura maciza."}
               </div>
