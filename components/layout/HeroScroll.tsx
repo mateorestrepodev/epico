@@ -1,4 +1,3 @@
-// components/layout/HeroScroll.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,7 +5,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, useAnimate } from "framer-motion";
 import Logo from "@/components/ui/Logo";
-import MenuOverlay from "@/components/layout/MenuOverlay"; // <-- Importamos nuestro nuevo componente
+import dynamic from "next/dynamic"; // <-- IMPORTAMOS DYNAMIC
+
+// === OPTIMIZACIÓN DE RENDIMIENTO ===
+// El menú ya no bloquea el hilo principal. Se descarga en segundo plano.
+const MenuOverlay = dynamic(() => import("@/components/layout/MenuOverlay"), {
+  ssr: false,
+});
 
 export default function HeroScroll() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -166,7 +171,7 @@ export default function HeroScroll() {
         <span className="block w-7 h-[4px] bg-[#291df1]" />
       </motion.button>
 
-      {/* AQUÍ INYECTAMOS EL NUEVO COMPONENTE */}
+      {/* Menú Lazy Loaded */}
       <MenuOverlay isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </div>
   );

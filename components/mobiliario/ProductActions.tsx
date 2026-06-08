@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import { ProductData } from "@/types/product";
+
+// 1. IMPORTAMOS LA MAGIA DE LA CARGA DIFERIDA
+import dynamic from "next/dynamic";
 
 // Simulamos los tipos para que coincidan con la DB nueva
 interface Size {
@@ -24,6 +27,11 @@ interface ExtendedProductData {
 interface ProductActionsProps {
   product: ExtendedProductData;
 }
+
+// 2. LE DECIMOS A NEXT.JS QUE NO CARGUE EL 3D HASTA QUE SE NECESITE
+const ModelViewerModal = dynamic(() => import("./ModelViewerModal"), {
+  ssr: false,
+});
 
 export default function ProductActions({ product }: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1);
@@ -54,16 +62,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
   const currentDisplayPrice = currentOriginalPrice
     ? currentOriginalPrice - (currentOriginalPrice * discountPercentage) / 100
     : null;
-
-  useEffect(() => {
-    if (show3DModal && !customElements.get("model-viewer")) {
-      const script = document.createElement("script");
-      script.type = "module";
-      script.src =
-        "https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js";
-      document.head.appendChild(script);
-    }
-  }, [show3DModal]);
 
   const handleAddToCart = () => {
     // 1. Aseguramos que el precio sea estrictamente un número (resolviendo el error de null con el precio rebajado)
@@ -179,7 +177,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
       </button>
       {/* 4. Controles de Compra */}
       <div className="flex gap-4 mb-4 w-full">
-        <div className="flex items-center justify-between border border-gray-00 bg-transparent px-3 py-2 w-32 flex-shrink-0">
+        <div className="flex items-center justify-between border border-gray-300 bg-transparent px-3 py-2 w-32 flex-shrink-0">
           <button
             onClick={() => setQuantity((q) => (q > 1 ? q - 1 : 1))}
             className="text-gray-500 hover:text-epico-dark text-lg px-2 cursor-pointer"
@@ -251,7 +249,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCustomModal(false)}
-                className="flex-1 py-3 text-xs uppercase tracking-wider border border-gray-00 text-gray-600 hover:bg-gray-50 cursor-pointer"
+                className="flex-1 py-3 text-xs uppercase tracking-wider border border-gray-300 text-gray-600 hover:bg-gray-50 cursor-pointer"
               >
                 Cancelar
               </button>
@@ -266,39 +264,13 @@ export default function ProductActions({ product }: ProductActionsProps) {
         </div>
       )}
 
-      {/* Modal 3D */}
+      {/* Modal 3D usando Lazy Loading */}
       {show3DModal && product.model_url && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10">
-          <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-[#F6F5F2] rounded-sm shadow-2xl flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b border-gray-00 bg-background">
-              <span className="text-sm font-medium text-epico-dark uppercase tracking-widest">
-                Visor 3D: {product.name}
-              </span>
-              <button
-                onClick={() => setShow3DModal(false)}
-                className="text-gray-500 hover:text-red-500 text-xs uppercase tracking-wider font-semibold cursor-pointer"
-              >
-                Cerrar ✕
-              </button>
-            </div>
-            <div className="flex-grow w-full h-full relative cursor-move">
-              {/* @ts-ignore */}
-              <model-viewer
-                src={product.model_url}
-                auto-rotate
-                camera-controls
-                shadow-intensity="1"
-                environment-image="neutral"
-                exposure="1"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "#F6F5F2",
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <ModelViewerModal
+          productName={product.name}
+          modelUrl={product.model_url}
+          onClose={() => setShow3DModal(false)}
+        />
       )}
     </div>
   );

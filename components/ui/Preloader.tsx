@@ -1,4 +1,3 @@
-// components/ui/Preloader.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -41,17 +40,11 @@ export default function Preloader() {
             <Logo className="w-full h-auto" />
           </motion.div>
 
-          {/* SEGUNDO: El texto (Slogan) */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            // LA CORRECCIÓN: 'w-full text-center' asegura el eje central.
-            // 'pl-[0.3em]' balancea el espacio invisible que deja el tracking al final.
-            className="absolute bottom-10 w-full text-center font-semibold text-white/50 text-xs tracking-[0.3em] pl-[0.3em] uppercase"
-          >
+          {/* SEGUNDO: El texto (Slogan) - OPTIMIZADO PARA LCP */}
+          {/* Usamos CSS en lugar de JS para que Google lo vea instantáneamente */}
+          <div className="absolute bottom-10 w-full text-center font-semibold text-white/50 text-xs tracking-[0.3em] pl-[0.3em] uppercase animate-pulse duration-1000">
             Objetos auténticos
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
