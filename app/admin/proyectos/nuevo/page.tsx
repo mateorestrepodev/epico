@@ -121,25 +121,39 @@ export default function NuevoProyecto() {
       }
 
       setLoadingText("Guardando proyecto...");
-      const { error: insertError } = await supabase.from("proyectos").insert([
-        {
-          title: formData.title,
-          slug: formData.slug,
-          location: formData.location,
-          description: formData.description,
-          image_url: coverUrl,
-          image_mobile_url: mobileCoverUrl || null,
-          gallery_urls: galleryUrls,
-        },
-      ]);
+
+      // === CORRECCIÓN: Enviamos textos vacíos en lugar de null ===
+      // Esto previene errores 400 causados por intentar enviar valores nulos
+      // a columnas que podrían no tener esa configuración en la BD
+      const payload = {
+        title: formData.title.trim(),
+        slug: formData.slug,
+        location: formData.location.trim(),
+        description: formData.description.trim(),
+        image_url: coverUrl,
+        image_mobile_url: mobileCoverUrl || "",
+        gallery_urls: galleryUrls,
+      };
+
+      console.log("Enviando Payload a Supabase:", payload); // Debugger para consola
+
+      const { error: insertError } = await supabase
+        .from("proyectos")
+        .insert([payload]);
 
       if (insertError) {
+        // Log para investigar en consola el mensaje real de la BD
+        console.error("🚨 ERROR EXACTO DE SUPABASE:", insertError);
+
         if (insertError.code === "23505") {
           throw new Error(
             "Ya existe un proyecto con este nombre o slug. Por favor, elige un nombre diferente.",
           );
         }
-        throw insertError;
+        // Mostramos el mensaje exacto de error en la alerta (por ejemplo: "column 'year' violates not-null")
+        throw new Error(
+          `Error guardando en BD: ${insertError.message || insertError.details}`,
+        );
       }
 
       setLoadingText("¡Proyecto publicado!");
@@ -147,7 +161,7 @@ export default function NuevoProyecto() {
       router.refresh();
     } catch (err) {
       if (err instanceof Error) setError(err.message);
-      else setError("Ocurrió un error inesperado.");
+      else setError("Ocurrió un error inesperado al subir el proyecto.");
       setLoading(false);
       setLoadingText("");
     }
@@ -209,7 +223,8 @@ export default function NuevoProyecto() {
             </div>
             <div className="md:col-span-2">
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
-                Ubicación
+                Ubicación{" "}
+                <span className="text-gray-400 normal-case">(Opcional)</span>
               </label>
               <input
                 type="text"
@@ -221,7 +236,8 @@ export default function NuevoProyecto() {
             </div>
             <div className="md:col-span-2">
               <label className="block text-xs uppercase tracking-wider text-[#6A6258] mb-2 font-medium">
-                Descripción del Proyecto
+                Descripción del Proyecto{" "}
+                <span className="text-gray-400 normal-case">(Opcional)</span>
               </label>
               <textarea
                 name="description"
