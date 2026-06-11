@@ -1,3 +1,4 @@
+// components/proyectos/ProyectosGallery.tsx
 "use client";
 
 import { useState } from "react";
@@ -24,7 +25,6 @@ export default function ProyectosGallery({ images, title }: Props) {
             onClick={() => setSelectedImg(src)}
             className="relative aspect-[5/4] bg-gray-100 overflow-hidden group cursor-pointer"
           >
-            {/* AQUÍ QUITAMOS EL ZOOM: La imagen ya no crecerá */}
             <Image
               src={src}
               alt={`${title} - Galería ${i + 1}`}
@@ -75,6 +75,7 @@ export default function ProyectosGallery({ images, title }: Props) {
                 alt={title}
                 fill
                 quality={100}
+                sizes="100vw" // CORRECCIÓN: Se añade sizes para evitar el warning en pantalla completa
                 className="object-contain"
               />
             </motion.div>

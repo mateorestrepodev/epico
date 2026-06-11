@@ -13,7 +13,7 @@ type Props = {
 
 export const revalidate = 60;
 
-// === NUEVA FUNCIÓN PARA SEO DINÁMICO ===
+// === FUNCIÓN PARA SEO DINÁMICO ===
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const cleanSlug = decodeURIComponent(resolvedParams.slug);
@@ -68,7 +68,6 @@ export default async function ProyectoDetalle({ params }: Props) {
   );
 
   // La galería mostrará: [Imagen Desktop] + [Fotos de la Galería]
-  // NOTA: No incluimos la imagen móvil aquí para no duplicar contenido.
   const todasLasImagenes = [proyecto.image_url, ...galeriaUrls].filter(
     (img): img is string => typeof img === "string" && img.trim() !== "",
   );
@@ -90,7 +89,8 @@ export default async function ProyectoDetalle({ params }: Props) {
             alt={`Portada de ${proyecto.title}`}
             fill
             priority
-            sizes="100vw" // CORREGIDO: 100vw para ultra alta resolución
+            // CORRECCIÓN: 0vw en móviles (oculta), 100vw en escritorio
+            sizes="(max-width: 768px) 0vw, 100vw"
             className="object-cover object-center hidden md:block opacity-90"
           />
 
@@ -100,7 +100,8 @@ export default async function ProyectoDetalle({ params }: Props) {
             alt={`Portada de ${proyecto.title} Mobile`}
             fill
             priority
-            sizes="100vw" // CORREGIDO: 100vw para ultra alta resolución
+            // CORRECCIÓN: 100vw en móviles, 0vw en escritorio (oculta)
+            sizes="(max-width: 768px) 100vw, 0vw"
             className="object-cover object-center md:hidden opacity-90"
           />
 
