@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase/supabase";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Trash2 } from "lucide-react";
 
 const CATEGORIAS = [
   "Camas",
@@ -38,7 +38,7 @@ export default function EditarMueblePage() {
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
-  const [discount, setDiscount] = useState(""); // <-- NUEVO ESTADO
+  const [discount, setDiscount] = useState("");
   const [description, setDescription] = useState("");
   const [colors, setColors] = useState("");
   const [sizes, setSizes] = useState<{ label: string; price: string }[]>([]);
@@ -57,6 +57,9 @@ export default function EditarMueblePage() {
   const [newGalleryImages, setNewGalleryImages] = useState<File[]>([]);
   const [newModel3d, setNewModel3d] = useState<File | null>(null);
 
+  // Estado para rastrear si el usuario decidió eliminar el modelo 3D existente
+  const [removeModel, setRemoveModel] = useState(false);
+
   useEffect(() => {
     async function fetchProduct() {
       try {
@@ -72,7 +75,7 @@ export default function EditarMueblePage() {
           setSlug(data.slug || "");
           setCategory(data.category || "");
           setPrice(data.price ? data.price.toString() : "");
-          setDiscount(data.discount ? data.discount.toString() : ""); // <-- CARGAMOS EL DESCUENTO
+          setDiscount(data.discount ? data.discount.toString() : "");
           setDescription(data.description || "");
           setColors(data.colors ? data.colors.join(", ") : "");
 
@@ -161,9 +164,16 @@ export default function EditarMueblePage() {
       if (newHoverImage)
         finalHoverUrl = await uploadFileToStorage(newHoverImage, "hover");
 
+      // === LÓGICA DEL MODELO 3D ===
       let finalModelUrl = existingModelUrl;
-      if (newModel3d)
+      // Si el usuario subió uno nuevo, lo reemplazamos
+      if (newModel3d) {
         finalModelUrl = await uploadFileToStorage(newModel3d, "models");
+      }
+      // Si el usuario decidió eliminar el actual y no subió uno nuevo
+      else if (removeModel) {
+        finalModelUrl = null;
+      }
 
       const finalGalleryUrls = [...existingGallery];
       for (const file of newGalleryImages)
@@ -175,9 +185,15 @@ export default function EditarMueblePage() {
             .map((c) => c.trim())
             .filter(Boolean)
         : [];
+
       const formattedSizes = sizes
         .filter((s) => s.label.trim() !== "" && s.price.trim() !== "")
         .map((s) => ({ label: s.label, price: parseFloat(s.price) }));
+
+      let finalBasePrice = price ? parseFloat(price) : null;
+      if (formattedSizes.length > 0) {
+        finalBasePrice = Math.min(...formattedSizes.map((s) => s.price));
+      }
 
       const { error: updateError } = await supabase
         .from("mobiliario")
@@ -185,15 +201,15 @@ export default function EditarMueblePage() {
           name,
           slug,
           category,
-          price: price ? parseFloat(price) : null,
-          discount: discount ? parseInt(discount) : 0, // <-- ACTUALIZAMOS EL DESCUENTO
+          price: finalBasePrice,
+          discount: discount ? parseInt(discount) : 0,
           description,
           colors: colorsArray,
           sizes: formattedSizes,
           image_url: finalImageUrl,
           hover_image_url: finalHoverUrl,
           gallery: finalGalleryUrls,
-          model_url: finalModelUrl,
+          model_url: finalModelUrl, // <-- Guardamos el estado final del 3D
         })
         .eq("id", productId);
 
@@ -217,7 +233,7 @@ export default function EditarMueblePage() {
   return (
     <main className="min-h-screen bg-[#F6F5F2] text-[#423C35] font-sans p-6 md:p-12">
       <div className="max-w-4xl mx-auto bg-background border p-8 rounded-xl">
-        <header className="mb-10 border-b pb-6 flex justify-between">
+        <header className="mb-10 border-b pb-6 flex justify-between items-center">
           <h1 className="text-2xl font-medium">Editar: {name}</h1>
           <Link
             href="/admin/mobiliario"
@@ -227,7 +243,14 @@ export default function EditarMueblePage() {
           </Link>
         </header>
 
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-md border border-red-200">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* BLOQUE 1: DATOS BÁSICOS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-xs uppercase mb-2">Nombre *</label>
@@ -279,6 +302,7 @@ export default function EditarMueblePage() {
             </div>
           </div>
 
+          {/* BLOQUE 2: PRECIOS Y TAMAÑOS */}
           <div className="border-t pt-8">
             <div className="flex justify-between items-center mb-4">
               <label className="block text-xs uppercase font-medium">
@@ -287,14 +311,13 @@ export default function EditarMueblePage() {
               <button
                 type="button"
                 onClick={handleAddSize}
-                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 rounded flex items-center gap-1 cursor-pointer"
+                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 rounded flex items-center gap-1 cursor-pointer hover:bg-gray-300"
               >
                 <Plus size={12} /> Añadir Medida
               </button>
             </div>
 
             {sizes.length === 0 ? (
-              // CAMBIO: Estructura vertical en móvil, horizontal en escritorio
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 w-full">
                   <label className="block text-[10px] mb-2 text-gray-500">
@@ -323,21 +346,28 @@ export default function EditarMueblePage() {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="w-full md:w-1/2">
-                  <label className="block text-[10px] text-gray-500 mb-1">
-                    Descuento Global (%)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                    className="w-full bg-[#FAFAF9] border px-4 py-2 rounded-md"
-                  />
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-4">
+                  <div className="flex-1 w-full md:w-auto">
+                    <label className="block text-[10px] text-gray-500 mb-1">
+                      Descuento Global (%)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={discount}
+                      onChange={(e) => setDiscount(e.target.value)}
+                      placeholder="Ej: 15"
+                      className="w-full md:w-1/2 bg-[#FAFAF9] border px-4 py-2 rounded-md text-sm"
+                    />
+                  </div>
+                  <div className="flex-1 w-full md:w-auto pt-2 md:pt-0">
+                    <span className="text-[10px] text-epico-blue font-medium bg-blue-50 px-3 py-2 rounded-md block w-max">
+                      💡 El Precio Base se calculará automáticamente.
+                    </span>
+                  </div>
                 </div>
                 {sizes.map((size, idx) => (
-                  // CAMBIO: Contenedor flexible que cambia a row solo en md
                   <div
                     key={idx}
                     className="flex flex-col md:flex-row gap-3 p-3 border border-gray-100 rounded-md bg-gray-50/50"
@@ -375,6 +405,7 @@ export default function EditarMueblePage() {
             )}
           </div>
 
+          {/* BLOQUE 3: DESCRIPCIÓN */}
           <div>
             <label className="block text-xs uppercase mb-2">
               Descripción Técnica
@@ -387,11 +418,13 @@ export default function EditarMueblePage() {
             />
           </div>
 
+          {/* BLOQUE 4: MULTIMEDIA */}
           <div className="border-t pt-8">
             <h2 className="text-sm uppercase mb-6">Archivos Multimedia</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Principal */}
               <div className="border p-6 rounded-xl">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold">Principal *</span>
                   <label className="bg-epico-blue text-white text-[10px] px-3 py-1 rounded cursor-pointer">
                     Cambiar
@@ -405,12 +438,14 @@ export default function EditarMueblePage() {
                     />
                   </label>
                 </div>
-                <div className="mt-2 text-[10px] text-zinc-500">
+                <div className="text-[10px] text-zinc-500">
                   {newMainImage ? newMainImage.name : "✓ Conservando actual"}
                 </div>
               </div>
+
+              {/* Hover */}
               <div className="border p-6 rounded-xl">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold">Hover</span>
                   <label className="bg-epico-blue text-white text-[10px] px-3 py-1 rounded cursor-pointer">
                     Cambiar
@@ -424,17 +459,19 @@ export default function EditarMueblePage() {
                     />
                   </label>
                 </div>
-                <div className="mt-2 text-[10px] text-zinc-500">
+                <div className="text-[10px] text-zinc-500">
                   {newHoverImage
                     ? newHoverImage.name
-                    : "✓ Conservando actual o vacío"}
+                    : "✓ Conservando actual/vacío"}
                 </div>
               </div>
+
+              {/* Galería */}
               <div className="md:col-span-2 border p-6 rounded-xl">
-                <div className="flex justify-between mb-4">
+                <div className="flex justify-between items-center mb-4">
                   <span className="text-xs font-bold">Galería</span>
                   <label className="bg-epico-blue text-white text-[10px] px-3 py-1 rounded cursor-pointer">
-                    Añadir
+                    Añadir Fotos
                     <input
                       type="file"
                       multiple
@@ -460,7 +497,7 @@ export default function EditarMueblePage() {
                       <button
                         type="button"
                         onClick={() => removeExistingGalleryImage(url)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 cursor-pointer"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 cursor-pointer hover:bg-red-600"
                       >
                         <X size={10} />
                       </button>
@@ -489,10 +526,66 @@ export default function EditarMueblePage() {
                   ))}
                 </div>
               </div>
+
+              {/* === NUEVO BLOQUE: MODELO 3D === */}
+              <div className="md:col-span-2 border p-6 rounded-xl bg-gray-50/30">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-bold">
+                    Modelo 3D (.glb / .gltf)
+                  </span>
+                  <div className="flex gap-2">
+                    {/* Botón para eliminar el 3D actual si existe */}
+                    {existingModelUrl && !removeModel && !newModel3d && (
+                      <button
+                        type="button"
+                        onClick={() => setRemoveModel(true)}
+                        className="flex items-center gap-1 bg-red-100 text-red-600 hover:bg-red-200 text-[10px] px-3 py-1 rounded cursor-pointer"
+                      >
+                        <Trash2 size={12} /> Eliminar
+                      </button>
+                    )}
+                    <label className="bg-epico-blue text-white text-[10px] px-3 py-1 rounded cursor-pointer hover:opacity-90">
+                      {existingModelUrl ? "Reemplazar" : "Subir Modelo"}
+                      <input
+                        type="file"
+                        accept=".glb,.gltf"
+                        className="hidden"
+                        onChange={(e) => {
+                          setNewModel3d(e.target.files?.[0] || null);
+                          setRemoveModel(false); // Si sube uno nuevo, cancelamos el borrado
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="text-[10px] text-zinc-600 mt-2">
+                  {newModel3d ? (
+                    <span className="text-epico-blue font-medium">
+                      Nuevo archivo: {newModel3d.name}
+                    </span>
+                  ) : removeModel ? (
+                    <span className="text-red-500 italic">
+                      El modelo 3D actual será eliminado al guardar.
+                    </span>
+                  ) : existingModelUrl ? (
+                    <span className="text-green-600">
+                      ✓ Modelo 3D actual activo.
+                    </span>
+                  ) : (
+                    <span>Sin modelo 3D. Puedes subir uno más adelante.</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="border-t pt-6 flex justify-end">
+          <div className="border-t pt-6 flex justify-end items-center gap-4">
+            {loadingSubmit && (
+              <span className="text-[10px] font-bold uppercase tracking-wider text-epico-blue animate-pulse">
+                Procesando cambios...
+              </span>
+            )}
             <button
               type="submit"
               disabled={loadingSubmit}

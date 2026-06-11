@@ -34,7 +34,7 @@ export default function NuevoMueblePage() {
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState(""); // Precio base
-  const [discount, setDiscount] = useState(""); // <-- NUEVO ESTADO DE DESCUENTO
+  const [discount, setDiscount] = useState("");
   const [description, setDescription] = useState("");
   const [colors, setColors] = useState("");
 
@@ -129,24 +129,42 @@ export default function NuevoMueblePage() {
         .filter((s) => s.label.trim() !== "" && s.price.trim() !== "")
         .map((s) => ({ label: s.label, price: parseFloat(s.price) }));
 
-      const { error: insertError } = await supabase.from("mobiliario").insert([
-        {
-          name,
-          slug,
-          category,
-          price: price ? parseFloat(price) : null,
-          discount: discount ? parseInt(discount) : 0, // <-- GUARDAMOS EL DESCUENTO
-          description,
-          colors: colorsArray,
-          sizes: formattedSizes,
-          image_url: imageUrl,
-          hover_image_url: hoverImageUrl,
-          gallery: galleryUrls,
-          model_url: modelUrl,
-        },
-      ]);
+      // === LA MAGIA PARA EL PRECIO BASE ===
+      let finalBasePrice = price ? parseFloat(price) : null;
 
-      if (insertError) throw insertError;
+      // Si el usuario añadió medidas, calculamos automáticamente el precio más bajo
+      if (formattedSizes.length > 0) {
+        finalBasePrice = Math.min(...formattedSizes.map((s) => s.price));
+      }
+
+      const payload = {
+        name,
+        slug,
+        category,
+        price: finalBasePrice, // Enviamos el precio calculado
+        discount: discount ? parseInt(discount) : 0,
+        description,
+        colors: colorsArray,
+        sizes: formattedSizes,
+        image_url: imageUrl,
+        hover_image_url: hoverImageUrl,
+        gallery: galleryUrls,
+        model_url: modelUrl,
+      };
+
+      console.log("Enviando mueble a Supabase:", payload);
+
+      const { error: insertError } = await supabase
+        .from("mobiliario")
+        .insert([payload]);
+
+      if (insertError) {
+        console.error("🚨 ERROR EXACTO DE SUPABASE:", insertError);
+        throw new Error(
+          `Error guardando en BD: ${insertError.message || insertError.details}`,
+        );
+      }
+
       router.push("/admin/mobiliario");
       router.refresh();
     } catch (err: unknown) {
@@ -298,13 +316,19 @@ export default function NuevoMueblePage() {
                       className="w-full md:w-1/2 bg-[#FAFAF9] border px-4 py-2 text-sm rounded-md"
                     />
                   </div>
+                  <div className="flex-1 w-full md:w-auto pt-2 md:pt-0">
+                    {/* Mensaje visual para que no te preocupes de que desapareció el precio base */}
+                    <span className="text-[10px] text-epico-blue font-medium bg-blue-50 px-3 py-2 rounded-md block w-max">
+                      💡 El Precio Base se calculará automáticamente usando la
+                      medida más económica.
+                    </span>
+                  </div>
                 </div>
                 {sizes.map((size, idx) => (
                   <div
                     key={idx}
                     className="relative flex flex-col md:flex-row gap-3 items-end md:items-center p-4 md:p-0 border border-gray-100 md:border-none rounded-lg bg-gray-50/50 md:bg-transparent"
                   >
-                    {/* En celular la X va arriba a la derecha del contenedor gris */}
                     <button
                       type="button"
                       onClick={() => handleRemoveSize(idx)}
