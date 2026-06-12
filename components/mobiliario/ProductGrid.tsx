@@ -1,3 +1,4 @@
+// components/mobiliario/ProductGrid.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -84,7 +85,6 @@ export default function ProductGrid({ categoria }: ProductGridProps) {
   }
 
   return (
-    // Redujimos el padding top (pt-8) para acercar el contenido a las pestañas
     <section className="w-full max-w-[1600px] mx-auto px-5 md:px-8 pt-8 pb-20">
       <div className="flex justify-between items-end mb-8 border-b border-gray-100 pb-4">
         <h1 className="text-2xl font-light tracking-wider text-epico-dark">
@@ -112,15 +112,11 @@ export default function ProductGrid({ categoria }: ProductGridProps) {
               }}
               className="relative w-full flex flex-col group"
             >
-              <div className="lg:hidden mb-4 flex justify-between items-baseline">
+              {/* Solo dejamos el título por fuera en móvil, como estaba originalmente */}
+              <div className="lg:hidden mb-4">
                 <h3 className="text-[14px] font-medium tracking-wider text-gray-900">
                   {product.name}
                 </h3>
-                <span className="text-[11px] text-zinc-500 tracking-wider">
-                  {product.price
-                    ? `$${Number(product.price).toLocaleString()} COP`
-                    : "Consultar"}
-                </span>
               </div>
 
               <div
@@ -172,7 +168,7 @@ export default function ProductGrid({ categoria }: ProductGridProps) {
                 )}
 
                 <div
-                  className={`absolute inset-x-0 bottom-0 p-6 md:p-8 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-all duration-500 flex flex-col justify-end z-10
+                  className={`absolute inset-x-0 bottom-0 p-6 md:p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-all duration-500 flex flex-col justify-end z-10
                     ${
                       isActive
                         ? "translate-y-0 opacity-100"
@@ -183,12 +179,15 @@ export default function ProductGrid({ categoria }: ProductGridProps) {
                   <h3 className="hidden lg:block text-white text-3xl font-medium tracking-tight mb-1 drop-shadow-sm">
                     {product.name}
                   </h3>
-                  <p className="hidden lg:block text-zinc-200 text-sm font-light tracking-wider uppercase drop-shadow-sm">
+
+                  {/* El precio ahora se muestra dentro de la capa oscura tanto en móvil como en desktop */}
+                  <p className="text-zinc-200 text-sm font-light tracking-wider uppercase drop-shadow-sm">
                     {product.price
                       ? `Desde $${Number(product.price).toLocaleString()} COP`
                       : "Consultar precio"}
                   </p>
-                  <p className="lg:hidden text-white text-[11px] font-medium tracking-wider uppercase drop-shadow-md">
+
+                  <p className="lg:hidden text-white/80 text-[10px] mt-2 tracking-wider uppercase drop-shadow-md">
                     Toca de nuevo para ver detalles
                   </p>
                 </div>
