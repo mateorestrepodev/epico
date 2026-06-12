@@ -57,7 +57,7 @@ export default function InnerNavbar({
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-40 flex justify-between items-center py-5 px-5 md:px-8 transition-colors duration-500 ease-in-out ${
+        className={`fixed top-0 left-0 w-full z-40 flex  justify-between items-center py-5 px-5 md:px-8 transition-colors duration-500 ease-in-out ${
           isScrolled
             ? "bg-epico-light backdrop-blur-md shadow-sm"
             : "bg-transparent"
@@ -65,11 +65,11 @@ export default function InnerNavbar({
       >
         <Link
           href="/"
-          className="hover:opacity-70 transition-opacity w-24 md:w-28 flex items-center cursor-pointer"
+          className="hover:opacity-70  transition-opacity w-28 md:w-32  flex items-center cursor-pointer"
           aria-label="Ir al inicio"
         >
           <Logo
-            className={`w-full h-auto transition-colors duration-300 ${iconColor}`}
+            className={`w-full h-auto transition-colors -ml-3 md:-ml-5 duration-300 ${iconColor}`}
           />
         </Link>
 

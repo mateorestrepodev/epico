@@ -1,4 +1,3 @@
-// components/mobiliario/ProductGrid.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -16,22 +15,31 @@ export interface ProductGridData {
   slug: string;
 }
 
-export default function ProductGrid() {
+interface ProductGridProps {
+  categoria: string;
+}
+
+export default function ProductGrid({ categoria }: ProductGridProps) {
   const [products, setProducts] = useState<ProductGridData[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Estado para controlar los "taps" en dispositivos móviles
   const [activeTouchId, setActiveTouchId] = useState<number | null>(null);
 
   const router = useRouter();
 
-  // Carga de productos
   useEffect(() => {
     async function fetchProducts() {
-      const { data, error } = await supabase
+      setLoading(true);
+
+      let query = supabase
         .from("mobiliario")
         .select("id, name, price, image_url, hover_image_url, slug")
         .order("created_at", { ascending: false });
+
+      if (categoria && categoria !== "Todos") {
+        query = query.eq("category", categoria);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error("Error al cargar mobiliario:", error);
@@ -44,11 +52,11 @@ export default function ProductGrid() {
     }
 
     fetchProducts();
-  }, []);
+  }, [categoria]);
 
   if (loading) {
     return (
-      <section className="w-full max-w-[1600px] mx-auto px-5 md:px-8 py-24 flex justify-center items-center">
+      <section className="w-full max-w-[1600px] mx-auto px-5 md:px-8 pt-20 pb-32 flex justify-center items-center">
         <p className="text-zinc-500 uppercase tracking-wider text-sm animate-pulse">
           Cargando catálogo...
         </p>
@@ -56,14 +64,39 @@ export default function ProductGrid() {
     );
   }
 
+  // Estado Vacío - Ajuste de padding para no verse "perdido" en la pantalla
+  if (!loading && products.length === 0) {
+    return (
+      <section className="w-full max-w-[1600px] mx-auto px-5 md:px-8 pt-20 pb-32 flex flex-col justify-center items-center text-center">
+        <h2 className="text-2xl font-light text-epico-dark mb-4">
+          Nuevas piezas en camino
+        </h2>
+        <p className="text-zinc-500 max-w-md font-light leading-relaxed">
+          Actualmente estamos diseñando y fabricando nuevas piezas para la
+          categoría{" "}
+          <span className="font-medium text-black uppercase tracking-wider text-xs">
+            {categoria}
+          </span>
+          . Vuelve pronto para descubrir nuestras novedades.
+        </p>
+      </section>
+    );
+  }
+
   return (
-    <section className="w-full max-w-[1600px] mx-auto px-5 md:px-8 py-16 md:py-20">
-      <h1 className="text-2xl font-light tracking-wider text-epico-dark mb-10">
-        Mobiliario / Productos
-      </h1>
+    // Redujimos el padding top (pt-8) para acercar el contenido a las pestañas
+    <section className="w-full max-w-[1600px] mx-auto px-5 md:px-8 pt-8 pb-20">
+      <div className="flex justify-between items-end mb-8 border-b border-gray-100 pb-4">
+        <h1 className="text-2xl font-light tracking-wider text-epico-dark">
+          {categoria === "Todos" ? "Catálogo Completo" : categoria}
+        </h1>
+        <span className="text-xs text-zinc-400 uppercase tracking-widest hidden md:block">
+          {products.length} {products.length === 1 ? "Pieza" : "Piezas"}
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-8">
         {products.map((product, index) => {
-          // Determinamos si este producto específico tiene el estado "activo" por touch
           const isActive = activeTouchId === product.id;
 
           return (
@@ -71,69 +104,59 @@ export default function ProductGrid() {
               key={product.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{
-                duration: 0.6,
+                duration: 0.5,
                 delay: (index % 3) * 0.1,
-                ease: [0.76, 0, 0.24, 1],
+                ease: [0.25, 0.1, 0.25, 1],
               }}
               className="relative w-full flex flex-col group"
             >
-              {/* --- TÍTULO PARA MOBILE / TABLET (Visible arriba de la foto) --- */}
-              <div className="lg:hidden mb-4">
-                <h3 className="text-[14px] font-light  tracking-wider text-gray-900">
+              <div className="lg:hidden mb-4 flex justify-between items-baseline">
+                <h3 className="text-[14px] font-medium tracking-wider text-gray-900">
                   {product.name}
                 </h3>
+                <span className="text-[11px] text-zinc-500 tracking-wider">
+                  {product.price
+                    ? `$${Number(product.price).toLocaleString()} COP`
+                    : "Consultar"}
+                </span>
               </div>
 
-              {/* --- CONTENEDOR DE LA IMAGEN E INTERACTIVIDAD --- */}
               <div
-                className="relative w-full aspect-square bg-zinc-100 overflow-hidden cursor-pointer shadow-lg shadow-black/40 "
-                // Lógica de Desktop (Hover normal)
+                className="relative w-full aspect-square bg-zinc-100 overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-shadow duration-500"
                 onMouseEnter={() => {
-                  // Si estamos en un dispositivo con mouse (width >= 1024 típicamente),
-                  // limpiamos el estado táctil para no interferir
                   if (window.innerWidth >= 1024) setActiveTouchId(null);
                 }}
-                // Lógica de Mobile/Tablet (Doble Tap)
                 onClick={(e) => {
-                  e.preventDefault(); // Evitamos que el Link actúe de inmediato
-
-                  // Si es Desktop, navegamos de inmediato
+                  e.preventDefault();
                   if (window.innerWidth >= 1024) {
                     router.push(`/mobiliario/${product.slug}`);
                     return;
                   }
-
-                  // Si es Mobile/Tablet y es el PRIMER tap
                   if (!isActive) {
                     setActiveTouchId(product.id);
-                  }
-                  // Si es el SEGUNDO tap (ya estaba activo)
-                  else {
+                  } else {
                     router.push(`/mobiliario/${product.slug}`);
                   }
                 }}
               >
-                {/* 1. Imagen Principal */}
                 {product.image_url && (
                   <Image
                     src={product.image_url}
                     alt={product.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className={`object-cover transition-opacity duration-700 ease-in-out  ${
-                      // Desktop Hover o Mobile Active
+                    className={`object-cover transition-all duration-700 ease-in-out ${
                       product.hover_image_url && isActive
                         ? "opacity-0 lg:group-hover:opacity-0"
                         : !product.hover_image_url && isActive
-                          ? "scale-105 "
-                          : "l" // Fallback para cuando no hay hover_img
+                          ? "scale-105"
+                          : "opacity-100"
                     }`}
                   />
                 )}
 
-                {/* 2. Imagen Secundaria (Swap) */}
                 {product.hover_image_url && (
                   <Image
                     src={product.hover_image_url}
@@ -148,30 +171,25 @@ export default function ProductGrid() {
                   />
                 )}
 
-                {/* 3. Capa de Información (Desktop Hover / Mobile Active) */}
                 <div
-                  className={`absolute inset-x-0 bottom-0 p-6 md:p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-all duration-500 flex flex-col justify-end z-10
+                  className={`absolute inset-x-0 bottom-0 p-6 md:p-8 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-all duration-500 flex flex-col justify-end z-10
                     ${
                       isActive
-                        ? "translate-y-0 opacity-100" // Activo en móvil
-                        : "translate-y-4 opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100" // Desktop hover
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-4 opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
                     }
                   `}
                 >
-                  {/* Título interno (Solo visible en Desktop, oculto en Mobile) */}
-                  <h3 className="hidden lg:block text-white text-3xl font-medium tracking-tight mb-1">
+                  <h3 className="hidden lg:block text-white text-3xl font-medium tracking-tight mb-1 drop-shadow-sm">
                     {product.name}
                   </h3>
-
-                  <p className="text-zinc-300 text-sm font-light tracking-wider uppercase">
+                  <p className="hidden lg:block text-zinc-200 text-sm font-light tracking-wider uppercase drop-shadow-sm">
                     {product.price
-                      ? `$${Number(product.price).toLocaleString()} COP`
+                      ? `Desde $${Number(product.price).toLocaleString()} COP`
                       : "Consultar precio"}
                   </p>
-
-                  {/* Instrucción sutil en móvil para indicar el segundo tap */}
-                  <p className="lg:hidden text-white/60 text-[10px] mt-2 tracking-wider uppercase">
-                    Toca de nuevo para ver
+                  <p className="lg:hidden text-white text-[11px] font-medium tracking-wider uppercase drop-shadow-md">
+                    Toca de nuevo para ver detalles
                   </p>
                 </div>
               </div>

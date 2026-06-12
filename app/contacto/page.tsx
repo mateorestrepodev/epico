@@ -69,7 +69,7 @@ export default function ContactoPage() {
                 className="flex items-center gap-5 group w-fit"
               >
                 <Mail size={30} strokeWidth={2} />
-                <span className="text-base md:text-lg tracking-wide break-all group-hover:opacity-70 transition-opacity">
+                <span className="text-xs sm:text-base md:text-lg tracking-wide break-all group-hover:opacity-70 transition-opacity">
                   juanita.gutierrez@estudioepico.com
                 </span>
               </a>

@@ -156,7 +156,7 @@ export default function HeroScroll() {
         }}
         className="absolute z-20 w-28 md:w-36 pointer-events-none select-none"
       >
-        <Logo className="w-full h-auto drop-shadow-md" />
+        <Logo className="w-full h-auto -ml-3 md:-ml-5 drop-shadow-md" />
       </motion.div>
 
       <motion.button
