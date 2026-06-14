@@ -26,7 +26,7 @@ export default function ModelViewerModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10">
-      <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-[#F6F5F2] rounded-sm shadow-2xl flex flex-col">
+      <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-[#F6F5F2]  shadow-2xl flex flex-col">
         <div className="flex justify-between items-center p-4 border-b border-gray-500 bg-background">
           <span className="text-sm font-medium text-epico-dark uppercase tracking-widest">
             Visor 3D: {productName}

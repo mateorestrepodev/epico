@@ -35,14 +35,11 @@ export default function ProjectGrid({ projects }: { projects: ProjectData[] }) {
             }}
             className="group flex flex-col"
           >
-            {/* Info Arriba: Nombre y Ubicación */}
+            {/* Info Arriba: Nombre  */}
             <div className="mb-4">
               <h3 className="text-[14px] font-light  tracking-wider text-gray-900">
                 {project.title}
               </h3>
-              <p className="text-[11px]  tracking-[0.2em] text-gray-700 mt-1 font-normal">
-                {project.location || "Sin ubicación"}
-              </p>
             </div>
 
             {/* Imagen con Hover Azul */}

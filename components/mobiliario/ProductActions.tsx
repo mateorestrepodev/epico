@@ -3,22 +3,25 @@
 import React, { useState } from "react";
 import { useCartStore } from "@/lib/store/useCartStore";
 import { ProductData } from "@/types/product";
-
-// 1. IMPORTAMOS LA MAGIA DE LA CARGA DIFERIDA
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
-// Simulamos los tipos para que coincidan con la DB nueva
 interface Size {
   label: string;
   price: number;
+}
+
+interface Texture {
+  name: string;
+  image_url: string;
 }
 
 interface ExtendedProductData {
   id: number;
   name: string;
   price: number | null;
-  discount?: number | null; // <-- INYECTAMOS EL TIPO DE DESCUENTO
-  colors?: string[];
+  discount?: number | null;
+  textures?: Texture[];
   sizes?: Size[];
   model_url?: string | null;
   image_url: string;
@@ -28,58 +31,51 @@ interface ProductActionsProps {
   product: ExtendedProductData;
 }
 
-// 2. LE DECIMOS A NEXT.JS QUE NO CARGUE EL 3D HASTA QUE SE NECESITE
 const ModelViewerModal = dynamic(() => import("./ModelViewerModal"), {
   ssr: false,
 });
 
 export default function ProductActions({ product }: ProductActionsProps) {
-  const [quantity, setQuantity] = useState(1);
-  const [show3DModal, setShow3DModal] = useState(false);
-  const [showCustomModal, setShowCustomModal] = useState(false); // Modal A la medida
+  const [quantity, setQuantity] = useState<number>(1);
+  const [show3DModal, setShow3DModal] = useState<boolean>(false);
+  const [showCustomModal, setShowCustomModal] = useState<boolean>(false);
 
-  // Manejo de variables
   const hasSizes = product.sizes && product.sizes.length > 0;
   const initialSize = hasSizes ? product.sizes![0] : null;
 
   const [selectedSize, setSelectedSize] = useState<Size | null>(initialSize);
-  const [selectedColor, setSelectedColor] = useState<string>(
-    product.colors && product.colors.length > 0
-      ? product.colors[0]
+
+  const [selectedTextureName, setSelectedTextureName] = useState<string>(
+    product.textures && product.textures.length > 0
+      ? product.textures[0].name
       : "Estándar",
   );
 
   const addToCart = useCartStore((state) => state.addToCart);
   const openCart = useCartStore((state) => state.openCart);
 
-  // === LÓGICA DE PRECIOS Y DESCUENTOS ===
   const discountPercentage = product.discount || 0;
   const currentOriginalPrice = selectedSize
     ? selectedSize.price
     : product.price;
 
-  // Calculamos el precio final real aplicando el porcentaje
   const currentDisplayPrice = currentOriginalPrice
     ? currentOriginalPrice - (currentOriginalPrice * discountPercentage) / 100
     : null;
 
   const handleAddToCart = () => {
-    // 1. Aseguramos que el precio sea estrictamente un número (resolviendo el error de null con el precio rebajado)
     const finalPrice = currentDisplayPrice || 0;
-
-    // 2. Si eligió una medida, se la agregamos al nombre para mayor claridad en el carrito
     const finalName = selectedSize
       ? `${product.name} (${selectedSize.label})`
       : product.name;
 
-    // 3. Formateamos el objeto para que coincida perfectamente con lo que exige ProductData
     const cartProduct = {
       ...product,
       name: finalName,
       price: finalPrice,
-    } as unknown as ProductData; // El casteo seguro para calmar a TypeScript
+    } as unknown as ProductData;
 
-    addToCart(cartProduct, selectedColor, quantity);
+    addToCart(cartProduct, selectedTextureName, quantity);
     openCart();
   };
 
@@ -93,17 +89,16 @@ export default function ProductActions({ product }: ProductActionsProps) {
   };
 
   return (
-    <div className="w-full mb-6 flex flex-col flex-shrink-0">
-      {/* 1. Precio Reactivo con Animación de Descuento */}
+    <div className="w-full flex flex-col flex-shrink-0">
       {currentOriginalPrice ? (
         <div className="flex flex-col items-start gap-1 mb-2">
           {discountPercentage > 0 && (
-            <span className="bg-red-600 text-white px-2 py-1 text-[10px] font-bold tracking-widest uppercase rounded-sm mb-1 flex items-center gap-1 w-max">
+            <span className="bg-red-600 text-white px-2 py-1 text-[10px] font-bold tracking-widest uppercase  mb-1 flex items-center gap-1 w-max">
               🔥 -{discountPercentage}% OFF
             </span>
           )}
           <div className="flex items-center gap-3">
-            <p className="text-xl md:text-2xl tracking-wider font-light text-gray-800">
+            <p className="text-2xl md:text-3xl tracking-wider font-light text-gray-800">
               ${Number(currentDisplayPrice).toLocaleString("es-CO")} COP
             </p>
             {discountPercentage > 0 && (
@@ -114,39 +109,49 @@ export default function ProductActions({ product }: ProductActionsProps) {
           </div>
         </div>
       ) : (
-        <p className="text-xl md:text-2xl tracking-wider font-light text-gray-800 mb-2">
+        <p className="text-2xl md:text-3xl tracking-wider font-light text-gray-800 mb-2">
           Cotizar
         </p>
       )}
-      <p className="text-xs text-gray-700 font-light tracking-wide mb-6">
+      <p className="text-xs text-gray-500 font-light tracking-wide mb-8">
         Envío calculado al finalizar la compra.
       </p>
 
-      {/* 2. Selector de Colores (Circulitos) */}
-      {product.colors && product.colors.length > 0 && (
+      {/* TEXTURAS CUADRADAS */}
+      {product.textures && product.textures.length > 0 && (
         <div className="mb-6">
-          <span className="text-xs uppercase tracking-widest text-gray-600 font-medium mb-3 block">
-            Color / Acabado
+          <span className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-3 block">
+            Textura / Acabado:{" "}
+            <span className="text-epico-dark font-semibold">
+              {selectedTextureName}
+            </span>
           </span>
-          <div className="flex gap-3 px-2">
-            {product.colors.map((colorHex, idx) => (
+          <div className="flex flex-wrap gap-3 px-1">
+            {product.textures.map((tex, idx) => (
               <button
                 key={idx}
-                onClick={() => setSelectedColor(colorHex)}
-                title={colorHex}
-                style={{ backgroundColor: colorHex }}
-                className={`w-6 h-6 rounded-full shadow-inner transition-transform cursor-pointer ${
-                  selectedColor === colorHex
-                    ? "ring-2 ring-offset-2 ring-epico-dark scale-110"
-                    : "border border-gray-200 hover:scale-105"
+                onClick={() => setSelectedTextureName(tex.name)}
+                title={tex.name}
+                className={`relative w-12 h-12 md:w-14 md:h-14 overflow-hidden   shadow-black transition-all cursor-pointer ${
+                  selectedTextureName === tex.name
+                    ? "border-epico-dark scale-105 shadow-md"
+                    : "border-gray-200 hover:border-gray-400 opacity-80 hover:opacity-100"
                 }`}
-              />
+              >
+                <Image
+                  src={tex.image_url}
+                  alt={tex.name}
+                  fill
+                  className="object-cover"
+                  sizes="60px"
+                />
+              </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* 3. Selector de Tamaños (Botones cuadrados) */}
+      {/* TAMAÑOS */}
       {hasSizes && (
         <div className="mb-6">
           <span className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-3 block">
@@ -160,7 +165,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
                 className={`px-4 py-2 text-xs uppercase tracking-wider border transition-colors cursor-pointer ${
                   selectedSize?.label === size.label
                     ? "border-epico-dark bg-epico-dark text-white font-medium"
-                    : "border-gray-500 text-gray-600 hover:border-gray-500"
+                    : "border-gray-300 text-gray-600 hover:border-gray-500"
                 }`}
               >
                 {size.label}
@@ -169,13 +174,14 @@ export default function ProductActions({ product }: ProductActionsProps) {
           </div>
         </div>
       )}
+
       <button
         onClick={() => setShowCustomModal(true)}
         className="w-full border border-gray-500 font-medium py-3 mb-4 text-xs uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
       >
         A la medida
       </button>
-      {/* 4. Controles de Compra */}
+
       <div className="flex gap-4 mb-4 w-full">
         <div className="flex items-center justify-between border border-gray-300 bg-transparent px-3 py-2 w-32 flex-shrink-0">
           <button
@@ -194,7 +200,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
             +
           </button>
         </div>
-
         <button
           onClick={handleAddToCart}
           className="flex-1 bg-epico-blue text-white font-medium py-4 px-2 text-[10px] md:text-xs uppercase tracking-widest hover:opacity-90 transition-opacity cursor-pointer"
@@ -203,7 +208,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
         </button>
       </div>
 
-      {/* 5. Botones Secundarios: 3D y A la medida */}
       <div className="flex flex-col gap-3">
         <button
           onClick={() => setShow3DModal(true)}
@@ -230,9 +234,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
         </button>
       </div>
 
-      {/* --- MODALES --- */}
-
-      {/* Modal A la medida */}
       {showCustomModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white p-8 max-w-sm w-full text-center shadow-2xl border border-gray-200">
@@ -240,8 +241,9 @@ export default function ProductActions({ product }: ProductActionsProps) {
               ¿Diseño a la medida?
             </h3>
             <p className="text-sm text-gray-600 font-light mb-6">
-              Serás redirigido a WhatsApp para hablar directamente con nuestro
-              equipo de diseño sobre las modificaciones que deseas para: <br />
+              Serás redirigido a WhatsApp para hablar con nuestro equipo sobre
+              modificaciones para:
+              <br />
               <strong className="font-medium text-epico-blue mt-2 block">
                 {product.name}
               </strong>
@@ -264,7 +266,6 @@ export default function ProductActions({ product }: ProductActionsProps) {
         </div>
       )}
 
-      {/* Modal 3D usando Lazy Loading */}
       {show3DModal && product.model_url && (
         <ModelViewerModal
           productName={product.name}

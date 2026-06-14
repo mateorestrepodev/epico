@@ -112,21 +112,24 @@ export default async function DetalleMobiliarioPage({ params }: Props) {
               ← Volver al catálogo
             </Link>
 
-            <h1 className="text-4xl md:text-5xl font-medium text-epico-dark mb-4 leading-none tracking-wide">
+            {/* --- 1. TÍTULO --- */}
+            <h1 className="text-4xl md:text-5xl font-medium text-epico-dark mb-6 leading-none tracking-wide">
               {product.name}
             </h1>
 
-            <ProductActions product={product} />
-
-            <div className="w-full text-left mt-6">
+            {/* --- 2. DESCRIPCIÓN (Movida arriba) --- */}
+            <div className="w-full text-left mb-8 border-b border-[#E4DFD5] pb-8">
               <div className="whitespace-pre-wrap text-sm text-gray-700 font-light leading-relaxed">
                 {product.description ||
                   "Diseño atemporal con estructura maciza."}
               </div>
-              <p className="mt-6 font-medium text-xs uppercase tracking-widest text-epico-dark">
-                El tiempo de producción es de 30 a 35 días hábiles.
+              <p className="mt-5 font-medium text-[10px] uppercase tracking-widest text-epico-dark bg-epico-dark/5 w-max px-3 py-1.5 ">
+                El tiempo de producción es de 30 a 35 días.
               </p>
             </div>
+
+            {/* --- 3. COMPONENTE DE COMPRA (Precio, Colores, Tallas y Carrito) --- */}
+            <ProductActions product={product} />
           </div>
         </article>
       </div>

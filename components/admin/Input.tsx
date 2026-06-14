@@ -7,7 +7,7 @@ export const Input = ({ label, ...props }: InputProps) => (
     <label className="text-sm font-medium text-gray-400">{label}</label>
     <input
       {...props}
-      className="bg-zinc-900 border border-zinc-800 text-white rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+      className="bg-zinc-900 border border-zinc-800 text-white  p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
     />
   </div>
 );

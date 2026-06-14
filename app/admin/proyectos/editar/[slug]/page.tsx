@@ -166,7 +166,7 @@ export default function EditarProyecto() {
 
   return (
     <main className="min-h-screen bg-[#F6F5F2] text-[#423C35] font-sans p-6 md:p-12">
-      <div className="max-w-4xl mx-auto bg-background border border-[#E4DFD5] p-8 shadow-sm rounded-xl">
+      <div className="max-w-4xl mx-auto bg-background border border-[#E4DFD5] p-8 shadow-sm ">
         <header className="mb-10 border-b border-[#E4DFD5] pb-6 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-medium tracking-tight">
@@ -182,7 +182,7 @@ export default function EditarProyecto() {
         </header>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm border border-red-200 rounded-md">
+          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm border border-red-200 ">
             {error}
           </div>
         )}
@@ -198,7 +198,7 @@ export default function EditarProyecto() {
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm "
               />
             </div>
             <div>
@@ -209,20 +209,10 @@ export default function EditarProyecto() {
                 type="text"
                 value={slug}
                 readOnly
-                className="w-full bg-[#ECE9E2] border px-4 py-3 text-sm rounded-md cursor-not-allowed text-zinc-500 font-mono"
+                className="w-full bg-[#ECE9E2] border px-4 py-3 text-sm  cursor-not-allowed text-zinc-500 font-mono"
               />
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
-                Ubicación
-              </label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md"
-              />
-            </div>
+
             <div className="md:col-span-2">
               <label className="block text-xs uppercase text-[#6A6258] mb-2 font-medium">
                 Descripción
@@ -231,7 +221,7 @@ export default function EditarProyecto() {
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md resize-none"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm  resize-none"
               />
             </div>
           </div>
@@ -241,7 +231,7 @@ export default function EditarProyecto() {
               Archivos Multimedia
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between">
+              <div className="bg-background border border-zinc-200 p-6  flex flex-col justify-between">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="block text-xs font-semibold">
@@ -251,7 +241,7 @@ export default function EditarProyecto() {
                       Horizontal (16:9)
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase font-medium px-4 py-2  cursor-pointer hover:opacity-90">
                     Cambiar
                     <input
                       type="file"
@@ -278,7 +268,7 @@ export default function EditarProyecto() {
                 </div>
               </div>
 
-              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between">
+              <div className="bg-background border border-zinc-200 p-6  flex flex-col justify-between">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="block text-xs font-semibold">
@@ -288,7 +278,7 @@ export default function EditarProyecto() {
                       Vertical (9:16)
                     </span>
                   </div>
-                  <label className="bg-epico-dark text-white text-[10px] uppercase font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90">
+                  <label className="bg-epico-dark text-white text-[10px] uppercase font-medium px-4 py-2  cursor-pointer hover:opacity-90">
                     Cambiar
                     <input
                       type="file"
@@ -315,10 +305,10 @@ export default function EditarProyecto() {
                 </div>
               </div>
 
-              <div className="md:col-span-2 border border-zinc-200 p-6 rounded-xl">
+              <div className="md:col-span-2 border border-zinc-200 p-6 ">
                 <div className="flex justify-between mb-4">
                   <span className="text-xs font-semibold">Galería</span>
-                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1 uppercase rounded-md cursor-pointer hover:opacity-90">
+                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1 uppercase  cursor-pointer hover:opacity-90">
                     Añadir
                     <input
                       type="file"
@@ -381,7 +371,7 @@ export default function EditarProyecto() {
             <button
               type="submit"
               disabled={loadingSubmit}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 rounded-md cursor-pointer disabled:opacity-50 transition-opacity"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90  cursor-pointer disabled:opacity-50 transition-opacity"
             >
               {loadingSubmit ? "Guardando..." : "Guardar Cambios"}
             </button>

@@ -169,7 +169,7 @@ export default function NuevoProyecto() {
 
   return (
     <main className="min-h-screen bg-[#F6F5F2] text-[#423C35] font-sans p-6 md:p-12">
-      <div className="max-w-4xl mx-auto bg-background border border-[#E4DFD5] p-8 md:p-10 shadow-sm rounded-xl">
+      <div className="max-w-4xl mx-auto bg-background border border-[#E4DFD5] p-8 md:p-10 shadow-sm ">
         <header className="mb-10 border-b border-[#E4DFD5] pb-6 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-medium tracking-tight text-[#332D26]">
@@ -188,7 +188,7 @@ export default function NuevoProyecto() {
         </header>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm ">
             {error}
           </div>
         )}
@@ -205,7 +205,7 @@ export default function NuevoProyecto() {
                 required
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm  focus:outline-none focus:border-epico-blue transition-colors"
               />
             </div>
             <div>
@@ -218,7 +218,7 @@ export default function NuevoProyecto() {
                 required
                 value={formData.slug}
                 readOnly
-                className="w-full bg-[#ECE9E2] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md cursor-not-allowed font-mono text-[#554E45]"
+                className="w-full bg-[#ECE9E2] border border-[#D5CEC4] px-4 py-3 text-sm  cursor-not-allowed font-mono text-[#554E45]"
               />
             </div>
             <div className="md:col-span-2">
@@ -231,7 +231,7 @@ export default function NuevoProyecto() {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm  focus:outline-none focus:border-epico-blue transition-colors"
               />
             </div>
             <div className="md:col-span-2">
@@ -244,7 +244,7 @@ export default function NuevoProyecto() {
                 rows={4}
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm rounded-md focus:outline-none focus:border-epico-blue transition-colors resize-none"
+                className="w-full bg-[#FAFAF9] border border-[#D5CEC4] px-4 py-3 text-sm  focus:outline-none focus:border-epico-blue transition-colors resize-none"
               />
             </div>
           </div>
@@ -255,7 +255,7 @@ export default function NuevoProyecto() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
+              <div className="bg-background border border-zinc-200 p-6  flex flex-col justify-between shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="block text-xs font-semibold text-[#332D26]">
@@ -265,7 +265,7 @@ export default function NuevoProyecto() {
                       Horizontal (16:9)
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2  cursor-pointer hover:opacity-90 w-max">
                     Elegir
                     <input
                       type="file"
@@ -287,7 +287,7 @@ export default function NuevoProyecto() {
                 )}
               </div>
 
-              <div className="bg-background border border-zinc-200 p-6 rounded-xl flex flex-col justify-between shadow-sm">
+              <div className="bg-background border border-zinc-200 p-6  flex flex-col justify-between shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="block text-xs font-semibold text-[#332D26]">
@@ -297,7 +297,7 @@ export default function NuevoProyecto() {
                       Vertical (Opcional, 9:16)
                     </span>
                   </div>
-                  <label className="bg-epico-dark text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 w-max">
+                  <label className="bg-epico-dark text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2  cursor-pointer hover:opacity-90 w-max">
                     Elegir
                     <input
                       type="file"
@@ -320,7 +320,7 @@ export default function NuevoProyecto() {
                 )}
               </div>
 
-              <div className="md:col-span-2 bg-background border border-zinc-200 p-6 rounded-xl shadow-sm">
+              <div className="md:col-span-2 bg-background border border-zinc-200 p-6  shadow-sm">
                 <div className="flex justify-between items-center mb-5">
                   <div>
                     <span className="block text-xs font-semibold text-[#332D26]">
@@ -330,7 +330,7 @@ export default function NuevoProyecto() {
                       Añade fotos para el carrusel
                     </span>
                   </div>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2 rounded-md cursor-pointer hover:opacity-90 w-max">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase tracking-wider font-medium px-4 py-2  cursor-pointer hover:opacity-90 w-max">
                     Añadir Fotos
                     <input
                       type="file"
@@ -343,11 +343,11 @@ export default function NuevoProyecto() {
                 </div>
 
                 {galleryFiles.length > 0 ? (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 bg-zinc-50 p-4 rounded-lg border border-zinc-100">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 bg-zinc-50 p-4  border border-zinc-100">
                     {galleryFiles.map((file, idx) => (
                       <div
                         key={idx}
-                        className="relative aspect-square rounded-md overflow-hidden border border-zinc-200 group"
+                        className="relative aspect-square  overflow-hidden border border-zinc-200 group"
                       >
                         <Image
                           src={URL.createObjectURL(file)}
@@ -367,7 +367,7 @@ export default function NuevoProyecto() {
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100 text-center">
+                  <div className="bg-zinc-50 p-4  border border-zinc-100 text-center">
                     <span className="text-[11px] text-zinc-400">
                       No has seleccionado imágenes
                     </span>
@@ -386,7 +386,7 @@ export default function NuevoProyecto() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50 rounded-md shadow-sm cursor-pointer"
+              className="bg-epico-blue text-white font-medium px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50  shadow-sm cursor-pointer"
             >
               {loading ? "Publicando..." : "Publicar Proyecto"}
             </button>

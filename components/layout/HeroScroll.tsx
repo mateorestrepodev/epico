@@ -126,10 +126,6 @@ export default function HeroScroll() {
             role="img"
             aria-label="Isotipo Estudio Épico"
           />
-
-          <span className="text-epico-blue text-[10px] md:text-xs font-bold tracking-wider uppercase">
-            ESTUDIOEPICO.COM
-          </span>
         </div>
       </div>
 

@@ -89,9 +89,8 @@ export default function NosotrosPage() {
           <div className="space-y-12 pl-0 lg:pl-12">
             <div>
               <p className="text-xl md:text-2xl font-medium text-black leading-relaxed mb-4">
-                Juanita, diseñadora y encargada del funcionamiento del negocio,
-                lidera cada proyecto desde la parte comercial, el diseño, la
-                fabricación y la instalación.
+                Juanita, ingeniera de diseño lidera cada proyecto desde la parte
+                comercial, el diseño, la fabricación y la instalación.
               </p>
             </div>
 
@@ -103,7 +102,7 @@ export default function NosotrosPage() {
                 David, quienes apoyan la comunicación visual y las redes
                 sociales.
               </p>
-              <div className="p-8 bg-[#F6F5F2] border border-gray-200 mt-8 rounded-sm">
+              <div className="p-8 bg-[#F6F5F2] border border-gray-200 mt-8 ">
                 <p className="text-black font-medium leading-relaxed">
                   Aunque cada uno aporta desde su experiencia, las decisiones
                   estratégicas de Épico se construyen en familia, uniendo

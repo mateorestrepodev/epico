@@ -23,25 +23,47 @@ const CATEGORIAS = [
   "Estanterías",
 ];
 
+// Interfaces estrictas para evitar 'any'
+interface SizeState {
+  label: string;
+  price: string;
+}
+
+interface EditTextureState {
+  name: string;
+  url?: string;
+  file?: File | null;
+}
+
+interface DbSize {
+  label: string;
+  price: string | number;
+}
+
+interface DbTexture {
+  name: string;
+  image_url: string;
+}
+
 export default function EditarMueblePage() {
   const router = useRouter();
   const params = useParams();
   const slugParam = params.slug as string;
 
-  const [loadingInitial, setLoadingInitial] = useState(true);
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [loadingInitial, setLoadingInitial] = useState<boolean>(true);
+  const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const [productId, setProductId] = useState<number | null>(null);
 
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [discount, setDiscount] = useState("");
-  const [description, setDescription] = useState("");
-  const [colors, setColors] = useState("");
-  const [sizes, setSizes] = useState<{ label: string; price: string }[]>([]);
+  const [name, setName] = useState<string>("");
+  const [slug, setSlug] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
+  const [discount, setDiscount] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [sizes, setSizes] = useState<SizeState[]>([]);
+  const [textures, setTextures] = useState<EditTextureState[]>([]);
 
   const [existingMainImage, setExistingMainImage] = useState<string | null>(
     null,
@@ -56,19 +78,17 @@ export default function EditarMueblePage() {
   const [newHoverImage, setNewHoverImage] = useState<File | null>(null);
   const [newGalleryImages, setNewGalleryImages] = useState<File[]>([]);
   const [newModel3d, setNewModel3d] = useState<File | null>(null);
-
-  // Estado para rastrear si el usuario decidió eliminar el modelo 3D existente
-  const [removeModel, setRemoveModel] = useState(false);
+  const [removeModel, setRemoveModel] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchProduct() {
       try {
-        const { data, error } = await supabase
+        const { data, error: fetchError } = await supabase
           .from("mobiliario")
           .select("*")
           .eq("slug", slugParam)
           .single();
-        if (error) throw error;
+        if (fetchError) throw fetchError;
         if (data) {
           setProductId(data.id);
           setName(data.name || "");
@@ -77,16 +97,23 @@ export default function EditarMueblePage() {
           setPrice(data.price ? data.price.toString() : "");
           setDiscount(data.discount ? data.discount.toString() : "");
           setDescription(data.description || "");
-          setColors(data.colors ? data.colors.join(", ") : "");
 
           if (data.sizes && Array.isArray(data.sizes)) {
             setSizes(
-              data.sizes.map(
-                (s: { label: string; price: string | number }) => ({
-                  label: s.label,
-                  price: s.price.toString(),
-                }),
-              ),
+              data.sizes.map((s: DbSize) => ({
+                label: s.label,
+                price: s.price.toString(),
+              })),
+            );
+          }
+
+          if (data.textures && Array.isArray(data.textures)) {
+            setTextures(
+              data.textures.map((t: DbTexture) => ({
+                name: t.name,
+                url: t.image_url,
+                file: null,
+              })),
             );
           }
 
@@ -97,7 +124,8 @@ export default function EditarMueblePage() {
         }
       } catch (err) {
         setError("Error al cargar datos.");
-      } finally {
+      }
+      pack: {
         setLoadingInitial(false);
       }
     }
@@ -121,12 +149,28 @@ export default function EditarMueblePage() {
     setSizes(sizes.filter((_, i) => i !== index));
   const handleSizeChange = (
     index: number,
-    field: "label" | "price",
+    field: keyof SizeState,
     value: string,
   ) => {
     const newSizes = [...sizes];
     newSizes[index][field] = value;
     setSizes(newSizes);
+  };
+
+  const handleAddTexture = () => {
+    if (textures.length < 4)
+      setTextures([...textures, { name: "", file: null }]);
+  };
+  const handleRemoveTexture = (index: number) =>
+    setTextures(textures.filter((_, i) => i !== index));
+  const handleTextureChange = (
+    index: number,
+    field: keyof EditTextureState,
+    value: string | File | null,
+  ) => {
+    const newTextures = [...textures];
+    newTextures[index] = { ...newTextures[index], [field]: value };
+    setTextures(newTextures);
   };
 
   const handleGalleryAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,7 +185,10 @@ export default function EditarMueblePage() {
   const removeNewGalleryImage = (indexToRemove: number) =>
     setNewGalleryImages((prev) => prev.filter((_, i) => i !== indexToRemove));
 
-  const uploadFileToStorage = async (file: File, folder: string) => {
+  const uploadFileToStorage = async (
+    file: File,
+    folder: string,
+  ): Promise<string> => {
     const fileExt = file.name.split(".").pop();
     const filePath = `mobiliario/${folder}/${Math.random()}.${fileExt}`;
     await supabase.storage.from("epico-images").upload(filePath, file);
@@ -164,36 +211,33 @@ export default function EditarMueblePage() {
       if (newHoverImage)
         finalHoverUrl = await uploadFileToStorage(newHoverImage, "hover");
 
-      // === LÓGICA DEL MODELO 3D ===
       let finalModelUrl = existingModelUrl;
-      // Si el usuario subió uno nuevo, lo reemplazamos
-      if (newModel3d) {
+      if (newModel3d)
         finalModelUrl = await uploadFileToStorage(newModel3d, "models");
-      }
-      // Si el usuario decidió eliminar el actual y no subió uno nuevo
-      else if (removeModel) {
-        finalModelUrl = null;
-      }
+      else if (removeModel) finalModelUrl = null;
 
       const finalGalleryUrls = [...existingGallery];
       for (const file of newGalleryImages)
         finalGalleryUrls.push(await uploadFileToStorage(file, "gallery"));
 
-      const colorsArray = colors
-        ? colors
-            .split(",")
-            .map((c) => c.trim())
-            .filter(Boolean)
-        : [];
+      const finalTextures = [];
+      for (const tex of textures) {
+        if (!tex.name) continue;
+        if (tex.file) {
+          const url = await uploadFileToStorage(tex.file, "textures");
+          finalTextures.push({ name: tex.name, image_url: url });
+        } else if (tex.url) {
+          finalTextures.push({ name: tex.name, image_url: tex.url });
+        }
+      }
 
       const formattedSizes = sizes
         .filter((s) => s.label.trim() !== "" && s.price.trim() !== "")
         .map((s) => ({ label: s.label, price: parseFloat(s.price) }));
 
-      let finalBasePrice = price ? parseFloat(price) : null;
-      if (formattedSizes.length > 0) {
+      let finalBasePrice: number | null = price ? parseFloat(price) : null;
+      if (formattedSizes.length > 0)
         finalBasePrice = Math.min(...formattedSizes.map((s) => s.price));
-      }
 
       const { error: updateError } = await supabase
         .from("mobiliario")
@@ -204,12 +248,12 @@ export default function EditarMueblePage() {
           price: finalBasePrice,
           discount: discount ? parseInt(discount) : 0,
           description,
-          colors: colorsArray,
+          textures: finalTextures,
           sizes: formattedSizes,
           image_url: finalImageUrl,
           hover_image_url: finalHoverUrl,
           gallery: finalGalleryUrls,
-          model_url: finalModelUrl, // <-- Guardamos el estado final del 3D
+          model_url: finalModelUrl,
         })
         .eq("id", productId);
 
@@ -232,7 +276,7 @@ export default function EditarMueblePage() {
 
   return (
     <main className="min-h-screen bg-[#F6F5F2] text-[#423C35] font-sans p-6 md:p-12">
-      <div className="max-w-4xl mx-auto bg-background border p-8 rounded-xl">
+      <div className="max-w-4xl mx-auto bg-background border p-8 ">
         <header className="mb-10 border-b pb-6 flex justify-between items-center">
           <h1 className="text-2xl font-medium">Editar: {name}</h1>
           <Link
@@ -244,13 +288,12 @@ export default function EditarMueblePage() {
         </header>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-md border border-red-200">
+          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm  border border-red-200">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* BLOQUE 1: DATOS BÁSICOS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-xs uppercase mb-2">Nombre *</label>
@@ -259,7 +302,7 @@ export default function EditarMueblePage() {
                 required
                 value={name}
                 onChange={handleNameChange}
-                className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md"
+                className="w-full bg-[#FAFAF9] border px-4 py-3 "
               />
             </div>
             <div>
@@ -268,7 +311,7 @@ export default function EditarMueblePage() {
                 type="text"
                 readOnly
                 value={slug}
-                className="w-full bg-[#ECE9E2] border px-4 py-3 rounded-md font-mono"
+                className="w-full bg-[#ECE9E2] border px-4 py-3  font-mono"
               />
             </div>
             <div>
@@ -279,7 +322,7 @@ export default function EditarMueblePage() {
                 required
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md"
+                className="w-full bg-[#FAFAF9] border px-4 py-3 "
               >
                 <option value="">Selecciona...</option>
                 {CATEGORIAS.map((cat) => (
@@ -289,20 +332,85 @@ export default function EditarMueblePage() {
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-xs uppercase mb-2">
-                Colores (Ej: #000000, #FFFFFF)
+          </div>
+
+          {/* TEXTURAS */}
+          <div className="border-t pt-8">
+            <div className="flex justify-between items-center mb-4">
+              <label className="block text-xs uppercase font-medium">
+                Texturas y Acabados
               </label>
-              <input
-                type="text"
-                value={colors}
-                onChange={(e) => setColors(e.target.value)}
-                className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md"
-              />
+              <button
+                type="button"
+                onClick={handleAddTexture}
+                disabled={textures.length >= 4}
+                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1  flex items-center gap-1 hover:bg-gray-300 disabled:opacity-50"
+              >
+                <Plus size={12} /> Añadir Textura
+              </button>
+            </div>
+            <div className="space-y-4">
+              {textures.map((tex, idx) => (
+                <div
+                  key={idx}
+                  className="relative flex flex-col md:flex-row gap-3 items-center p-4 border border-gray-100  bg-gray-50/50"
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTexture(idx)}
+                    className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-2"
+                  >
+                    <X size={18} />
+                  </button>
+                  <div className="w-full flex-1">
+                    <label className="block text-[10px] mb-1">Nombre</label>
+                    <input
+                      type="text"
+                      value={tex.name}
+                      onChange={(e) =>
+                        handleTextureChange(idx, "name", e.target.value)
+                      }
+                      className="w-full bg-white border px-4 py-2 text-sm "
+                      required
+                    />
+                  </div>
+                  <div className="w-full flex-1">
+                    <label className="block text-[10px] mb-1">
+                      Imagen (Vacío para conservar actual)
+                    </label>
+                    <label className="bg-epico-blue text-white text-[10px] uppercase px-3 py-1.5  cursor-pointer hover:opacity-90 inline-block">
+                      Cambiar
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          handleTextureChange(
+                            idx,
+                            "file",
+                            e.target.files?.[0] || null,
+                          )
+                        }
+                        className="hidden"
+                      />
+                    </label>
+                    <div className="text-[10px] mt-1 truncate">
+                      {tex.file ? (
+                        <span className="text-epico-blue">{tex.file.name}</span>
+                      ) : tex.url ? (
+                        <span className="text-green-600">
+                          ✓ Conservando actual
+                        </span>
+                      ) : (
+                        <span className="text-zinc-500">Sin archivo</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* BLOQUE 2: PRECIOS Y TAMAÑOS */}
+          {/* TAMAÑOS */}
           <div className="border-t pt-8">
             <div className="flex justify-between items-center mb-4">
               <label className="block text-xs uppercase font-medium">
@@ -311,12 +419,11 @@ export default function EditarMueblePage() {
               <button
                 type="button"
                 onClick={handleAddSize}
-                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 rounded flex items-center gap-1 cursor-pointer hover:bg-gray-300"
+                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1  flex items-center gap-1 hover:bg-gray-300"
               >
                 <Plus size={12} /> Añadir Medida
               </button>
             </div>
-
             {sizes.length === 0 ? (
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 w-full">
@@ -327,7 +434,7 @@ export default function EditarMueblePage() {
                     type="number"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md"
+                    className="w-full bg-[#FAFAF9] border px-4 py-3 "
                   />
                 </div>
                 <div className="flex-1 w-full">
@@ -340,13 +447,13 @@ export default function EditarMueblePage() {
                     max="100"
                     value={discount}
                     onChange={(e) => setDiscount(e.target.value)}
-                    className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md"
+                    className="w-full bg-[#FAFAF9] border px-4 py-3 "
                   />
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-4">
+                <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
                   <div className="flex-1 w-full md:w-auto">
                     <label className="block text-[10px] text-gray-500 mb-1">
                       Descuento Global (%)
@@ -357,20 +464,14 @@ export default function EditarMueblePage() {
                       max="100"
                       value={discount}
                       onChange={(e) => setDiscount(e.target.value)}
-                      placeholder="Ej: 15"
-                      className="w-full md:w-1/2 bg-[#FAFAF9] border px-4 py-2 rounded-md text-sm"
+                      className="w-full md:w-1/2 bg-[#FAFAF9] border px-4 py-2  text-sm"
                     />
-                  </div>
-                  <div className="flex-1 w-full md:w-auto pt-2 md:pt-0">
-                    <span className="text-[10px] text-epico-blue font-medium bg-blue-50 px-3 py-2 rounded-md block w-max">
-                      💡 El Precio Base se calculará automáticamente.
-                    </span>
                   </div>
                 </div>
                 {sizes.map((size, idx) => (
                   <div
                     key={idx}
-                    className="flex flex-col md:flex-row gap-3 p-3 border border-gray-100 rounded-md bg-gray-50/50"
+                    className="flex flex-col md:flex-row gap-3 p-3 border border-gray-100  bg-gray-50/50"
                   >
                     <input
                       type="text"
@@ -379,7 +480,7 @@ export default function EditarMueblePage() {
                       onChange={(e) =>
                         handleSizeChange(idx, "label", e.target.value)
                       }
-                      className="flex-1 bg-white border px-4 py-2 rounded-md text-sm"
+                      className="flex-1 bg-white border px-4 py-2  text-sm"
                     />
                     <div className="flex gap-2 items-center">
                       <input
@@ -389,12 +490,12 @@ export default function EditarMueblePage() {
                         onChange={(e) =>
                           handleSizeChange(idx, "price", e.target.value)
                         }
-                        className="w-full md:w-32 bg-white border px-4 py-2 rounded-md text-sm"
+                        className="w-full md:w-32 bg-white border px-4 py-2  text-sm"
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveSize(idx)}
-                        className="text-red-500 hover:text-red-700 p-2 cursor-pointer"
+                        className="text-red-500 hover:text-red-700 p-2"
                       >
                         <X size={18} />
                       </button>
@@ -405,7 +506,6 @@ export default function EditarMueblePage() {
             )}
           </div>
 
-          {/* BLOQUE 3: DESCRIPCIÓN */}
           <div>
             <label className="block text-xs uppercase mb-2">
               Descripción Técnica
@@ -414,19 +514,18 @@ export default function EditarMueblePage() {
               rows={5}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-[#FAFAF9] border px-4 py-3 rounded-md resize-y"
+              className="w-full bg-[#FAFAF9] border px-4 py-3  resize-y"
             />
           </div>
 
-          {/* BLOQUE 4: MULTIMEDIA */}
+          {/* MULTIMEDIA */}
           <div className="border-t pt-8">
             <h2 className="text-sm uppercase mb-6">Archivos Multimedia</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Principal */}
-              <div className="border p-6 rounded-xl">
+              <div className="border p-6 ">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold">Principal *</span>
-                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1 rounded cursor-pointer">
+                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1  cursor-pointer">
                     Cambiar
                     <input
                       type="file"
@@ -442,12 +541,10 @@ export default function EditarMueblePage() {
                   {newMainImage ? newMainImage.name : "✓ Conservando actual"}
                 </div>
               </div>
-
-              {/* Hover */}
-              <div className="border p-6 rounded-xl">
+              <div className="border p-6 ">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold">Hover</span>
-                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1 rounded cursor-pointer">
+                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1  cursor-pointer">
                     Cambiar
                     <input
                       type="file"
@@ -465,12 +562,10 @@ export default function EditarMueblePage() {
                     : "✓ Conservando actual/vacío"}
                 </div>
               </div>
-
-              {/* Galería */}
-              <div className="md:col-span-2 border p-6 rounded-xl">
+              <div className="md:col-span-2 border p-6 ">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-xs font-bold">Galería</span>
-                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1 rounded cursor-pointer">
+                  <label className="bg-epico-blue text-white text-[10px] px-3 py-1  cursor-pointer">
                     Añadir Fotos
                     <input
                       type="file"
@@ -497,7 +592,7 @@ export default function EditarMueblePage() {
                       <button
                         type="button"
                         onClick={() => removeExistingGalleryImage(url)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 cursor-pointer hover:bg-red-600"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
                       >
                         <X size={10} />
                       </button>
@@ -518,7 +613,7 @@ export default function EditarMueblePage() {
                       <button
                         type="button"
                         onClick={() => removeNewGalleryImage(idx)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 cursor-pointer"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
                       >
                         <X size={10} />
                       </button>
@@ -526,25 +621,22 @@ export default function EditarMueblePage() {
                   ))}
                 </div>
               </div>
-
-              {/* === NUEVO BLOQUE: MODELO 3D === */}
-              <div className="md:col-span-2 border p-6 rounded-xl bg-gray-50/30">
+              <div className="md:col-span-2 border p-6  bg-gray-50/30">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold">
                     Modelo 3D (.glb / .gltf)
                   </span>
                   <div className="flex gap-2">
-                    {/* Botón para eliminar el 3D actual si existe */}
                     {existingModelUrl && !removeModel && !newModel3d && (
                       <button
                         type="button"
                         onClick={() => setRemoveModel(true)}
-                        className="flex items-center gap-1 bg-red-100 text-red-600 hover:bg-red-200 text-[10px] px-3 py-1 rounded cursor-pointer"
+                        className="flex items-center gap-1 bg-red-100 text-red-600 hover:bg-red-200 text-[10px] px-3 py-1  cursor-pointer"
                       >
                         <Trash2 size={12} /> Eliminar
                       </button>
                     )}
-                    <label className="bg-epico-blue text-white text-[10px] px-3 py-1 rounded cursor-pointer hover:opacity-90">
+                    <label className="bg-epico-blue text-white text-[10px] px-3 py-1  cursor-pointer hover:opacity-90">
                       {existingModelUrl ? "Reemplazar" : "Subir Modelo"}
                       <input
                         type="file"
@@ -552,13 +644,12 @@ export default function EditarMueblePage() {
                         className="hidden"
                         onChange={(e) => {
                           setNewModel3d(e.target.files?.[0] || null);
-                          setRemoveModel(false); // Si sube uno nuevo, cancelamos el borrado
+                          setRemoveModel(false);
                         }}
                       />
                     </label>
                   </div>
                 </div>
-
                 <div className="text-[10px] text-zinc-600 mt-2">
                   {newModel3d ? (
                     <span className="text-epico-blue font-medium">
@@ -566,14 +657,14 @@ export default function EditarMueblePage() {
                     </span>
                   ) : removeModel ? (
                     <span className="text-red-500 italic">
-                      El modelo 3D actual será eliminado al guardar.
+                      El modelo será eliminado.
                     </span>
                   ) : existingModelUrl ? (
                     <span className="text-green-600">
                       ✓ Modelo 3D actual activo.
                     </span>
                   ) : (
-                    <span>Sin modelo 3D. Puedes subir uno más adelante.</span>
+                    <span>Sin modelo 3D.</span>
                   )}
                 </div>
               </div>
@@ -583,15 +674,15 @@ export default function EditarMueblePage() {
           <div className="border-t pt-6 flex justify-end items-center gap-4">
             {loadingSubmit && (
               <span className="text-[10px] font-bold uppercase tracking-wider text-epico-blue animate-pulse">
-                Procesando cambios...
+                Procesando...
               </span>
             )}
             <button
               type="submit"
               disabled={loadingSubmit}
-              className="bg-epico-blue text-white px-8 py-4 text-xs uppercase rounded-md cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="bg-epico-blue text-white px-8 py-4 text-xs uppercase  cursor-pointer hover:opacity-90 disabled:opacity-50"
             >
-              {loadingSubmit ? "Guardando..." : "Guardar Cambios"}
+              Guardar Cambios
             </button>
           </div>
         </form>

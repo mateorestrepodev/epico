@@ -82,7 +82,7 @@ export default function AdminProyectosDashboard() {
         </div>
         <Link
           href="/admin/proyectos/nuevo"
-          className="bg-epico-blue text-white px-6 py-3 rounded-sm text-xs uppercase font-medium hover:bg-blue-700 transition-colors shadow-sm"
+          className="bg-epico-blue text-white px-6 py-3  text-xs uppercase font-medium hover:bg-blue-700 transition-colors shadow-sm"
         >
           + Nuevo Proyecto
         </Link>
@@ -93,7 +93,7 @@ export default function AdminProyectosDashboard() {
           proyectos.map((item) => (
             <div
               key={item.id}
-              className="bg-background border border-[#E4DFD5] rounded-sm overflow-hidden flex flex-col group shadow-sm hover:shadow-md transition-shadow duration-300"
+              className="bg-background border border-[#E4DFD5]  overflow-hidden flex flex-col group shadow-sm hover:shadow-md transition-shadow duration-300"
             >
               <div className="relative aspect-[5/4] w-full bg-[#EBE7DF] overflow-hidden p-4">
                 {item.image_url ? (
@@ -116,22 +116,19 @@ export default function AdminProyectosDashboard() {
                   <h3 className="font-medium text-lg tracking-wider text-[#332D26] truncate mb-1">
                     {item.title}
                   </h3>
-                  <p className="text-[#827A70] text-[10px] uppercase tracking-wider font-medium">
-                    {item.location || "Sin ubicación"}
-                  </p>
                 </div>
 
                 <div className="flex gap-3 pt-3 mt-4 border-t border-gray-100">
                   <Link
                     href={`/admin/proyectos/editar/${item.slug}`}
-                    className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-white transition-colors border border-[#D5CEC4] py-2.5 rounded-sm bg-epico-blue"
+                    className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-white transition-colors border border-[#D5CEC4] py-2.5  bg-epico-blue"
                   >
                     Editar
                   </Link>
                   <button
                     onClick={() => handleDelete(item.id, item.title)}
                     disabled={isDeleting === item.id}
-                    className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-red-600 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300 bg-red-50 py-2.5 rounded-sm disabled:opacity-50 cursor-pointer"
+                    className="flex-1 text-center text-[10px] uppercase tracking-wider font-medium text-red-600 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300 bg-red-50 py-2.5  disabled:opacity-50 cursor-pointer"
                   >
                     {isDeleting === item.id ? "Borrando..." : "Eliminar"}
                   </button>
@@ -140,7 +137,7 @@ export default function AdminProyectosDashboard() {
             </div>
           ))
         ) : (
-          <div className="col-span-full border border-dashed border-[#D5CEC4] rounded-sm p-16 flex flex-col justify-center items-center text-center bg-background shadow-sm">
+          <div className="col-span-full border border-dashed border-[#D5CEC4]  p-16 flex flex-col justify-center items-center text-center bg-background shadow-sm">
             <p className="text-[#6A6258] text-sm mb-6 font-light">
               El portafolio de proyectos está vacío.
             </p>

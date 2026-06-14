@@ -28,7 +28,7 @@ export default function Preloader() {
           key="preloader"
           exit={{ y: "-100%" }}
           transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
-          className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-epico-dark"
+          className="fixed inset-0 z-[999] -ml-3 md:-ml-5 flex flex-col items-center justify-center bg-epico-dark"
         >
           {/* PRIMERO: El Logo */}
           <motion.div
