@@ -125,7 +125,7 @@ export default function DetalleMobiliarioGallery({
                 aria-label={`Ver imagen ${idx + 1}`}
                 className={`relative aspect-square w-full flex-shrink-0 overflow-hidden transition-all duration-300 bg-[#E8E3D9] ${
                   currentIndex === idx
-                    ? "opacity-100 ring-1 ring-offset-2 ring-[#7A7265]"
+                    ? "opacity-100 "
                     : "opacity-60 hover:opacity-100"
                 }`}
               >

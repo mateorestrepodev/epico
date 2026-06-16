@@ -65,8 +65,10 @@ export default function ProductActions({ product }: ProductActionsProps) {
 
   const handleAddToCart = () => {
     const finalPrice = currentDisplayPrice || 0;
+
+    // Al añadir al carrito, convertimos a minúsculas 'cm'
     const finalName = selectedSize
-      ? `${product.name} (${selectedSize.label})`
+      ? `${product.name} (${selectedSize.label.toLowerCase().includes("cm") ? selectedSize.label.toLowerCase() : `${selectedSize.label} cm`})`
       : product.name;
 
     const cartProduct = {
@@ -132,7 +134,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
                 key={idx}
                 onClick={() => setSelectedTextureName(tex.name)}
                 title={tex.name}
-                className={`relative w-12 h-12 md:w-14 md:h-14 overflow-hidden   shadow-black transition-all cursor-pointer ${
+                className={`relative w-12 h-12 md:w-14 md:h-14 overflow-hidden shadow-black transition-all cursor-pointer ${
                   selectedTextureName === tex.name
                     ? "border-epico-dark scale-105 shadow-md"
                     : "border-gray-200 hover:border-gray-400 opacity-80 hover:opacity-100"
@@ -162,13 +164,16 @@ export default function ProductActions({ product }: ProductActionsProps) {
               <button
                 key={idx}
                 onClick={() => setSelectedSize(size)}
-                className={`px-4 py-2 text-xs uppercase tracking-wider border transition-colors cursor-pointer ${
+                className={`px-4 py-2 text-xs border transition-colors cursor-pointer ${
                   selectedSize?.label === size.label
                     ? "border-epico-dark bg-epico-dark text-white font-medium"
                     : "border-gray-300 text-gray-600 hover:border-gray-500"
                 }`}
               >
-                {size.label}
+                {/* Forzamos el 'cm' estrictamente en minúsculas en el botón */}
+                {size.label.toLowerCase().includes("cm")
+                  ? size.label.toLowerCase()
+                  : `${size.label} cm`}
               </button>
             ))}
           </div>

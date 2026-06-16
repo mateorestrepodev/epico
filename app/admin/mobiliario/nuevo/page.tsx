@@ -221,7 +221,7 @@ export default function NuevoMueblePage() {
         </header>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm  border border-red-200">
+          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm border border-red-200">
             {error}
           </div>
         )}
@@ -248,7 +248,7 @@ export default function NuevoMueblePage() {
                 type="text"
                 readOnly
                 value={slug}
-                className="w-full bg-[#ECE9E2] border px-4 py-3 text-sm  font-mono"
+                className="w-full bg-[#ECE9E2] border px-4 py-3 text-sm font-mono"
               />
             </div>
             <div>
@@ -281,7 +281,7 @@ export default function NuevoMueblePage() {
                 type="button"
                 onClick={handleAddTexture}
                 disabled={textures.length >= 4}
-                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1  hover:bg-gray-300 flex items-center gap-1 disabled:opacity-50"
+                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 hover:bg-gray-300 flex items-center gap-1 disabled:opacity-50 cursor-pointer"
               >
                 <Plus size={12} /> Añadir Textura (Max 4)
               </button>
@@ -290,7 +290,7 @@ export default function NuevoMueblePage() {
               {textures.map((tex, idx) => (
                 <div
                   key={idx}
-                  className="relative flex flex-col md:flex-row gap-3 items-center p-4 border border-gray-100  bg-gray-50/50"
+                  className="relative flex flex-col md:flex-row gap-3 items-center p-4 border border-gray-100 bg-gray-50/50"
                 >
                   <button
                     type="button"
@@ -317,7 +317,7 @@ export default function NuevoMueblePage() {
                     <label className="block text-[10px] text-gray-500 mb-1">
                       Imagen (Cuadrada)
                     </label>
-                    <label className="bg-epico-blue text-white text-[10px] uppercase px-3 py-1.5  cursor-pointer hover:opacity-90 inline-block">
+                    <label className="bg-epico-blue text-white text-[10px] uppercase px-3 py-1.5 cursor-pointer hover:opacity-90 inline-block">
                       Elegir Imagen
                       <input
                         type="file"
@@ -360,7 +360,7 @@ export default function NuevoMueblePage() {
               <button
                 type="button"
                 onClick={handleAddSize}
-                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1  hover:bg-gray-300 flex items-center gap-1"
+                className="text-[10px] uppercase font-bold bg-gray-200 px-3 py-1 hover:bg-gray-300 flex items-center gap-1 cursor-pointer"
               >
                 <Plus size={12} /> Añadir Medida
               </button>
@@ -409,43 +409,50 @@ export default function NuevoMueblePage() {
                     />
                   </div>
                 </div>
+                {/* --- NUEVO LAYOUT DE TALLAS ORGANIZADO --- */}
                 {sizes.map((size, idx) => (
                   <div
                     key={idx}
-                    className="relative flex flex-col md:flex-row gap-3 items-end md:items-center p-4 border border-gray-100  bg-gray-50/50"
+                    className="flex flex-col md:flex-row gap-3 items-center w-full"
                   >
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSize(idx)}
-                      className="absolute top-2 right-2 md:static md:order-last text-red-500 hover:text-red-700 p-2 z-10"
-                    >
-                      <X size={18} />
-                    </button>
-                    <div className="w-full flex-1">
-                      <label className="block text-[10px] text-gray-500 mb-1 md:hidden">
-                        Medida
-                      </label>
+                    <div className="relative flex-1 w-full">
                       <input
                         type="text"
+                        placeholder="Medida (Ej: 140x190)"
                         value={size.label}
                         onChange={(e) =>
                           handleSizeChange(idx, "label", e.target.value)
                         }
-                        className="w-full bg-[#FAFAF9] border px-4 py-2 text-sm "
+                        className="w-full bg-[#FAFAF9] border border-gray-200 px-4 py-3 text-sm outline-none focus:border-epico-blue transition-colors pr-10"
+                        required
                       />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-medium pointer-events-none">
+                        cm
+                      </span>
                     </div>
-                    <div className="w-full flex-1">
-                      <label className="block text-[10px] text-gray-500 mb-1 md:hidden">
-                        Precio Original
-                      </label>
-                      <input
-                        type="number"
-                        value={size.price}
-                        onChange={(e) =>
-                          handleSizeChange(idx, "price", e.target.value)
-                        }
-                        className="w-full bg-[#FAFAF9] border px-4 py-2 text-sm "
-                      />
+                    <div className="flex w-full md:w-auto gap-3 items-center">
+                      <div className="relative w-full md:w-48">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">
+                          $
+                        </span>
+                        <input
+                          type="number"
+                          placeholder="Precio"
+                          value={size.price}
+                          onChange={(e) =>
+                            handleSizeChange(idx, "price", e.target.value)
+                          }
+                          className="w-full bg-[#FAFAF9] border border-gray-200 pl-8 pr-4 py-3 text-sm outline-none focus:border-epico-blue transition-colors"
+                          required
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSize(idx)}
+                        className="text-red-500 hover:text-red-700 p-2 flex-shrink-0 transition-colors cursor-pointer"
+                      >
+                        <X size={20} strokeWidth={1.5} />
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -461,7 +468,7 @@ export default function NuevoMueblePage() {
               rows={5}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-[#FAFAF9] border px-4 py-3 text-sm  resize-y"
+              className="w-full bg-[#FAFAF9] border px-4 py-3 text-sm resize-y"
             />
           </div>
 
@@ -471,12 +478,12 @@ export default function NuevoMueblePage() {
               Archivos Multimedia
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="bg-background border p-6  shadow-sm">
+              <div className="bg-background border p-6 shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <span className="block text-xs font-semibold">
                     Principal *
                   </span>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2  cursor-pointer hover:opacity-90">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 cursor-pointer hover:opacity-90">
                     Elegir{" "}
                     <input
                       type="file"
@@ -488,14 +495,14 @@ export default function NuevoMueblePage() {
                     />
                   </label>
                 </div>
-                <span className="text-[11px] text-epico-blue truncate">
+                <span className="text-[11px] text-epico-blue truncate block">
                   {mainImage ? mainImage.name : "Sin archivo"}
                 </span>
               </div>
-              <div className="bg-background border p-6  shadow-sm">
+              <div className="bg-background border p-6 shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <span className="block text-xs font-semibold">Hover</span>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2  cursor-pointer hover:opacity-90">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 cursor-pointer hover:opacity-90">
                     Elegir{" "}
                     <input
                       type="file"
@@ -507,16 +514,16 @@ export default function NuevoMueblePage() {
                     />
                   </label>
                 </div>
-                <span className="text-[11px] text-zinc-400">
+                <span className="text-[11px] text-zinc-400 block">
                   {hoverImage ? hoverImage.name : "Opcional"}
                 </span>
               </div>
-              <div className="md:col-span-2 bg-background border p-6  shadow-sm">
+              <div className="md:col-span-2 bg-background border p-6 shadow-sm">
                 <div className="flex justify-between items-center mb-5">
                   <span className="text-xs font-semibold">
                     Galería Múltiple
                   </span>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2  cursor-pointer hover:opacity-90">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 cursor-pointer hover:opacity-90">
                     Añadir{" "}
                     <input
                       type="file"
@@ -548,12 +555,12 @@ export default function NuevoMueblePage() {
                   ))}
                 </div>
               </div>
-              <div className="md:col-span-2 bg-background border p-6  shadow-sm">
+              <div className="md:col-span-2 bg-background border p-6 shadow-sm">
                 <div className="flex justify-between items-start mb-4">
                   <span className="text-xs font-semibold">
                     Modelo 3D (.glb)
                   </span>
-                  <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2  cursor-pointer hover:opacity-90">
+                  <label className="bg-epico-blue text-white text-[10px] uppercase px-4 py-2 cursor-pointer hover:opacity-90">
                     Elegir{" "}
                     <input
                       type="file"
@@ -563,7 +570,7 @@ export default function NuevoMueblePage() {
                     />
                   </label>
                 </div>
-                <span className="text-[11px] text-zinc-400">
+                <span className="text-[11px] text-zinc-400 block">
                   {model3d ? model3d.name : "Opcional"}
                 </span>
               </div>
@@ -574,7 +581,7 @@ export default function NuevoMueblePage() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-epico-blue text-white px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50  shadow-sm"
+              className="bg-epico-blue text-white px-8 py-4 text-xs uppercase hover:opacity-90 disabled:opacity-50 shadow-sm cursor-pointer"
             >
               {loading ? "Publicando..." : "Publicar Mueble"}
             </button>

@@ -378,7 +378,7 @@ export default function EditarMueblePage() {
                     <label className="block text-[10px] mb-1">
                       Imagen (Vacío para conservar actual)
                     </label>
-                    <label className="bg-epico-blue text-white text-[10px] uppercase px-3 py-1.5  cursor-pointer hover:opacity-90 inline-block">
+                    <label className="bg-epico-blue text-white text-[10px] uppercase px-3 py-1.5 rounded-md cursor-pointer hover:opacity-90 inline-block">
                       Cambiar
                       <input
                         type="file"
@@ -452,7 +452,7 @@ export default function EditarMueblePage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
                   <div className="flex-1 w-full md:w-auto">
                     <label className="block text-[10px] text-gray-500 mb-1">
@@ -468,36 +468,47 @@ export default function EditarMueblePage() {
                     />
                   </div>
                 </div>
+                {/* --- NUEVO LAYOUT DE TALLAS --- */}
                 {sizes.map((size, idx) => (
                   <div
                     key={idx}
-                    className="flex flex-col md:flex-row gap-3 p-3 border border-gray-100  bg-gray-50/50"
+                    className="flex flex-col md:flex-row gap-3 items-center w-full"
                   >
-                    <input
-                      type="text"
-                      placeholder="Ej: 140x190cm"
-                      value={size.label}
-                      onChange={(e) =>
-                        handleSizeChange(idx, "label", e.target.value)
-                      }
-                      className="flex-1 bg-white border px-4 py-2  text-sm"
-                    />
-                    <div className="flex gap-2 items-center">
+                    <div className="relative flex-1 w-full">
                       <input
-                        type="number"
-                        placeholder="Precio"
-                        value={size.price}
+                        type="text"
+                        placeholder="Medida (Ej: 140x190)"
+                        value={size.label}
                         onChange={(e) =>
-                          handleSizeChange(idx, "price", e.target.value)
+                          handleSizeChange(idx, "label", e.target.value)
                         }
-                        className="w-full md:w-32 bg-white border px-4 py-2  text-sm"
+                        className="w-full bg-[#FAFAF9] border border-gray-200 px-4 py-3 text-sm outline-none focus:border-epico-blue transition-colors pr-10"
                       />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-medium pointer-events-none">
+                        cm
+                      </span>
+                    </div>
+                    <div className="flex w-full md:w-auto gap-3 items-center">
+                      <div className="relative w-full md:w-48">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">
+                          $
+                        </span>
+                        <input
+                          type="number"
+                          placeholder="Precio"
+                          value={size.price}
+                          onChange={(e) =>
+                            handleSizeChange(idx, "price", e.target.value)
+                          }
+                          className="w-full bg-[#FAFAF9] border border-gray-200 pl-8 pr-4 py-3 text-sm outline-none focus:border-epico-blue transition-colors"
+                        />
+                      </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveSize(idx)}
-                        className="text-red-500 hover:text-red-700 p-2"
+                        className="text-red-500 hover:text-red-700 p-2 flex-shrink-0 transition-colors cursor-pointer"
                       >
-                        <X size={18} />
+                        <X size={20} strokeWidth={1.5} />
                       </button>
                     </div>
                   </div>
