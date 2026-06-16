@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useCartStore } from "@/lib/store/useCartStore";
 
 // Número de WhatsApp de Juanita (con código de país, sin el '+')
-const WHATSAPP_NUMBER = "573192391641";
+const WHATSAPP_NUMBER = "573242548059";
 
 export default function CartDrawer() {
   const {

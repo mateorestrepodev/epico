@@ -74,7 +74,7 @@ export default function ALaMedidaPage() {
     const text = `*Cliente A la medida:*\n\n*Tipo de proyecto:* ${formData.tipoProyecto}\n*Nivel de definición:* ${formData.nivelDefinicion}\n\n*Datos del cliente:*\n*Nombre:* ${formData.nombre}\n*Email:* ${formData.email}\n*Teléfono:* ${formData.telefono || "No especificado"}\n*Ciudad:* ${formData.ciudad}`;
 
     // URL de WhatsApp con el número asignado
-    const whatsappUrl = `https://wa.me/573192391641?text=${encodeURIComponent(text)}`;
+    const whatsappUrl = `https://wa.me/573242548059?text=${encodeURIComponent(text)}`;
 
     // Abrimos WhatsApp en una pestaña nueva
     window.open(whatsappUrl, "_blank");

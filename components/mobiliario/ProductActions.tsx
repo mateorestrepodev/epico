@@ -82,7 +82,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
   const handleCustomWhatsApp = () => {
     const text = `Hola, estoy interesado en un producto a la medida:\n\n*Producto:* ${product.name}\nMe gustaría cotizar opciones personalizadas.`;
     window.open(
-      `https://wa.me/573192391641?text=${encodeURIComponent(text)}`,
+      `https://wa.me/573242548059?text=${encodeURIComponent(text)}`,
       "_blank",
     );
     setShowCustomModal(false);
