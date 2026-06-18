@@ -120,12 +120,10 @@ export default function HeroScroll() {
           className="object-cover object-center md:hidden"
         />
 
-        <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between z-10">
-          <div
-            className="w-[100px] md:w-[130px] lg:w-[170px] aspect-[3/1] bg-epico-blue [mask-image:url('/isotipo.svg')] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:left_bottom] [-webkit-mask-image:url('/isotipo.svg')] [-webkit-mask-size:contain] [-webkit-mask-repeat:no-repeat] [-webkit-mask-position:left_bottom]"
-            role="img"
-            aria-label="Isotipo Estudio Épico"
-          />
+        <div className="absolute bottom-4 left-8 right-8 flex items-center justify-center z-10">
+          <h2 className="text-epico-blue text-sm tracking-[0.1em]  font-semibold uppercase">
+            CREAR Y PERMANECER
+          </h2>
         </div>
       </div>
 

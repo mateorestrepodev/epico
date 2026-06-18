@@ -1,3 +1,4 @@
+// app/mobiliario/page.tsx
 import { Metadata } from "next";
 import Image from "next/image";
 import InnerNavbar from "@/components/layout/InnerNavbar";
@@ -59,14 +60,14 @@ export default async function MobiliarioPage({ searchParams }: PageProps) {
           className="object-cover object-center md:hidden"
         />
 
-        {/* Franja Azul Animada */}
-        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 overflow-hidden bg-[#1A00FF] z-10 pointer-events-none flex items-center h-5">
+        {/* Franja Azul Animada - ANCLADA AL INFERIOR (bottom-0) */}
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden bg-[#1A00FF] z-10 pointer-events-none flex items-center h-6">
           <div className="animate-marquee-lr items-center">
             <div className="flex items-center gap-8 md:gap-16 pr-8 md:pr-16 shrink-0 h-full">
               {repeatedText.map((text, i) => (
                 <span
                   key={`a-${i}`}
-                  className="text-white text-[10px] md:text-[15px] font-semibold leading-none"
+                  className="text-white text-[10px] md:text-[14px] font-semibold leading-none "
                 >
                   {text}
                 </span>
@@ -77,7 +78,7 @@ export default async function MobiliarioPage({ searchParams }: PageProps) {
               {repeatedText.map((text, i) => (
                 <span
                   key={`b-${i}`}
-                  className="text-white text-[10px] md:text-[15px] font-semibold leading-none"
+                  className="text-white text-[10px] md:text-[14px] font-semibold leading-none pt-[2px]"
                 >
                   {text}
                 </span>
@@ -90,7 +91,7 @@ export default async function MobiliarioPage({ searchParams }: PageProps) {
       {/* 2. MENÚ DE CATEGORÍAS (Barra Arrastrable) */}
       <CategoryNav />
 
-      {/* 3. GRILLA DE PRODUCTOS - Eliminado el py-12 redundante */}
+      {/* 3. GRILLA DE PRODUCTOS */}
       <div className="flex-grow bg-background">
         <ProductGrid categoria={categoriaActiva} />
       </div>
