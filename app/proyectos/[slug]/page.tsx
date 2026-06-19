@@ -1,4 +1,3 @@
-// app/proyectos/[slug]/page.tsx
 import { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -89,7 +88,6 @@ export default async function ProyectoDetalle({ params }: Props) {
             alt={`Portada de ${proyecto.title}`}
             fill
             priority
-            // CORRECCIÓN: 0vw en móviles (oculta), 100vw en escritorio
             sizes="(max-width: 768px) 0vw, 100vw"
             className="object-cover object-center hidden md:block opacity-90"
           />
@@ -100,7 +98,6 @@ export default async function ProyectoDetalle({ params }: Props) {
             alt={`Portada de ${proyecto.title} Mobile`}
             fill
             priority
-            // CORRECCIÓN: 100vw en móviles, 0vw en escritorio (oculta)
             sizes="(max-width: 768px) 100vw, 0vw"
             className="object-cover object-center md:hidden opacity-90"
           />
@@ -111,11 +108,18 @@ export default async function ProyectoDetalle({ params }: Props) {
         <section className="relative w-full h-[100svh] bg-epico-dark" />
       )}
 
-      {/* 2. FRANJA BLANCA: Título */}
-      <section className="w-full bg-background py-8 flex flex-col items-center justify-center text-center px-6">
+      {/* 2. FRANJA BLANCA: Título y Descripción (Opcional) */}
+      <section className="w-full bg-background py-10 flex flex-col items-center justify-center  px-6 md:px-12">
         <h1 className="text-xl md:text-2xl font-semibold uppercase tracking-widest text-epico-dark">
           {proyecto.title}
         </h1>
+
+        {/* Renderizado Condicional para la Descripción */}
+        {proyecto.description && (
+          <p className="mt-4 text-left text-md md:text-base font-normal text-gray-800 max-w-3xl leading-relaxed whitespace-pre-wrap">
+            {proyecto.description}
+          </p>
+        )}
       </section>
 
       {/* 3. GALERÍA */}
