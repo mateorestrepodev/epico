@@ -40,7 +40,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
   const [show3DModal, setShow3DModal] = useState<boolean>(false);
   const [showCustomModal, setShowCustomModal] = useState<boolean>(false);
 
-  // Estado: Controla la textura ampliada
+  // Estado: Controla la textura ampliada en el modal
   const [zoomedTexture, setZoomedTexture] = useState<Texture | null>(null);
 
   const hasSizes = product.sizes && product.sizes.length > 0;
@@ -122,7 +122,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
         Envío calculado al finalizar la compra.
       </p>
 
-      {/* TEXTURAS CUADRADAS CON ZOOM PERFECCIONADO */}
+      {/* TEXTURAS CUADRADAS CON ZOOM DIRECTO Y MICRO-COPY */}
       {product.textures && product.textures.length > 0 && (
         <div className="mb-6">
           <span className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-3 flex flex-col gap-1">
@@ -141,13 +141,11 @@ export default function ProductActions({ product }: ProductActionsProps) {
               <button
                 key={idx}
                 onClick={() => {
-                  if (selectedTextureName === tex.name) {
-                    setZoomedTexture(tex);
-                  } else {
-                    setSelectedTextureName(tex.name);
-                  }
+                  // Con un solo clic: seleccionamos la textura y abrimos el modal de zoom a la vez
+                  setSelectedTextureName(tex.name);
+                  setZoomedTexture(tex);
                 }}
-                title={`${tex.name} (Toca para ampliar)`}
+                title={tex.name}
                 className={`relative w-12 h-12 md:w-14 md:h-14 overflow-hidden shadow-black transition-all cursor-pointer group ${
                   selectedTextureName === tex.name
                     ? "border-epico-dark scale-105 shadow-md"
@@ -161,34 +159,11 @@ export default function ProductActions({ product }: ProductActionsProps) {
                   className="object-cover"
                   sizes="60px"
                 />
-
-                {/* Lupa overlay */}
-                <div
-                  className={`absolute inset-0 bg-black/30 flex items-center justify-center transition-opacity duration-300 ${
-                    selectedTextureName === tex.name
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
-                  }`}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="1.5"
-                  >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    <line x1="11" y1="8" x2="11" y2="14"></line>
-                    <line x1="8" y1="11" x2="14" y2="11"></line>
-                  </svg>
-                </div>
               </button>
             ))}
           </div>
 
-          {/* --- MODAL OPTIMIZADO (MÁS ACORDE Y COMPLETO) --- */}
+          {/* --- MODAL OPTIMIZADO (ZOOM) --- */}
           {zoomedTexture && (
             <div
               className="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 backdrop-blur-sm p-6"
@@ -221,7 +196,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
                     src={zoomedTexture.image_url}
                     alt={zoomedTexture.name}
                     fill
-                    className="object-contain" // CORRECCIÓN CLAVE: Se ve completa sin cortes
+                    className="object-contain"
                     sizes="(max-width: 768px) 100vw, 450px"
                     quality={100}
                     priority
